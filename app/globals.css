@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bronze: #a67856;
+  --bronze-dark: #8b6347;
+  --cream: #f5ede7;
+  --charcoal: #2a2a2a;
+}
+
+@layer base {
+  body {
+    @apply bg-cream text-charcoal antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .blueprint-line {
+    position: relative;
+  }
+  
+  .blueprint-line::before {
+    content: '';
+    position: absolute;
+    background: currentColor;
+    opacity: 0.2;
+  }
+  
+  .blueprint-grid {
+    background-image: 
+      linear-gradient(rgba(166, 120, 86, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(166, 120, 86, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  
+  .text-shadow-bronze {
+    text-shadow: 2px 2px 4px rgba(166, 120, 86, 0.2);
+  }
+  
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(42, 42, 42, 0.15);
+  }
+}
+
+@layer utilities {
+  .animation-delay-200 {
+    animation-delay: 0.2s;
+  }
+  
+  .animation-delay-400 {
+    animation-delay: 0.4s;
+  }
+  
+  .animation-delay-600 {
+    animation-delay: 0.6s;
+  }
+}
+
