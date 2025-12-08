@@ -44,7 +44,8 @@ export const projects: Project[] = [
         "images": [
           "/images/projects/resort-fashion-show/drawing-1.jpg",
           "/images/projects/resort-fashion-show/drawing-2.webp",
-          "/images/projects/resort-fashion-show/stage-1765134068255-688a-1.png"
+          "/images/projects/resort-fashion-show/stage-1765134068255-688a-1.png",
+          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-688a-1765230006885-4mzo.png"
         ],
         "description": "Site planning and sustainability features",
         "id": "stage-1765134068255-688a",
@@ -57,8 +58,7 @@ export const projects: Project[] = [
           "/images/projects/resort-fashion-show/final-1.jpg",
           "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765227990330-fr6a.jpg",
           "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765228298810-du39.png",
-          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765229312614-qqob.png",
-          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765229905196-xjgq.png"
+          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765229312614-qqob.png"
         ],
         "description": "The outdoor fashion presentation",
         "id": "stage-1765134068255-490a",
