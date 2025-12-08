@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { isAuthenticated } from '@/lib/auth';
 import { canUseGithubContent, uploadGithubBinaryFile, deleteGithubFile, getGithubRawUrl } from '@/lib/github-content';
+import { getCurrentData, updateProjects } from '@/lib/data-utils';
 
 // Mark as dynamic for Next.js
 export const dynamic = 'force-dynamic';
@@ -134,58 +135,42 @@ export async function POST(request: NextRequest) {
 
     const relativePath = `public/images/projects/${sanitizedProjectId}/${filename}`;
     const publicUrl = `/images/projects/${sanitizedProjectId}/${filename}`;
-    let finalUrl = publicUrl;
-    let uploadedToGithub = false;
 
-    // Try GitHub upload first if configured
     if (canUseGithubContent()) {
-      try {
-        console.log(`[Upload] Uploading to GitHub: ${relativePath}`);
-        const result = await uploadGithubBinaryFile({
-          path: relativePath,
-          content: buffer,
-          message: `feat: upload image ${filename} for project ${sanitizedProjectId}`,
-        });
-        
-        // Use the GitHub raw URL for immediate access
-        finalUrl = result.url;
-        uploadedToGithub = true;
-        console.log(`[Upload] ✅ Uploaded to GitHub, URL: ${finalUrl}`);
-      } catch (error) {
-        console.error('[Upload] GitHub upload failed, falling back to local:', error);
-        uploadedToGithub = false;
-      }
+      // GitHub mode: upload to GitHub only
+      console.log(`[Upload] Uploading to GitHub: ${relativePath}`);
+      const result = await uploadGithubBinaryFile({
+        path: relativePath,
+        content: buffer,
+        message: `feat: upload image ${filename} for project ${sanitizedProjectId}`,
+      });
+      
+      console.log(`[Upload] ✅ Uploaded to GitHub, URL: ${result.url}`);
+      
+      return NextResponse.json({
+        success: true,
+        url: result.url,
+        filename,
+        size: buffer.length,
+        uploadedToGithub: true,
+        message: 'Image uploaded to GitHub'
+      });
     }
 
-    // Always save locally as well (cache/fallback)
-    try {
-      const projectDir = path.join(process.cwd(), 'public', 'images', 'projects', sanitizedProjectId);
-      await fs.mkdir(projectDir, { recursive: true });
-      const filepath = path.join(projectDir, filename);
-      await fs.writeFile(filepath, buffer);
-      console.log(`[Upload] ✅ Saved locally: ${filepath}`);
-      
-      // If GitHub upload failed, use local URL
-      if (!uploadedToGithub) {
-        finalUrl = publicUrl;
-      }
-    } catch (localError) {
-      console.error('[Upload] Local save failed:', localError);
-      // If GitHub succeeded but local failed, that's OK
-      if (!uploadedToGithub) {
-        throw localError; // Both failed, propagate error
-      }
-    }
+    // Local mode: save to local file only
+    const projectDir = path.join(process.cwd(), 'public', 'images', 'projects', sanitizedProjectId);
+    await fs.mkdir(projectDir, { recursive: true });
+    const filepath = path.join(projectDir, filename);
+    await fs.writeFile(filepath, buffer);
+    console.log(`[Upload] ✅ Saved locally: ${filepath}`);
 
     return NextResponse.json({
       success: true,
-      url: finalUrl,
+      url: publicUrl,
       filename,
       size: buffer.length,
-      uploadedToGithub,
-      message: uploadedToGithub 
-        ? 'Image uploaded to GitHub and cached locally' 
-        : 'Image saved locally (GitHub not configured or failed)'
+      uploadedToGithub: false,
+      message: 'Image saved locally'
     });
   } catch (error) {
     console.error('Upload error:', error);
@@ -302,40 +287,78 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    let deletedFromGithub = false;
-
-    // Try to delete from GitHub if configured
     if (canUseGithubContent()) {
-      try {
-        const relativePath = `public${imagePath}`;
-        console.log(`[Delete] Deleting from GitHub: ${relativePath}`);
-        await deleteGithubFile({
-          path: relativePath,
-          message: `chore: delete image ${imagePath}`,
-        });
-        deletedFromGithub = true;
-        console.log(`[Delete] ✅ Deleted from GitHub`);
-      } catch (error) {
-        console.error('[Delete] GitHub deletion failed:', error);
-      }
-    }
-
-    // Try to delete local file
-    try {
+      // GitHub mode: delete from GitHub only
+      const relativePath = `public${imagePath}`;
+      console.log(`[Delete] Deleting from GitHub: ${relativePath}`);
+      await deleteGithubFile({
+        path: relativePath,
+        message: `chore: delete image ${imagePath}`,
+      });
+      console.log(`[Delete] ✅ Deleted from GitHub`);
+    } else {
+      // Local mode: delete from local file only
       await fs.unlink(fullPath);
       console.log(`[Delete] ✅ Deleted locally: ${fullPath}`);
-    } catch (localError) {
-      console.error('[Delete] Local deletion failed:', localError);
-      // If GitHub succeeded but local failed, that's OK
-      if (!deletedFromGithub) {
-        throw localError; // Both failed, propagate error
+    }
+
+    // CRITICAL: Remove image reference from all projects
+    try {
+      console.log(`[Delete] Removing image references from project data...`);
+      const { projects } = await getCurrentData();
+      let referencesRemoved = 0;
+      let projectsUpdated = 0;
+
+      // Update each project to remove this image path
+      const updatedProjects = projects.map((project: any) => {
+        let projectModified = false;
+        
+        // Check thumbnail
+        if (project.thumbnail === imagePath) {
+          console.log(`[Delete] ⚠️  Project "${project.id}" uses this as thumbnail!`);
+          // Don't auto-remove thumbnail, just warn
+        }
+        
+        // Check all stage images
+        if (project.stages && Array.isArray(project.stages)) {
+          project.stages = project.stages.map((stage: any) => {
+            if (stage.images && Array.isArray(stage.images)) {
+              const originalLength = stage.images.length;
+              stage.images = stage.images.filter((img: string) => img !== imagePath);
+              
+              if (stage.images.length < originalLength) {
+                referencesRemoved += (originalLength - stage.images.length);
+                projectModified = true;
+                console.log(`[Delete] ✅ Removed reference from project "${project.id}" stage "${stage.title}"`);
+              }
+            }
+            return stage;
+          });
+        }
+        
+        if (projectModified) {
+          projectsUpdated++;
+        }
+        
+        return project;
+      });
+
+      // Save updated projects if any changes were made
+      if (projectsUpdated > 0) {
+        await updateProjects(updatedProjects);
+        console.log(`[Delete] ✅ Updated ${projectsUpdated} project(s), removed ${referencesRemoved} reference(s)`);
+      } else {
+        console.log(`[Delete] ℹ️  No project references found for this image`);
       }
+    } catch (updateError) {
+      console.error('[Delete] Failed to update project references:', updateError);
+      // Don't fail the entire deletion if project update fails
+      // The file is already deleted, just log the error
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Image deleted successfully',
-      deletedFromGithub
+      message: 'Image deleted successfully'
     });
   } catch (error) {
     console.error('DELETE image error:', error);

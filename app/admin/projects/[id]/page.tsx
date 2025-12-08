@@ -164,7 +164,7 @@ export default function ProjectFormPage() {
 
     setSaving(true);
     try {
-      const url = isEditMode ? `/api/projects/${projectId}` : '/api/projects';
+      const url = isEditMode ? `/api/admin/projects/${projectId}` : '/api/admin/projects';
       const method = isEditMode ? 'PUT' : 'POST';
 
       const response = await fetch(url, {

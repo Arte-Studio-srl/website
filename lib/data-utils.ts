@@ -19,17 +19,13 @@ const CACHE_TTL = 1000; // 1 second cache to prevent excessive file reads
  * Read the projects.ts file from GitHub or local filesystem
  */
 export async function readDataFile(): Promise<string> {
-  // Try GitHub first if configured
   if (canUseGithubContent()) {
-    try {
-      const { content } = await fetchGithubFile(PROJECTS_FILE_PATH);
-      return content;
-    } catch (error) {
-      console.error('[Data] GitHub read failed, falling back to local file:', error);
-    }
+    // GitHub mode: read from GitHub only (single source of truth)
+    const { content } = await fetchGithubFile(PROJECTS_FILE_PATH);
+    return content;
   }
 
-  // Fallback to local file
+  // Local mode: read from local file
   try {
     return await fs.readFile(DATA_FILE_PATH, 'utf-8');
   } catch (error) {
@@ -39,17 +35,80 @@ export async function readDataFile(): Promise<string> {
 }
 
 /**
+ * Write to the projects.ts file
+ */
+export async function writeDataFile(content: string): Promise<void> {
+  try {
+    await fs.writeFile(DATA_FILE_PATH, content, 'utf-8');
+  } catch (error) {
+    console.error('Error writing data file:', error);
+    throw new Error('Failed to write projects data');
+  }
+}
+
+/**
  * Parse the projects.ts file content to extract projects and categories
+ * Uses a bracket-counting approach to handle nested arrays correctly
  */
 function parseDataFile(content: string): { projects: Project[]; categories: Category[] } {
   try {
-    // Extract projects array
-    const projectsMatch = content.match(/export const projects: Project\[\] = (\[[\s\S]*?\n\]);/);
-    const projects = projectsMatch ? JSON.parse(projectsMatch[1]) : [];
-
-    // Extract categories array
-    const categoriesMatch = content.match(/export const categories: Category\[\] = (\[[\s\S]*?\n\]);/);
-    const categories = categoriesMatch ? JSON.parse(categoriesMatch[1]) : [];
+    // Helper function to extract array by counting brackets
+    const extractArray = (content: string, varName: string): any[] => {
+      const regex = new RegExp(`export const ${varName}: \\w+\\[\\] = `);
+      const match = content.match(regex);
+      
+      if (!match) return [];
+      
+      const startIndex = match.index! + match[0].length;
+      let bracketCount = 0;
+      let inString = false;
+      let escapeNext = false;
+      let endIndex = startIndex;
+      
+      // Count brackets to find the matching closing bracket
+      for (let i = startIndex; i < content.length; i++) {
+        const char = content[i];
+        
+        // Handle escape sequences
+        if (escapeNext) {
+          escapeNext = false;
+          continue;
+        }
+        
+        if (char === '\\') {
+          escapeNext = true;
+          continue;
+        }
+        
+        // Handle strings (don't count brackets inside strings)
+        if (char === '"' && !inString) {
+          inString = true;
+          continue;
+        }
+        if (char === '"' && inString) {
+          inString = false;
+          continue;
+        }
+        
+        // Count brackets only outside of strings
+        if (!inString) {
+          if (char === '[') bracketCount++;
+          if (char === ']') bracketCount--;
+          
+          // Found the matching closing bracket
+          if (bracketCount === 0 && char === ']') {
+            endIndex = i + 1;
+            break;
+          }
+        }
+      }
+      
+      const arrayStr = content.substring(startIndex, endIndex);
+      return JSON.parse(arrayStr);
+    };
+    
+    const projects = extractArray(content, 'projects');
+    const categories = extractArray(content, 'categories');
 
     return { projects, categories };
   } catch (error) {
@@ -92,18 +151,6 @@ export function invalidateDataCache(): void {
 }
 
 /**
- * Write to the projects.ts file
- */
-export async function writeDataFile(content: string): Promise<void> {
-  try {
-    await fs.writeFile(DATA_FILE_PATH, content, 'utf-8');
-  } catch (error) {
-    console.error('Error writing data file:', error);
-    throw new Error('Failed to write projects data');
-  }
-}
-
-/**
  * Update projects array in the data file
  */
 export async function updateProjects(projects: Project[]): Promise<void> {
@@ -116,24 +163,22 @@ export async function updateProjects(projects: Project[]): Promise<void> {
     );
 
   if (canUseGithubContent()) {
-    try {
-      const { content, sha } = await fetchGithubFile(PROJECTS_FILE_PATH);
-      const newContent = replaceProjects(content);
-      await writeGithubFile({
-        path: PROJECTS_FILE_PATH,
-        content: newContent,
-        sha,
-        message: 'chore: update projects via admin dashboard',
-      });
-      
-      // Invalidate cache after successful update
-      invalidateDataCache();
-      return;
-    } catch (error) {
-      console.error('GitHub content update failed, falling back to local file.', error);
-    }
+    // GitHub mode: write to GitHub only (prod filesystem is readonly anyway)
+    const { content, sha } = await fetchGithubFile(PROJECTS_FILE_PATH);
+    const newContent = replaceProjects(content);
+    await writeGithubFile({
+      path: PROJECTS_FILE_PATH,
+      content: newContent,
+      sha,
+      message: 'chore: update projects via admin dashboard',
+    });
+    
+    // Invalidate cache after successful update
+    invalidateDataCache();
+    return;
   }
 
+  // Local mode: write to local file only
   const content = await readDataFile();
   const newContent = replaceProjects(content);
   await writeDataFile(newContent);
@@ -155,24 +200,22 @@ export async function updateCategories(categories: Category[]): Promise<void> {
     );
 
   if (canUseGithubContent()) {
-    try {
-      const { content, sha } = await fetchGithubFile(PROJECTS_FILE_PATH);
-      const newContent = replaceCategories(content);
-      await writeGithubFile({
-        path: PROJECTS_FILE_PATH,
-        content: newContent,
-        sha,
-        message: 'chore: update categories via admin dashboard',
-      });
-      
-      // Invalidate cache after successful update
-      invalidateDataCache();
-      return;
-    } catch (error) {
-      console.error('GitHub content update failed, falling back to local file.', error);
-    }
+    // GitHub mode: write to GitHub only (prod filesystem is readonly anyway)
+    const { content, sha } = await fetchGithubFile(PROJECTS_FILE_PATH);
+    const newContent = replaceCategories(content);
+    await writeGithubFile({
+      path: PROJECTS_FILE_PATH,
+      content: newContent,
+      sha,
+      message: 'chore: update categories via admin dashboard',
+    });
+    
+    // Invalidate cache after successful update
+    invalidateDataCache();
+    return;
   }
 
+  // Local mode: write to local file only
   const content = await readDataFile();
   const newContent = replaceCategories(content);
   await writeDataFile(newContent);

@@ -47,7 +47,7 @@ export default function ImageUpload({
       formData.append('projectId', projectId);
       formData.append('type', type);
 
-      const response = await fetch('/api/upload', {
+      const response = await fetch('/api/admin/upload', {
         method: 'POST',
         body: formData,
       });

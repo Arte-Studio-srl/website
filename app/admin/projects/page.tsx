@@ -40,7 +40,7 @@ export default function ProjectsAdminPage() {
     }
 
     try {
-      const response = await fetch(`/api/projects/${id}`, {
+      const response = await fetch(`/api/admin/projects/${id}`, {
         method: 'DELETE',
       });
       const data = await response.json();

@@ -62,7 +62,7 @@ export default function CategoriesAdminPage() {
   const saveCategories = async () => {
     setSaving(true);
     try {
-      const response = await fetch('/api/categories', {
+      const response = await fetch('/api/admin/categories', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ categories }),

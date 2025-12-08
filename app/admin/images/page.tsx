@@ -67,7 +67,7 @@ export default function ImagesAdminPage() {
     }
 
     try {
-      const response = await fetch(`/api/upload?path=${encodeURIComponent(imagePath)}`, {
+      const response = await fetch(`/api/admin/upload?path=${encodeURIComponent(imagePath)}`, {
         method: 'DELETE',
       });
 
