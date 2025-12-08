@@ -40,59 +40,85 @@ export type SiteConfig = {
 };
 
 export const siteConfig: SiteConfig = {
-  siteName: 'ArteStudio',
-  tagline: 'Professional scenography and event structures for conventions, exhibitions, fashion shows, and theater productions.',
-  faviconUrl: '/favicon.ico',
-  contactEmail: 'info@progettoartestudio.it',
-  phone: '+393357041512',
-  address: `ArteStudio s.r.l.
-Vicolo San Giorgio 5
-20090 Buccinasco (MI)
-Italy`,
-  googleMapsUrl: 'https://www.google.com/maps/search/?api=1&query=Vicolo+San+Giorgio+5,+Buccinasco,+MI',
-  legal: {
-    companyName: 'ArteStudio s.r.l.',
-    piva: '02513970182',
-    legalAddress: 'Via Porro, 14 - 27100 - Pavia',
+  "siteName": "ArteStudioo",
+  "tagline": "Professional scenography and event structures for conventions, exhibitions, fashion shows, and theater productions.",
+  "faviconUrl": "/favicon.ico",
+  "contactEmail": "info@progettoartestudio.it",
+  "phone": "+393357041512",
+  "address": "ArteStudio s.r.l.\nVicolo San Giorgio 5\n20090 Buccinasco (MI)\nItaly",
+  "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Vicolo+San+Giorgio+5,+Buccinasco,+MI",
+  "legal": {
+    "companyName": "ArteStudio s.r.l.",
+    "piva": "02513970182",
+    "legalAddress": "Via Porro, 14 - 27100 - Pavia"
   },
-  openingHours: [
-    { day: 'Monday', open: '09:00', close: '18:00' },
-    { day: 'Tuesday', open: '09:00', close: '18:00' },
-    { day: 'Wednesday', open: '09:00', close: '18:00' },
-    { day: 'Thursday', open: '09:00', close: '18:00' },
-    { day: 'Friday', open: '09:00', close: '18:00' },
-    { day: 'Saturday', open: 'By appointment', close: '', note: 'By appointment', closed: false },
-    { day: 'Sunday', open: '', close: '', closed: true },
+  "openingHours": [
+    {
+      "day": "Monday",
+      "open": "09:00",
+      "close": "18:00"
+    },
+    {
+      "day": "Tuesday",
+      "open": "09:00",
+      "close": "18:00"
+    },
+    {
+      "day": "Wednesday",
+      "open": "09:00",
+      "close": "18:00"
+    },
+    {
+      "day": "Thursday",
+      "open": "09:00",
+      "close": "18:00"
+    },
+    {
+      "day": "Friday",
+      "open": "09:00",
+      "close": "18:00"
+    },
+    {
+      "day": "Saturday",
+      "open": "By appointment",
+      "close": "",
+      "note": "By appointment",
+      "closed": false
+    },
+    {
+      "day": "Sunday",
+      "open": "",
+      "close": "",
+      "closed": true
+    }
   ],
-  social: {
-    facebook: 'https://www.facebook.com/progettoartestudio',
-    instagram: '',
-    linkedin: '',
+  "social": {
+    "facebook": "https://www.facebook.com/progettoartestudio",
+    "instagram": "",
+    "linkedin": ""
   },
-  seo: {
-    defaultMetaTitle: 'ArteStudio - Event Structures & Scenography',
-    defaultMetaDescription:
-      'Professional event structures, stages, exhibition stands, and scenography for conventions, exhibitions, fashion shows, and theater productions.',
+  "seo": {
+    "defaultMetaTitle": "ArteStudio - Event Structures & Scenography",
+    "defaultMetaDescription": "Professional event structures, stages, exhibition stands, and scenography for conventions, exhibitions, fashion shows, and theater productions."
   },
-  heroCarousel: [
+  "heroCarousel": [
     {
-      projectId: 'siemens',
-      image: '/images/projects/siemens/final-1.jpg',
-      title: 'International Corporate Summit',
-      category: 'Conventions',
+      "projectId": "siemens",
+      "image": "/images/projects/siemens/final-1.jpg",
+      "title": "International Corporate Summit",
+      "category": "Conventions"
     },
     {
-      projectId: 'resort-show',
-      image: '/images/projects/resort-show/final-1.jpg',
-      title: 'Resort Event Experience',
-      category: 'Events',
+      "projectId": "resort-show",
+      "image": "/images/projects/resort-show/final-1.jpg",
+      "title": "Resort Event Experience",
+      "category": "Events"
     },
     {
-      projectId: 'resort-fashion-show',
-      image: '/images/projects/resort-fashion-show/final-1.jpg',
-      title: 'Fashion Show Runway',
-      category: 'Fashion Shows',
-    },
-  ],
+      "projectId": "resort-fashion-show",
+      "image": "/images/projects/resort-fashion-show/final-1.jpg",
+      "title": "Fashion Show Runway",
+      "category": "Fashion Shows"
+    }
+  ]
 };
-
