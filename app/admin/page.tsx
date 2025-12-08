@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import AdminLayout from '@/components/admin/AdminLayout';
+import { Project, Category, ProjectStage } from '@/types';
 
 interface DashboardStats {
   totalProjects: number;
@@ -20,28 +21,24 @@ export default function AdminPage() {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
   const fetchStats = async () => {
     try {
       const response = await fetch('/api/projects');
       const data = await response.json();
       
       if (data.success) {
-        const projects = data.projects;
-        const categories = data.categories;
+        const projects = data.projects as Project[];
+        const categories = data.categories as Category[];
         
         // Calculate stats
-        const totalImages = projects.reduce((acc: number, project: any) => {
-          return acc + project.stages.reduce((stageAcc: number, stage: any) => {
+        const totalImages = projects.reduce((acc: number, project: Project) => {
+          return acc + project.stages.reduce((stageAcc: number, stage: ProjectStage) => {
             return stageAcc + stage.images.length;
           }, 0);
         }, 0);
         
         const latestYear = projects.length > 0 
-          ? Math.max(...projects.map((p: any) => parseInt(p.year))) 
+          ? Math.max(...projects.map((p: Project) => parseInt(String(p.year)))) 
           : '-';
         
         setStats({
@@ -57,6 +54,10 @@ export default function AdminPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
 
   const dashboardCards = [
     {

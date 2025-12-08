@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Category, Project, ProjectStage, StageIcon } from '@/types';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -69,11 +69,7 @@ export default function ProjectFormPage() {
     stages: normalizeStages([]),
   }));
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       if (isEditMode) {
         const [projectRes, categoriesRes] = await Promise.all([
@@ -101,7 +97,11 @@ export default function ProjectFormPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isEditMode, projectId]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const generateId = (title: string) => {
     return title

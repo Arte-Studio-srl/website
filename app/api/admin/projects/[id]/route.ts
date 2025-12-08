@@ -2,8 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
 import { getCurrentData, updateProjects, validateProject } from '@/lib/data-utils';
 
-// Mark as dynamic for Next.js
-export const dynamic = 'force-dynamic';
+// Static export compatibility
+export const dynamic = 'force-static';
+
+export async function generateStaticParams() {
+  const { projects } = await getCurrentData();
+  return projects.map((project) => ({ id: project.id }));
+}
 
 // PUT - Update project - Requires authentication
 export async function PUT(
@@ -34,7 +39,7 @@ export async function PUT(
     // Get current projects
     const { projects } = await getCurrentData();
     const currentProjects = [...projects];
-    const index = currentProjects.findIndex((p: any) => p.id === id);
+    const index = currentProjects.findIndex((p) => p.id === id);
     
     if (index === -1) {
       return NextResponse.json(
@@ -79,7 +84,7 @@ export async function DELETE(
     // Get current projects
     const { projects } = await getCurrentData();
     const currentProjects = [...projects];
-    const filteredProjects = currentProjects.filter((p: any) => p.id !== id);
+    const filteredProjects = currentProjects.filter((p) => p.id !== id);
     
     if (currentProjects.length === filteredProjects.length) {
       return NextResponse.json(

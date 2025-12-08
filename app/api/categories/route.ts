@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getCurrentData } from '@/lib/data-utils';
 
-// Mark as dynamic for Next.js
-export const dynamic = 'force-dynamic';
+// Static export compatibility
+export const dynamic = 'force-static';
 
 // GET all categories - Public endpoint
 export async function GET() {

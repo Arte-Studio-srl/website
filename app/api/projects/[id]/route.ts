@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentData } from '@/lib/data-utils';
 
-// Mark as dynamic for Next.js
-export const dynamic = 'force-dynamic';
+// Static export compatibility
+export const dynamic = 'force-static';
+
+export async function generateStaticParams() {
+  const { projects } = await getCurrentData();
+  return projects.map((project) => ({ id: project.id }));
+}
 
 // GET single project - Public endpoint
 export async function GET(

@@ -2,9 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
 import { updateCategories, validateCategory } from '@/lib/data-utils';
 
-// Mark as dynamic for Next.js
-export const dynamic = 'force-dynamic';
-
 // PUT - Update categories - Requires authentication
 export async function PUT(request: NextRequest) {
   try {
