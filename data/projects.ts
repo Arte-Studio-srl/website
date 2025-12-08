@@ -155,9 +155,7 @@ export const projects: Project[] = [
       {
         "type": "drawing",
         "title": "Stage Designs",
-        "images": [
-          "/images/projects/concert-series/drawing-2.jpg"
-        ],
+        "images": [],
         "description": "Modular stage system for different venues"
       },
       {
