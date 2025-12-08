@@ -42,7 +42,7 @@ export type SiteConfig = {
 export const siteConfig: SiteConfig = {
   "siteName": "ArteStudio",
   "tagline": "Professional scenography and event structures for conventions, exhibitions, fashion shows, and theater productions.",
-  "faviconUrl": "/favicon.ico",
+  "faviconUrl": "/favicon.svg",
   "contactEmail": "info@progettoartestudio.it",
   "phone": "+393357041512",
   "address": "ArteStudio s.r.l.\nVicolo San Giorgio 5\n20090 Buccinasco (MI)\nItaly",
