@@ -44,8 +44,7 @@ export const projects: Project[] = [
         "images": [
           "/images/projects/resort-fashion-show/drawing-1.jpg",
           "/images/projects/resort-fashion-show/drawing-2.webp",
-          "/images/projects/resort-fashion-show/stage-1765134068255-688a-1.png",
-          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-688a-1765230006885-4mzo.png"
+          "/images/projects/resort-fashion-show/stage-1765134068255-688a-1.png"
         ],
         "description": "Site planning and sustainability features",
         "id": "stage-1765134068255-688a",
