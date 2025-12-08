@@ -26,3 +26,14 @@ export function formatTelHref(raw: string): string {
   return `tel:${raw.replace(/\s+/g, '')}`;
 }
 
+export function getGoogleMapsEmbedUrl(config: SiteConfig): string {
+  if (config.googleMapsUrl.includes('output=embed')) {
+    return config.googleMapsUrl;
+  }
+
+  const queryMatch = config.googleMapsUrl.match(/query=([^&]+)/);
+  const query = queryMatch ? decodeURIComponent(queryMatch[1]) : config.address.replace(/\s+/g, ' ').trim();
+
+  return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+}
+

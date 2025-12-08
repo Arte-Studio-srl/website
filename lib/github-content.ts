@@ -40,7 +40,7 @@ export async function fetchGithubFile(path: string): Promise<{ content: string; 
     throw new Error('Github env not configured');
   }
 
-  console.log(`[GitHub] Fetching file: ${path} from ${env.owner}/${env.repo}@${env.branch}`);
+  console.info('[GitHub] Fetching file', { path, owner: env.owner, repo: env.repo, branch: env.branch });
   
   const url = `${GH_API_BASE}/repos/${env.owner}/${env.repo}/contents/${path}?ref=${env.branch}`;
   
@@ -66,7 +66,7 @@ export async function fetchGithubFile(path: string): Promise<{ content: string; 
   }
   
   const decoded = Buffer.from(data.content, data.encoding || 'base64').toString('utf-8');
-  console.log(`[GitHub] Successfully fetched file (${decoded.length} chars, sha: ${data.sha.substring(0, 7)})`);
+  console.info('[GitHub] Fetch success', { length: decoded.length, sha: data.sha.substring(0, 7) });
   
   return { content: decoded, sha: data.sha };
 }
@@ -82,8 +82,8 @@ export async function writeGithubFile(params: {
     throw new Error('Github env not configured');
   }
 
-  console.log(`[GitHub] Writing file: ${params.path} to ${env.owner}/${env.repo}@${env.branch}`);
-  console.log(`[GitHub] Content size: ${params.content.length} chars, SHA: ${params.sha.substring(0, 7)}`);
+  console.info('[GitHub] Writing file', { path: params.path, owner: env.owner, repo: env.repo, branch: env.branch });
+  console.info('[GitHub] Content size', { length: params.content.length, sha: params.sha.substring(0, 7) });
 
   const body = {
     message: params.message,
@@ -112,7 +112,7 @@ export async function writeGithubFile(params: {
   }
 
   const responseData = await res.json();
-  console.log(`[GitHub] Successfully wrote file. New SHA: ${responseData.content?.sha?.substring(0, 7) || 'unknown'}`);
+  console.info('[GitHub] Write success', { sha: responseData.content?.sha?.substring(0, 7) || 'unknown' });
 }
 
 /**
@@ -128,16 +128,16 @@ export async function uploadGithubBinaryFile(params: {
     throw new Error('Github env not configured');
   }
 
-  console.log(`[GitHub] Uploading binary file: ${params.path} (${params.content.length} bytes)`);
+  console.info('[GitHub] Uploading binary', { path: params.path, bytes: params.content.length });
 
   // Check if file already exists (to get SHA for update)
   let existingSha: string | null = null;
   try {
     const existing = await fetchGithubFile(params.path);
     existingSha = existing.sha;
-    console.log(`[GitHub] File exists, will update (SHA: ${existingSha.substring(0, 7)})`);
+    console.info('[GitHub] Binary exists, updating', { sha: existingSha.substring(0, 7) });
   } catch {
-    console.log(`[GitHub] File doesn't exist, will create new`);
+    console.info('[GitHub] Binary missing, creating');
   }
 
   const body: { message: string; content: string; branch: string; sha?: string } = {
@@ -175,8 +175,7 @@ export async function uploadGithubBinaryFile(params: {
   // Return the raw GitHub URL for immediate access
   const rawUrl = `https://raw.githubusercontent.com/${env.owner}/${env.repo}/${env.branch}/${params.path}`;
   
-  console.log(`[GitHub] Binary file uploaded successfully. SHA: ${sha.substring(0, 7)}`);
-  console.log(`[GitHub] Raw URL: ${rawUrl}`);
+  console.info('[GitHub] Binary upload success', { sha: sha.substring(0, 7), rawUrl });
 
   return { url: rawUrl, sha };
 }
@@ -193,7 +192,7 @@ export async function deleteGithubFile(params: {
     throw new Error('Github env not configured');
   }
 
-  console.log(`[GitHub] Deleting file: ${params.path}`);
+  console.info('[GitHub] Deleting file', { path: params.path });
 
   // Get the file's SHA (required for deletion)
   let sha: string;
@@ -201,7 +200,7 @@ export async function deleteGithubFile(params: {
     const existing = await fetchGithubFile(params.path);
     sha = existing.sha;
   } catch {
-    console.log(`[GitHub] File doesn't exist, nothing to delete`);
+    console.info('[GitHub] File missing, nothing to delete');
     return; // File doesn't exist, consider it deleted
   }
 
@@ -230,7 +229,7 @@ export async function deleteGithubFile(params: {
     throw new Error(`Failed to delete from GitHub: ${res.status} ${res.statusText} - ${text}`);
   }
 
-  console.log(`[GitHub] File deleted successfully`);
+  console.info('[GitHub] Delete success');
 }
 
 

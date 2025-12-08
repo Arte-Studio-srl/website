@@ -69,12 +69,14 @@ export async function POST(request: NextRequest) {
     verificationCodes.set(normalizedEmail, { code, expiresAt });
 
     // In production, send email with the code
-    console.log(`\n==========================================`);
-    console.log(`🔐 Verification Code for ${normalizedEmail}`);
-    console.log(`Code: ${code}`);
-    console.log(`Expires in 10 minutes`);
-    console.log(`Remaining attempts: ${rateLimit.remaining}`);
-    console.log(`==========================================\n`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.info('[AuthCode] Verification code issued', {
+        email: normalizedEmail,
+        code,
+        expiresInMinutes: 10,
+        remainingAttempts: rateLimit.remaining,
+      });
+    }
 
     const missingEnv = missingSmtpEnv();
     if (missingEnv.length > 0) {

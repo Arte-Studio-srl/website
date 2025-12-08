@@ -73,7 +73,9 @@ export async function POST(request: NextRequest) {
     const token = await createToken(normalizedEmail);
     await setAuthCookie(token);
 
-    console.log(`✅ Authentication successful for ${normalizedEmail}`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.info('[AuthCode] Authentication success', { email: normalizedEmail });
+    }
 
     return NextResponse.json({
       success: true,

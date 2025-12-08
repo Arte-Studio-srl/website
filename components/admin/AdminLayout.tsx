@@ -83,8 +83,10 @@ export default function AdminLayout({
                 </div>
 
                 {actions && (
-                  <div className="flex w-full sm:w-auto flex-wrap items-center gap-2 sm:gap-3 justify-start sm:justify-end">
-                    {actions}
+                  <div className="flex w-full sm:w-auto justify-end">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 bg-white/5 border border-white/10 rounded-full px-2 py-1 shadow-sm backdrop-blur-sm">
+                      {actions}
+                    </div>
                   </div>
                 )}
               </div>

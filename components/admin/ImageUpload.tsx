@@ -34,7 +34,7 @@ export default function ImageUpload({
     }
 
     if (uploadingRef.current) {
-      console.log('Upload already in progress');
+      console.warn('[ImageUpload] Upload already in progress');
       return;
     }
 

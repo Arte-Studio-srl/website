@@ -243,13 +243,8 @@ export default function ProjectDetailClient({ project }: ProjectDetailClientProp
                     {project.title} • {formatCategoryName(project.category)}
                   </p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full bg-bronze-50 text-bronze-700 flex items-center justify-center shadow-inner">
-                    {renderIcon(resolveStageIcon(currentStage, selectedStage))}
-                  </div>
-                  <span className="text-xs text-charcoal/60 uppercase tracking-[0.2em]">
-                    {currentImages.length} visual{currentImages.length === 1 ? '' : 's'}
-                  </span>
+                <div className="w-12 h-12 rounded-full bg-bronze-50 text-bronze-700 flex items-center justify-center shadow-inner">
+                  {renderIcon(resolveStageIcon(currentStage, selectedStage))}
                 </div>
               </div>
 

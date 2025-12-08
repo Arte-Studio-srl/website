@@ -63,19 +63,78 @@ export default function ConfigAdminPage() {
     }
   };
 
+  const updateOpeningHour = (index: number, field: keyof SiteConfig['openingHours'][number], value: string | boolean) => {
+    setConfig(prev => {
+      const hours = [...prev.openingHours];
+      hours[index] = { ...hours[index], [field]: value };
+      return { ...prev, openingHours: hours };
+    });
+  };
+
+  const addOpeningHour = () => {
+    setConfig(prev => ({
+      ...prev,
+      openingHours: [
+        ...prev.openingHours,
+        { day: '', open: '', close: '', closed: false, note: '' },
+      ],
+    }));
+  };
+
+  const removeOpeningHour = (index: number) => {
+    setConfig(prev => ({
+      ...prev,
+      openingHours: prev.openingHours.filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateHeroSlide = (index: number, field: keyof SiteConfig['heroCarousel'][number], value: string) => {
+    setConfig(prev => {
+      const slides = [...prev.heroCarousel];
+      slides[index] = { ...slides[index], [field]: value };
+      return { ...prev, heroCarousel: slides };
+    });
+  };
+
+  const addHeroSlide = () => {
+    setConfig(prev => ({
+      ...prev,
+      heroCarousel: [
+        ...prev.heroCarousel,
+        { projectId: '', image: '', title: '', category: '' },
+      ],
+    }));
+  };
+
+  const removeHeroSlide = (index: number) => {
+    setConfig(prev => ({
+      ...prev,
+      heroCarousel: prev.heroCarousel.filter((_, i) => i !== index),
+    }));
+  };
+
+  const actionButtonClass =
+    'inline-flex items-center gap-2 rounded-full bg-bronze-600 text-white px-4 py-2 text-sm font-semibold shadow-lg hover:bg-bronze-700 transition-colors disabled:opacity-50';
+
   const saveButton = !loading ? (
     <button
       onClick={handleSave}
       disabled={saving}
-      className="bg-bronze-600 hover:bg-bronze-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition-colors disabled:opacity-50 shadow-lg hover:shadow-xl"
-      title={saving ? 'Saving...' : 'Save Changes'}
+      className={actionButtonClass}
+      aria-label="Save changes"
     >
       {saving ? (
-        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+        <>
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent" />
+          <span className="font-medium">Saving...</span>
+        </>
       ) : (
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-        </svg>
+        <>
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          <span className="font-medium">Save Changes</span>
+        </>
       )}
     </button>
   ) : undefined;
@@ -133,6 +192,35 @@ export default function ConfigAdminPage() {
               </div>
             </div>
 
+            {/* SEO Defaults */}
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <h2 className="font-display text-2xl text-charcoal mb-6">SEO Defaults</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    Meta Title
+                  </label>
+                  <input
+                    type="text"
+                    value={config.seo.defaultMetaTitle}
+                    onChange={(e) => setConfig(prev => ({ ...prev, seo: { ...prev.seo, defaultMetaTitle: e.target.value } }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    Meta Description
+                  </label>
+                  <textarea
+                    value={config.seo.defaultMetaDescription}
+                    onChange={(e) => setConfig(prev => ({ ...prev, seo: { ...prev.seo, defaultMetaDescription: e.target.value } }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+                    rows={3}
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* Contact Information */}
             <div className="bg-white p-6 rounded-lg shadow-lg">
               <h2 className="font-display text-2xl text-charcoal mb-6">Contact Information</h2>
@@ -181,6 +269,137 @@ export default function ConfigAdminPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Business / Legal */}
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <h2 className="font-display text-2xl text-charcoal mb-6">Business Details</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    Company Name
+                  </label>
+                  <input
+                    type="text"
+                    value={config.legal.companyName}
+                    onChange={(e) => setConfig(prev => ({ ...prev, legal: { ...prev.legal, companyName: e.target.value } }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    VAT / Tax ID (P.IVA)
+                  </label>
+                  <input
+                    type="text"
+                    value={config.legal.piva}
+                    onChange={(e) => setConfig(prev => ({ ...prev, legal: { ...prev.legal, piva: e.target.value } }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-charcoal mb-2">
+                    Registered Office (Sede Legale)
+                  </label>
+                  <input
+                    type="text"
+                    value={config.legal.legalAddress || ''}
+                    onChange={(e) => setConfig(prev => ({ ...prev, legal: { ...prev.legal, legalAddress: e.target.value } }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+                    placeholder="Optional"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Opening Hours */}
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="font-display text-2xl text-charcoal">Opening Hours</h2>
+                <button
+                  onClick={addOpeningHour}
+                  className="px-3 py-2 text-sm bg-bronze-600 text-white rounded hover:bg-bronze-700 transition-colors"
+                >
+                  Add Entry
+                </button>
+              </div>
+
+              {config.openingHours.length === 0 && (
+                <p className="text-sm text-charcoal/60 mb-4">No hours set yet.</p>
+              )}
+
+              <div className="space-y-4">
+                {config.openingHours.map((entry, index) => (
+                  <div key={`${entry.day}-${index}`} className="grid grid-cols-1 md:grid-cols-5 gap-3 p-4 border rounded-lg">
+                    <div className="md:col-span-1">
+                      <label className="block text-xs font-medium text-charcoal mb-1">
+                        Day
+                      </label>
+                      <input
+                        type="text"
+                        value={entry.day}
+                        onChange={(e) => updateOpeningHour(index, 'day', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+                        placeholder="Monday"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-charcoal mb-1">
+                        Opens
+                      </label>
+                      <input
+                        type="text"
+                        value={entry.open}
+                        onChange={(e) => updateOpeningHour(index, 'open', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+                        placeholder="09:00"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-charcoal mb-1">
+                        Closes
+                      </label>
+                      <input
+                        type="text"
+                        value={entry.close}
+                        onChange={(e) => updateOpeningHour(index, 'close', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+                        placeholder="18:00"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-charcoal mb-1">
+                        Note
+                      </label>
+                      <input
+                        type="text"
+                        value={entry.note || ''}
+                        onChange={(e) => updateOpeningHour(index, 'note', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+                        placeholder="By appointment"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-2">
+                      <label className="flex items-center gap-2 text-sm text-charcoal">
+                        <input
+                          type="checkbox"
+                          checked={Boolean(entry.closed)}
+                          onChange={(e) => updateOpeningHour(index, 'closed', e.target.checked)}
+                          className="rounded border-gray-300 text-bronze-600 focus:ring-bronze-500"
+                        />
+                        Closed
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => removeOpeningHour(index)}
+                        className="text-red-600 text-sm hover:underline"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -233,6 +452,87 @@ export default function ConfigAdminPage() {
                     placeholder="https://linkedin.com/company/yourcompany"
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Hero Section */}
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="font-display text-2xl text-charcoal">Hero Slides</h2>
+                <button
+                  onClick={addHeroSlide}
+                  className="px-3 py-2 text-sm bg-bronze-600 text-white rounded hover:bg-bronze-700 transition-colors"
+                >
+                  Add Slide
+                </button>
+              </div>
+
+              {config.heroCarousel.length === 0 && (
+                <p className="text-sm text-charcoal/60 mb-4">No slides added yet.</p>
+              )}
+
+              <div className="space-y-4">
+                {config.heroCarousel.map((slide, index) => (
+                  <div key={`${slide.projectId}-${index}`} className="p-4 border rounded-lg space-y-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-medium text-charcoal mb-1">
+                          Project ID / Slug
+                        </label>
+                        <input
+                          type="text"
+                          value={slide.projectId}
+                          onChange={(e) => updateHeroSlide(index, 'projectId', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-charcoal mb-1">
+                          Image URL
+                        </label>
+                        <input
+                          type="text"
+                          value={slide.image}
+                          onChange={(e) => updateHeroSlide(index, 'image', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-medium text-charcoal mb-1">
+                          Title
+                        </label>
+                        <input
+                          type="text"
+                          value={slide.title}
+                          onChange={(e) => updateHeroSlide(index, 'title', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-charcoal mb-1">
+                          Category
+                        </label>
+                        <input
+                          type="text"
+                          value={slide.category || ''}
+                          onChange={(e) => updateHeroSlide(index, 'category', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => removeHeroSlide(index)}
+                        className="text-red-600 text-sm hover:underline"
+                      >
+                        Remove Slide
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 

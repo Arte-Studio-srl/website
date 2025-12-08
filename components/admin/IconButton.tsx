@@ -5,6 +5,7 @@ interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'success' | 'danger' | 'secondary';
   size?: 'sm' | 'md' | 'lg';
   label?: string;
+  loading?: boolean;
 }
 
 const icons = {
@@ -42,6 +43,7 @@ export default function IconButton({
   variant = 'primary',
   size = 'md',
   label,
+  loading = false,
   className = '',
   disabled,
   type = 'button',
@@ -51,7 +53,8 @@ export default function IconButton({
     <button
       type={type}
       {...props}
-      disabled={disabled}
+      disabled={disabled || loading}
+      aria-busy={loading}
       title={label}
       className={`
         ${variants[variant]}
@@ -62,19 +65,23 @@ export default function IconButton({
         ${className}
       `}
     >
-      <svg 
-        className={iconSizes[size]} 
-        fill="none" 
-        viewBox="0 0 24 24" 
-        stroke="currentColor"
-      >
-        <path 
-          strokeLinecap="round" 
-          strokeLinejoin="round" 
-          strokeWidth={2} 
-          d={icons[icon]} 
-        />
-      </svg>
+      {loading ? (
+        <div className={`animate-spin rounded-full border-2 border-white border-t-transparent ${iconSizes[size]}`} />
+      ) : (
+        <svg 
+          className={iconSizes[size]} 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor"
+        >
+          <path 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            strokeWidth={2} 
+            d={icons[icon]} 
+          />
+        </svg>
+      )}
     </button>
   );
 }

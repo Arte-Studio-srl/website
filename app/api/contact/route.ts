@@ -73,6 +73,8 @@ export async function POST(request: NextRequest) {
       .filter(Boolean)
       .join('\n');
 
+    await transport.verify();
+
     await transport.sendMail({
       from: process.env.CONTACT_FROM,
       to: process.env.CONTACT_TO,
@@ -83,7 +85,13 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Contact send error', error);
+    console.error('[Contact] send error', {
+      message: (error as any)?.message,
+      code: (error as any)?.code,
+      response: (error as any)?.response,
+      responseCode: (error as any)?.responseCode,
+      command: (error as any)?.command,
+    });
     return NextResponse.json(
       { success: false, error: 'Failed to send message' },
       { status: 500 }

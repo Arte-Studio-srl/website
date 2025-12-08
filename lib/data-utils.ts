@@ -147,7 +147,7 @@ export async function getCurrentData(): Promise<{ projects: Project[]; categorie
  */
 export function invalidateDataCache(): void {
   dataCache = null;
-  console.log('[Data] Cache invalidated');
+  console.info('[Data] Cache invalidated');
 }
 
 /**

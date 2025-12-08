@@ -136,14 +136,14 @@ export async function POST(request: NextRequest) {
 
     if (canUseGithubContent()) {
       // GitHub mode: upload to GitHub only
-      console.log(`[Upload] Uploading to GitHub: ${relativePath}`);
+      console.info('[Upload] Uploading to GitHub', { path: relativePath });
       const result = await uploadGithubBinaryFile({
         path: relativePath,
         content: buffer,
         message: `feat: upload image ${filename} for project ${sanitizedProjectId}`,
       });
       
-      console.log(`[Upload] ✅ Uploaded to GitHub, URL: ${result.url}`);
+      console.info('[Upload] Uploaded to GitHub', { url: result.url });
       
       return NextResponse.json({
         success: true,
@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
     await fs.mkdir(projectDir, { recursive: true });
     const filepath = path.join(projectDir, filename);
     await fs.writeFile(filepath, buffer);
-    console.log(`[Upload] ✅ Saved locally: ${filepath}`);
+    console.info('[Upload] Saved locally', { path: filepath });
 
     return NextResponse.json({
       success: true,
@@ -288,21 +288,21 @@ export async function DELETE(request: NextRequest) {
     if (canUseGithubContent()) {
       // GitHub mode: delete from GitHub only
       const relativePath = `public${imagePath}`;
-      console.log(`[Delete] Deleting from GitHub: ${relativePath}`);
+      console.info('[Upload] Deleting from GitHub', { path: relativePath });
       await deleteGithubFile({
         path: relativePath,
         message: `chore: delete image ${imagePath}`,
       });
-      console.log(`[Delete] ✅ Deleted from GitHub`);
+      console.info('[Upload] Deleted from GitHub');
     } else {
       // Local mode: delete from local file only
       await fs.unlink(fullPath);
-      console.log(`[Delete] ✅ Deleted locally: ${fullPath}`);
+      console.info('[Upload] Deleted locally', { path: fullPath });
     }
 
     // CRITICAL: Remove image reference from all projects
     try {
-      console.log(`[Delete] Removing image references from project data...`);
+      console.info('[Upload] Removing image references from project data');
       const { projects } = await getCurrentData();
       let referencesRemoved = 0;
       let projectsUpdated = 0;
@@ -313,7 +313,7 @@ export async function DELETE(request: NextRequest) {
         
         // Check thumbnail
         if (project.thumbnail === imagePath) {
-          console.log(`[Delete] ⚠️  Project "${project.id}" uses this as thumbnail!`);
+          console.warn('[Upload] Project uses deleted image as thumbnail', { projectId: project.id });
           // Don't auto-remove thumbnail, just warn
         }
         
@@ -325,7 +325,7 @@ export async function DELETE(request: NextRequest) {
           if (filteredImages.length < originalLength) {
             referencesRemoved += (originalLength - filteredImages.length);
             projectModified = true;
-            console.log(`[Delete] ✅ Removed reference from project "${project.id}" stage "${stage.title}"`);
+            console.info('[Upload] Removed stage image reference', { projectId: project.id, stageTitle: stage.title });
           }
 
           return {
@@ -347,9 +347,9 @@ export async function DELETE(request: NextRequest) {
       // Save updated projects if any changes were made
       if (projectsUpdated > 0) {
         await updateProjects(updatedProjects);
-        console.log(`[Delete] ✅ Updated ${projectsUpdated} project(s), removed ${referencesRemoved} reference(s)`);
+        console.info('[Upload] Updated projects after delete', { projectsUpdated, referencesRemoved });
       } else {
-        console.log(`[Delete] ℹ️  No project references found for this image`);
+        console.info('[Upload] No project references found for deleted image');
       }
     } catch (updateError) {
       console.error('[Delete] Failed to update project references:', updateError);

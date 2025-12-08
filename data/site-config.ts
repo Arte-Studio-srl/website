@@ -93,8 +93,8 @@ export const siteConfig: SiteConfig = {
     }
   ],
   "social": {
-    "facebook": "https://www.facebook.com/progettoartestudio",
-    "instagram": "",
+    "facebook": "https://www.facebook.com/ArteStudioSrl/",
+    "instagram": "https://www.instagram.com/artestudiosrl/",
     "linkedin": ""
   },
   "seo": {
