@@ -190,8 +190,6 @@ export const projects: Project[] = [
         "type": "final",
         "title": "Final Implementation",
         "images": [
-          "/images/projects/hgdf/final-1.svg",
-          "/images/projects/hgdf/final-1.svg",
           "/images/projects/hgdf/final-2.jpg",
           "/images/projects/hgdf/final-2.jpg"
         ],
