@@ -1,8 +1,17 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 const ADMIN_EMAILS = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim()) || [];
+const AUTH_COOKIE_NAME = 'admin_token';
+const AUTH_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  maxAge: 60 * 60 * 24 * 7, // 7 days
+  path: '/',
+};
 
 const secret = new TextEncoder().encode(JWT_SECRET);
 
@@ -27,7 +36,7 @@ export async function verifyToken(token: string) {
 
 export async function isAuthenticated() {
   const cookieStore = await cookies();
-  const token = cookieStore.get('admin_token')?.value;
+  const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
   
   if (!token) return false;
   
@@ -37,7 +46,7 @@ export async function isAuthenticated() {
 
 export async function getCurrentUser() {
   const cookieStore = await cookies();
-  const token = cookieStore.get('admin_token')?.value;
+  const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
   
   if (!token) return null;
   
@@ -48,20 +57,12 @@ export function isEmailAllowed(email: string) {
   return ADMIN_EMAILS.includes(email.toLowerCase().trim());
 }
 
-export async function setAuthCookie(token: string) {
-  const cookieStore = await cookies();
-  cookieStore.set('admin_token', token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: '/',
-  });
+export function setAuthCookie(response: NextResponse, token: string) {
+  response.cookies.set(AUTH_COOKIE_NAME, token, AUTH_COOKIE_OPTIONS);
 }
 
-export async function clearAuthCookie() {
-  const cookieStore = await cookies();
-  cookieStore.delete('admin_token');
+export function clearAuthCookie(response: NextResponse) {
+  response.cookies.delete(AUTH_COOKIE_NAME);
 }
 
 

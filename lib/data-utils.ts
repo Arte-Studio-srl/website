@@ -1,7 +1,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { Project, Category } from '@/types';
-import { canUseGithubContent, fetchGithubFile, writeGithubFile } from '@/lib/github-content';
+import { canUseGithubContent, fetchGithubFile, getGithubRawUrl, writeGithubFile } from '@/lib/github-content';
 
 const DATA_FILE_PATH = path.join(process.cwd(), 'data', 'projects.ts');
 const PROJECTS_FILE_PATH = 'data/projects.ts';
@@ -16,13 +16,50 @@ let dataCache: {
 const CACHE_TTL = 1000; // 1 second cache to prevent excessive file reads
 
 /**
- * Read the projects.ts file from GitHub or local filesystem
+ * Read the projects.ts file from GitHub or local filesystem with resiliency:
+ * - Retry GitHub API reads
+ * - Fallback to GitHub raw URL
+ * - Fallback to local bundled file
  */
 export async function readDataFile(): Promise<string> {
+  const pathToRead = PROJECTS_FILE_PATH;
+
   if (canUseGithubContent()) {
-    // GitHub mode: read from GitHub only (single source of truth)
-    const { content } = await fetchGithubFile(PROJECTS_FILE_PATH);
-    return content;
+    // GitHub mode: primary read from API with retries
+    try {
+      const content = await readFromGithubWithRetry(pathToRead);
+      return content;
+    } catch (error) {
+      console.error('[Data] GitHub API read failed, attempting fallbacks', error);
+
+      // Fallback 1: raw GitHub URL (unauthenticated)
+      const rawUrl = getGithubRawUrl(pathToRead);
+      if (rawUrl) {
+        try {
+          const res = await fetch(rawUrl, { cache: 'no-store' });
+          if (res.ok) {
+            const text = await res.text();
+            console.warn('[Data] Served data from raw GitHub URL fallback');
+            return text;
+          }
+          console.error('[Data] Raw GitHub URL fallback failed', { status: res.status, statusText: res.statusText });
+        } catch (rawErr) {
+          console.error('[Data] Raw GitHub URL fetch threw', rawErr);
+        }
+      }
+
+      // Fallback 2: local file (bundled) if available
+      try {
+        const localContent = await fs.readFile(DATA_FILE_PATH, 'utf-8');
+        console.warn('[Data] Served data from local fallback file');
+        return localContent;
+      } catch (localErr) {
+        console.error('[Data] Local fallback read failed', localErr);
+      }
+
+      // If all attempts fail, propagate the original error
+      throw new Error('Failed to read projects data from all sources');
+    }
   }
 
   // Local mode: read from local file
@@ -32,6 +69,27 @@ export async function readDataFile(): Promise<string> {
     console.error('Error reading data file:', error);
     throw new Error('Failed to read projects data');
   }
+}
+
+async function readFromGithubWithRetry(pathToRead: string): Promise<string> {
+  const attempts = 3;
+  let lastError: unknown = null;
+
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const { content } = await fetchGithubFile(pathToRead);
+      return content;
+    } catch (error) {
+      lastError = error;
+      const delay = 200 * (i + 1);
+      console.error(`[Data] GitHub read attempt ${i + 1} failed, retrying in ${delay}ms`, error);
+      if (i < attempts - 1) {
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+    }
+  }
+
+  throw lastError;
 }
 
 /**

@@ -69,18 +69,18 @@ export async function POST(request: NextRequest) {
     resetRateLimit(`send-code:${normalizedEmail}`);
     resetRateLimit(`verify-code:${normalizedEmail}`);
 
-    // Create JWT token
-    const token = await createToken(normalizedEmail);
-    await setAuthCookie(token);
-
     if (process.env.NODE_ENV !== 'production') {
       console.info('[AuthCode] Authentication success', { email: normalizedEmail });
     }
-
-    return NextResponse.json({
+    
+    // Create JWT token and set it on the response cookie
+    const token = await createToken(normalizedEmail);
+    const response = NextResponse.json({
       success: true,
       message: 'Authentication successful'
     });
+    setAuthCookie(response, token);
+    return response;
   } catch (error) {
     console.error('Error verifying code:', error);
     return NextResponse.json(

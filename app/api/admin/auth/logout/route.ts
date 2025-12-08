@@ -3,12 +3,13 @@ import { clearAuthCookie } from '@/lib/auth';
 
 export async function POST(_request: NextRequest) {
   try {
-    await clearAuthCookie();
-
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       message: 'Logged out successfully',
     });
+    clearAuthCookie(response);
+
+    return response;
   } catch (error) {
     console.error('Error logging out:', error);
     return NextResponse.json(
