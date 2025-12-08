@@ -1,11 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,7 +30,7 @@ export default function AdminLoginPage() {
       } else {
         setError(data.error || 'Failed to send code');
       }
-    } catch (error) {
+    } catch (_error) {
       setError('Failed to send code. Please try again.');
     } finally {
       setLoading(false);

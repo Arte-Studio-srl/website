@@ -12,7 +12,7 @@ export async function GET(
   try {
     const { id } = await params;
     const { projects } = await getCurrentData();
-    const project = projects.find((p: any) => p.id === id);
+    const project = projects.find((p) => p.id === id);
     
     if (!project) {
       return NextResponse.json(

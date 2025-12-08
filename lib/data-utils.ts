@@ -53,7 +53,7 @@ export async function writeDataFile(content: string): Promise<void> {
 function parseDataFile(content: string): { projects: Project[]; categories: Category[] } {
   try {
     // Helper function to extract array by counting brackets
-    const extractArray = (content: string, varName: string): any[] => {
+    const extractArray = (content: string, varName: string): unknown[] => {
       const regex = new RegExp(`export const ${varName}: \\w+\\[\\] = `);
       const match = content.match(regex);
       
@@ -104,11 +104,11 @@ function parseDataFile(content: string): { projects: Project[]; categories: Cate
       }
       
       const arrayStr = content.substring(startIndex, endIndex);
-      return JSON.parse(arrayStr);
+      return JSON.parse(arrayStr) as unknown[];
     };
     
-    const projects = extractArray(content, 'projects');
-    const categories = extractArray(content, 'categories');
+    const projects = extractArray(content, 'projects') as Project[];
+    const categories = extractArray(content, 'categories') as Category[];
 
     return { projects, categories };
   } catch (error) {

@@ -76,7 +76,7 @@ export default function ContactPage() {
       
       // Reset success message after 5 seconds
       setTimeout(() => setSubmitStatus('idle'), 5000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error submitting form:', error);
       setSubmitStatus('error');
     } finally {

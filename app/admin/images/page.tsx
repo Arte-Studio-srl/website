@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Project, ProjectStage } from '@/types';
 
 interface ImageInfo {
   path: string;
@@ -14,7 +15,7 @@ export default function ImagesAdminPage() {
   const [images, setImages] = useState<ImageInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState<string>('all');
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -30,7 +31,7 @@ export default function ImagesAdminPage() {
         
         // Extract all images from projects
         const allImages: ImageInfo[] = [];
-        data.projects.forEach((project: any) => {
+        data.projects.forEach((project: Project) => {
           // Thumbnail
           if (project.thumbnail) {
             allImages.push({
@@ -41,7 +42,7 @@ export default function ImagesAdminPage() {
           }
           
           // Stage images
-          project.stages.forEach((stage: any) => {
+          project.stages.forEach((stage: ProjectStage) => {
             stage.images.forEach((img: string) => {
               allImages.push({
                 path: img,
@@ -200,7 +201,7 @@ export default function ImagesAdminPage() {
             <li>• Upload images through the project editor (New Project or Edit Project)</li>
             <li>• Deleting an image here only removes the file - update the project to remove references</li>
             <li>• Images are organized by project ID in the file system</li>
-            <li>• Thumbnails are automatically named "thumb.jpg" when uploaded</li>
+            <li>• Thumbnails are automatically named &quot;thumb.jpg&quot; when uploaded</li>
           </ul>
         </div>
       </main>

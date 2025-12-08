@@ -178,7 +178,7 @@ export default function Home() {
       {/* Image Showcase Section - Full width gallery */}
       <section className="py-0 bg-charcoal">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-          {projects.slice(0, 6).map((project, index) => (
+          {projects.slice(0, 6).map((project) => (
             <Link
               key={project.id}
               href={`/project/${project.id}`}

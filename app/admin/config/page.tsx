@@ -214,7 +214,7 @@ export default function ConfigAdminPage() {
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
             <h3 className="font-display text-lg text-charcoal mb-2">⚠️ Note</h3>
             <p className="text-sm text-charcoal/70">
-              This configuration page is a placeholder. To make it functional, you'll need to:
+              This configuration page is a placeholder. To make it functional, you&apos;ll need to:
             </p>
             <ul className="text-sm text-charcoal/70 mt-2 space-y-1 list-disc list-inside">
               <li>Create a configuration file or database table</li>

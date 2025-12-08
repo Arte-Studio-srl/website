@@ -136,7 +136,7 @@ export default function CategoriesAdminPage() {
             <p className="text-sm text-blue-700 font-medium">About Categories</p>
             <p className="text-sm text-blue-600 mt-1">
               Categories help organize your projects. New categories will appear at the top. 
-              Don't forget to save your changes!
+              Don&apos;t forget to save your changes!
             </p>
           </div>
         </div>
@@ -145,7 +145,7 @@ export default function CategoriesAdminPage() {
       {/* Categories Grid */}
       {categories.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {categories.map((category, index) => (
+          {categories.map((category) => (
             <div
               key={category.id}
               className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-all border-l-4 border-bronze-500 overflow-hidden group"

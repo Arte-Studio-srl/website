@@ -119,7 +119,7 @@ export default function FloatingContact() {
           >
             <div className="flex items-start justify-between px-5 py-4 bg-charcoal text-cream">
               <div>
-                <p className="font-display text-lg">Let's talk</p>
+                <p className="font-display text-lg">Let&apos;s talk</p>
                 <p className="text-sm text-cream/80">We reply within one business day</p>
               </div>
               <button
