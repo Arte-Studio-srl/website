@@ -172,36 +172,6 @@ export const projects: Project[] = [
     ]
   },
   {
-    "id": "hgdf",
-    "title": "hgdf",
-    "category": "events",
-    "year": 2025,
-    "client": "wtf",
-    "description": "dghfgd",
-    "thumbnail": "/images/projects/hgdf/thumb.jpg",
-    "stages": [
-      {
-        "type": "drawing",
-        "title": "Technical Drawings",
-        "images": [],
-        "description": "",
-        "id": "stage-1765148907754-68ec",
-        "icon": "blueprint"
-      },
-      {
-        "type": "final",
-        "title": "Final Implementation",
-        "images": [
-          "/images/projects/hgdf/final-2.jpg",
-          "/images/projects/hgdf/final-2.jpg"
-        ],
-        "description": "",
-        "id": "stage-1765148907754-27a7",
-        "icon": "camera"
-      }
-    ]
-  },
-  {
     "id": "siemens",
     "title": "Siemens",
     "category": "stands",
