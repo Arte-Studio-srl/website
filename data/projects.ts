@@ -54,7 +54,8 @@ export const projects: Project[] = [
         "type": "final",
         "title": "Fashion Show",
         "images": [
-          "/images/projects/resort-fashion-show/final-1.jpg"
+          "/images/projects/resort-fashion-show/final-1.jpg",
+          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765227825797-z4rd.png"
         ],
         "description": "The outdoor fashion presentation",
         "id": "stage-1765134068255-490a",
