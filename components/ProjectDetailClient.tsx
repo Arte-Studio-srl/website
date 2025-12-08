@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type ReactElement } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -8,7 +8,7 @@ import { Project, StageIcon } from '@/types';
 
 const FALLBACK_ICON_ORDER: StageIcon[] = ['compass', 'blueprint', 'layers', 'camera', 'sparkles', 'flag'];
 
-const ICON_SHAPES: Record<StageIcon, JSX.Element> = {
+const ICON_SHAPES: Record<StageIcon, ReactElement> = {
   compass: (
     <>
       <circle cx="12" cy="12" r="9" />
