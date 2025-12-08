@@ -243,6 +243,26 @@ export const projects: Project[] = [
         "description": ""
       }
     ]
+  },
+  {
+    "id": "hjkhkjhkj",
+    "title": "hjkhkjhkj",
+    "category": "events",
+    "year": 2025,
+    "client": "dfg",
+    "description": "etyerty",
+    "thumbnail": "/images/projects/hjkhkjhkj/thumb.png",
+    "stages": [
+      {
+        "id": "stage-1765150232255-e2cb",
+        "title": "Step 1",
+        "description": "",
+        "images": [
+          "/images/projects/hjkhkjhkj/stage-1765150232255-e2cb-1.jpg"
+        ],
+        "icon": "blueprint"
+      }
+    ]
   }
 ];
 
