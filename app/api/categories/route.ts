@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getCurrentData } from '@/lib/data-utils';
 
-// Static export compatibility
-export const dynamic = 'force-static';
+// Force dynamic so updates are visible without rebuilds
+export const dynamic = 'force-dynamic';
 
 // GET all categories - Public endpoint
 export async function GET() {
