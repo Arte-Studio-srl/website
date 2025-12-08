@@ -31,7 +31,7 @@ export const categories: Category[] = [
 export const projects: Project[] = [
   {
     "id": "resort-fashion-show",
-    "title": "Resort Collection Fashion Show",
+    "title": "Resort Collection Fashion Showtwrwerw",
     "category": "fashion-shows",
     "year": 2024,
     "client": "International Fashion Brand",
@@ -54,7 +54,10 @@ export const projects: Project[] = [
         "type": "final",
         "title": "Fashion Show",
         "images": [
-          "/images/projects/resort-fashion-show/final-1.jpg"
+          "/images/projects/resort-fashion-show/final-1.jpg",
+          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765227990330-fr6a.jpg",
+          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765228298810-du39.png",
+          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765229312614-qqob.png"
         ],
         "description": "The outdoor fashion presentation",
         "id": "stage-1765134068255-490a",
