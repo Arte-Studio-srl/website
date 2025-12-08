@@ -40,7 +40,7 @@ export type SiteConfig = {
 };
 
 export const siteConfig: SiteConfig = {
-  "siteName": "ArteStudioo",
+  "siteName": "ArteStudio",
   "tagline": "Professional scenography and event structures for conventions, exhibitions, fashion shows, and theater productions.",
   "faviconUrl": "/favicon.ico",
   "contactEmail": "info@progettoartestudio.it",
