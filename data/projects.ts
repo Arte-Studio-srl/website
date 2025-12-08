@@ -249,6 +249,27 @@ export const projects: Project[] = [
         "icon": "blueprint"
       }
     ]
+  },
+  {
+    "id": "cagss",
+    "title": "cagss",
+    "category": "events",
+    "year": 2025,
+    "client": "xaop",
+    "description": "xajajjajaja",
+    "thumbnail": "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/cagss/thumb.jpg",
+    "stages": [
+      {
+        "id": "stage-1765205965755-66c4",
+        "title": "Step 1",
+        "description": "paoapsoapospaospaospao",
+        "images": [
+          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/cagss/stage-1765205965755-66c4-1765206004508-kuc5.jpg",
+          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/cagss/stage-1765205965755-66c4-1765206013031-pjvy.png"
+        ],
+        "icon": "blueprint"
+      }
+    ]
   }
 ];
 
