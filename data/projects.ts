@@ -43,7 +43,8 @@ export const projects: Project[] = [
         "title": "Outdoor Runway",
         "images": [
           "/images/projects/resort-fashion-show/drawing-1.jpg",
-          "/images/projects/resort-fashion-show/drawing-2.webp"
+          "/images/projects/resort-fashion-show/drawing-2.webp",
+          "/images/projects/resort-fashion-show/stage-1765134068255-688a-1.png"
         ],
         "description": "Site planning and sustainability features",
         "id": "stage-1765134068255-688a",
@@ -180,9 +181,9 @@ export const projects: Project[] = [
   {
     "id": "hgdf",
     "title": "hgdf",
-    "category": "category-1765061877392",
+    "category": "events",
     "year": 2025,
-    "client": "",
+    "client": "wtf",
     "description": "dghfgd",
     "thumbnail": "/images/projects/hgdf/thumb.jpg",
     "stages": [
@@ -193,7 +194,9 @@ export const projects: Project[] = [
           "/images/projects/hgdf/drawing-1.jpg",
           "/images/projects/hgdf/drawing-1.jpg"
         ],
-        "description": ""
+        "description": "",
+        "id": "stage-1765148907754-68ec",
+        "icon": "blueprint"
       },
       {
         "type": "final",
@@ -204,7 +207,9 @@ export const projects: Project[] = [
           "/images/projects/hgdf/final-2.jpg",
           "/images/projects/hgdf/final-2.jpg"
         ],
-        "description": ""
+        "description": "",
+        "id": "stage-1765148907754-27a7",
+        "icon": "camera"
       }
     ]
   },

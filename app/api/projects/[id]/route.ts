@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { projects } from '@/data/projects';
 import { isAuthenticated } from '@/lib/auth';
-import { updateProjects, validateProject } from '@/lib/data-utils';
+import { getCurrentData, updateProjects, validateProject } from '@/lib/data-utils';
 
 // Mark as dynamic for Next.js
 export const dynamic = 'force-dynamic';
@@ -13,6 +12,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const { projects } = await getCurrentData();
     const project = projects.find((p: any) => p.id === id);
     
     if (!project) {
@@ -61,6 +61,8 @@ export async function PUT(
       );
     }
 
+    // Get current projects
+    const { projects } = await getCurrentData();
     const currentProjects = [...projects];
     const index = currentProjects.findIndex((p: any) => p.id === id);
     
@@ -103,6 +105,9 @@ export async function DELETE(
     }
 
     const { id } = await params;
+    
+    // Get current projects
+    const { projects } = await getCurrentData();
     const currentProjects = [...projects];
     const filteredProjects = currentProjects.filter((p: any) => p.id !== id);
     

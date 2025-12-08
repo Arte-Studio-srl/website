@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { categories } from '@/data/projects';
 import { isAuthenticated } from '@/lib/auth';
-import { updateCategories, validateCategory } from '@/lib/data-utils';
+import { getCurrentData, updateCategories, validateCategory } from '@/lib/data-utils';
 
 // Mark as dynamic for Next.js
 export const dynamic = 'force-dynamic';
@@ -9,6 +8,8 @@ export const dynamic = 'force-dynamic';
 // GET all categories - Public endpoint
 export async function GET() {
   try {
+    const { categories } = await getCurrentData();
+    
     return NextResponse.json({
       success: true,
       categories

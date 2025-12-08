@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { projects, categories } from '@/data/projects';
 import { isAuthenticated } from '@/lib/auth';
-import { updateProjects, validateProject } from '@/lib/data-utils';
+import { getCurrentData, updateProjects, validateProject } from '@/lib/data-utils';
 
 // Mark as dynamic for Next.js
 export const dynamic = 'force-dynamic';
@@ -9,6 +8,8 @@ export const dynamic = 'force-dynamic';
 // GET all projects - Public endpoint
 export async function GET() {
   try {
+    const { projects, categories } = await getCurrentData();
+    
     return NextResponse.json({
       success: true,
       projects,
@@ -44,6 +45,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    
+    // Get current projects
+    const { projects } = await getCurrentData();
     
     // Check if project ID already exists
     if (projects.some(p => p.id === newProject.id)) {

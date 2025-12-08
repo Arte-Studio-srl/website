@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { isAuthenticated } from '@/lib/auth';
+import { canUseGithubContent, uploadGithubBinaryFile, deleteGithubFile, getGithubRawUrl } from '@/lib/github-content';
 
 // Mark as dynamic for Next.js
 export const dynamic = 'force-dynamic';
@@ -116,40 +117,75 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create directory if it doesn't exist
-    const projectDir = path.join(process.cwd(), 'public', 'images', 'projects', sanitizedProjectId);
-    await fs.mkdir(projectDir, { recursive: true });
+    // Convert File to Buffer
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
 
     // Generate safe filename
     let filename: string;
     if (sanitizedType === 'thumbnail') {
       filename = `thumb.${extension}`;
     } else {
+      // For non-thumbnails, generate unique filename with timestamp
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(2, 6);
+      filename = `${sanitizedType}-${timestamp}-${random}.${extension}`;
+    }
+
+    const relativePath = `public/images/projects/${sanitizedProjectId}/${filename}`;
+    const publicUrl = `/images/projects/${sanitizedProjectId}/${filename}`;
+    let finalUrl = publicUrl;
+    let uploadedToGithub = false;
+
+    // Try GitHub upload first if configured
+    if (canUseGithubContent()) {
       try {
-        const files = await fs.readdir(projectDir);
-        const typeFiles = files.filter(f => f.startsWith(sanitizedType));
-        const nextNumber = typeFiles.length + 1;
-        filename = `${sanitizedType}-${nextNumber}.${extension}`;
-      } catch {
-        filename = `${sanitizedType}-1.${extension}`;
+        console.log(`[Upload] Uploading to GitHub: ${relativePath}`);
+        const result = await uploadGithubBinaryFile({
+          path: relativePath,
+          content: buffer,
+          message: `feat: upload image ${filename} for project ${sanitizedProjectId}`,
+        });
+        
+        // Use the GitHub raw URL for immediate access
+        finalUrl = result.url;
+        uploadedToGithub = true;
+        console.log(`[Upload] ✅ Uploaded to GitHub, URL: ${finalUrl}`);
+      } catch (error) {
+        console.error('[Upload] GitHub upload failed, falling back to local:', error);
+        uploadedToGithub = false;
       }
     }
 
-    // Convert File to Buffer and save
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    
-    const filepath = path.join(projectDir, filename);
-    await fs.writeFile(filepath, buffer);
-
-    const stats = await fs.stat(filepath);
-    const publicUrl = `/images/projects/${sanitizedProjectId}/${filename}`;
+    // Always save locally as well (cache/fallback)
+    try {
+      const projectDir = path.join(process.cwd(), 'public', 'images', 'projects', sanitizedProjectId);
+      await fs.mkdir(projectDir, { recursive: true });
+      const filepath = path.join(projectDir, filename);
+      await fs.writeFile(filepath, buffer);
+      console.log(`[Upload] ✅ Saved locally: ${filepath}`);
+      
+      // If GitHub upload failed, use local URL
+      if (!uploadedToGithub) {
+        finalUrl = publicUrl;
+      }
+    } catch (localError) {
+      console.error('[Upload] Local save failed:', localError);
+      // If GitHub succeeded but local failed, that's OK
+      if (!uploadedToGithub) {
+        throw localError; // Both failed, propagate error
+      }
+    }
 
     return NextResponse.json({
       success: true,
-      url: publicUrl,
+      url: finalUrl,
       filename,
-      size: stats.size
+      size: buffer.length,
+      uploadedToGithub,
+      message: uploadedToGithub 
+        ? 'Image uploaded to GitHub and cached locally' 
+        : 'Image saved locally (GitHub not configured or failed)'
     });
   } catch (error) {
     console.error('Upload error:', error);
@@ -266,11 +302,40 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    await fs.unlink(fullPath);
+    let deletedFromGithub = false;
+
+    // Try to delete from GitHub if configured
+    if (canUseGithubContent()) {
+      try {
+        const relativePath = `public${imagePath}`;
+        console.log(`[Delete] Deleting from GitHub: ${relativePath}`);
+        await deleteGithubFile({
+          path: relativePath,
+          message: `chore: delete image ${imagePath}`,
+        });
+        deletedFromGithub = true;
+        console.log(`[Delete] ✅ Deleted from GitHub`);
+      } catch (error) {
+        console.error('[Delete] GitHub deletion failed:', error);
+      }
+    }
+
+    // Try to delete local file
+    try {
+      await fs.unlink(fullPath);
+      console.log(`[Delete] ✅ Deleted locally: ${fullPath}`);
+    } catch (localError) {
+      console.error('[Delete] Local deletion failed:', localError);
+      // If GitHub succeeded but local failed, that's OK
+      if (!deletedFromGithub) {
+        throw localError; // Both failed, propagate error
+      }
+    }
 
     return NextResponse.json({
       success: true,
-      message: 'Image deleted successfully'
+      message: 'Image deleted successfully',
+      deletedFromGithub
     });
   } catch (error) {
     console.error('DELETE image error:', error);

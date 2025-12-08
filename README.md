@@ -7,6 +7,9 @@ Professional portfolio website for ArteStudio - Scenography and event structures
 - 📱 Responsive design with mobile-first approach
 - 🎨 Elegant blueprint-inspired design system
 - 🔐 Secure admin panel for content management
+- ⚡ **Instant updates** - Changes appear immediately without restart
+- 🔄 **GitHub integration** - Auto-commit changes and images to repository
+- 🖼️ **Dynamic image uploads** - Images instantly available via GitHub CDN
 - 🖼️ Image gallery with lightbox and keyboard navigation
 - ⚡ Optimized performance with Next.js
 - ♿ WCAG 2.1 Level AA accessibility compliance
@@ -54,10 +57,11 @@ CONTACT_FROM=Studio Website <no-reply@yourdomain.com>
 CONTACT_TO=owner@yourdomain.com
 
 # GitHub content storage (optional, enables writing via dashboard)
+# See GITHUB_INTEGRATION.md for detailed setup instructions
 GITHUB_CONTENT_OWNER=your-github-username-or-org
 GITHUB_CONTENT_REPO=your-repo-name
 GITHUB_CONTENT_BRANCH=main
-GITHUB_CONTENT_TOKEN=ghp_xxx # token with repo:contents scope
+GITHUB_CONTENT_TOKEN=ghp_xxx # token with repo scope (https://github.com/settings/tokens/new)
 ```
 
 Generate secure JWT secret:
@@ -111,6 +115,9 @@ vercel --prod
 ## Documentation
 
 - `QUICKSTART.md` - Detailed setup guide
+- `GITHUB_INTEGRATION.md` - GitHub content management setup
+- `IMAGE_UPLOAD_GITHUB.md` - Image upload with GitHub integration
+- `DYNAMIC_DATA_LOADING.md` - How immediate updates work (no restart needed!)
 - `DEPLOYMENT.md` - Production deployment strategies
 - `SECURITY.md` - Security best practices
 - `AUTHENTICATION.md` - Auth system details

@@ -6,16 +6,89 @@ import { canUseGithubContent, fetchGithubFile, writeGithubFile } from '@/lib/git
 const DATA_FILE_PATH = path.join(process.cwd(), 'data', 'projects.ts');
 const PROJECTS_FILE_PATH = 'data/projects.ts';
 
+// Cache for data with timestamp
+let dataCache: {
+  projects: Project[];
+  categories: Category[];
+  timestamp: number;
+} | null = null;
+
+const CACHE_TTL = 1000; // 1 second cache to prevent excessive file reads
+
 /**
- * Read the projects.ts file
+ * Read the projects.ts file from GitHub or local filesystem
  */
 export async function readDataFile(): Promise<string> {
+  // Try GitHub first if configured
+  if (canUseGithubContent()) {
+    try {
+      const { content } = await fetchGithubFile(PROJECTS_FILE_PATH);
+      return content;
+    } catch (error) {
+      console.error('[Data] GitHub read failed, falling back to local file:', error);
+    }
+  }
+
+  // Fallback to local file
   try {
     return await fs.readFile(DATA_FILE_PATH, 'utf-8');
   } catch (error) {
     console.error('Error reading data file:', error);
     throw new Error('Failed to read projects data');
   }
+}
+
+/**
+ * Parse the projects.ts file content to extract projects and categories
+ */
+function parseDataFile(content: string): { projects: Project[]; categories: Category[] } {
+  try {
+    // Extract projects array
+    const projectsMatch = content.match(/export const projects: Project\[\] = (\[[\s\S]*?\n\]);/);
+    const projects = projectsMatch ? JSON.parse(projectsMatch[1]) : [];
+
+    // Extract categories array
+    const categoriesMatch = content.match(/export const categories: Category\[\] = (\[[\s\S]*?\n\]);/);
+    const categories = categoriesMatch ? JSON.parse(categoriesMatch[1]) : [];
+
+    return { projects, categories };
+  } catch (error) {
+    console.error('[Data] Failed to parse data file:', error);
+    throw new Error('Failed to parse projects data');
+  }
+}
+
+/**
+ * Get current projects and categories (with caching)
+ */
+export async function getCurrentData(): Promise<{ projects: Project[]; categories: Category[] }> {
+  const now = Date.now();
+  
+  // Return cached data if still valid
+  if (dataCache && (now - dataCache.timestamp) < CACHE_TTL) {
+    return { projects: dataCache.projects, categories: dataCache.categories };
+  }
+
+  // Read and parse fresh data
+  const content = await readDataFile();
+  const data = parseDataFile(content);
+
+  // Update cache
+  dataCache = {
+    projects: data.projects,
+    categories: data.categories,
+    timestamp: now,
+  };
+
+  return data;
+}
+
+/**
+ * Invalidate the data cache (call after updates)
+ */
+export function invalidateDataCache(): void {
+  dataCache = null;
+  console.log('[Data] Cache invalidated');
 }
 
 /**
@@ -52,6 +125,9 @@ export async function updateProjects(projects: Project[]): Promise<void> {
         sha,
         message: 'chore: update projects via admin dashboard',
       });
+      
+      // Invalidate cache after successful update
+      invalidateDataCache();
       return;
     } catch (error) {
       console.error('GitHub content update failed, falling back to local file.', error);
@@ -61,19 +137,48 @@ export async function updateProjects(projects: Project[]): Promise<void> {
   const content = await readDataFile();
   const newContent = replaceProjects(content);
   await writeDataFile(newContent);
+  
+  // Invalidate cache after local update
+  invalidateDataCache();
 }
 
 /**
  * Update categories array in the data file
  */
 export async function updateCategories(categories: Category[]): Promise<void> {
-  const content = await readDataFile();
   const newCategoriesArray = JSON.stringify(categories, null, 2);
-  const newContent = content.replace(
-    /export const categories: Category\[\] = \[[\s\S]*?\n\];/,
-    `export const categories: Category[] = ${newCategoriesArray};`
-  );
+
+  const replaceCategories = (content: string) =>
+    content.replace(
+      /export const categories: Category\[\] = \[[\s\S]*?\n\];/,
+      `export const categories: Category[] = ${newCategoriesArray};`
+    );
+
+  if (canUseGithubContent()) {
+    try {
+      const { content, sha } = await fetchGithubFile(PROJECTS_FILE_PATH);
+      const newContent = replaceCategories(content);
+      await writeGithubFile({
+        path: PROJECTS_FILE_PATH,
+        content: newContent,
+        sha,
+        message: 'chore: update categories via admin dashboard',
+      });
+      
+      // Invalidate cache after successful update
+      invalidateDataCache();
+      return;
+    } catch (error) {
+      console.error('GitHub content update failed, falling back to local file.', error);
+    }
+  }
+
+  const content = await readDataFile();
+  const newContent = replaceCategories(content);
   await writeDataFile(newContent);
+  
+  // Invalidate cache after local update
+  invalidateDataCache();
 }
 
 /**
