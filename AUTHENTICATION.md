@@ -84,7 +84,6 @@ All admin routes are now protected:
 - `/admin/projects/new` - Create project
 - `/admin/projects/edit/[id]` - Edit project
 - `/admin/categories` - Category management
-- `/admin/images` - Image gallery
 - `/admin/config` - Configuration
 
 ## Logout

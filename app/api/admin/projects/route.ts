@@ -2,9 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
 import { getCurrentData, updateProjects, validateProject } from '@/lib/data-utils';
 
-// Mark as dynamic for Next.js
-export const dynamic = 'force-dynamic';
-
 // POST - Create new project - Requires authentication
 export async function POST(request: NextRequest) {
   try {

@@ -1,7 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
 import { isEmailAllowed } from '@/lib/auth';
 import { verificationCodes } from '@/lib/verification-storage';
 import { checkRateLimit } from '@/lib/rate-limiter';
+
+const smtpEnvVars = ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 'CONTACT_FROM'] as const;
+
+function missingSmtpEnv() {
+  return smtpEnvVars.filter((key) => !process.env[key]);
+}
+
+function buildSmtpTransport() {
+  const port = Number(process.env.SMTP_PORT || 587);
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port,
+    secure: port === 465,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -56,8 +76,23 @@ export async function POST(request: NextRequest) {
     console.log(`Remaining attempts: ${rateLimit.remaining}`);
     console.log(`==========================================\n`);
 
-    // TODO: Implement actual email sending
-    // Example: await sendEmail(email, code);
+    const missingEnv = missingSmtpEnv();
+    if (missingEnv.length > 0) {
+      console.error(`SMTP not configured; missing: ${missingEnv.join(', ')}`);
+      return NextResponse.json(
+        { success: false, error: 'Email service not configured' },
+        { status: 500 }
+      );
+    }
+
+    const transport = buildSmtpTransport();
+    await transport.sendMail({
+      from: process.env.CONTACT_FROM,
+      to: normalizedEmail,
+      subject: 'Your Admin Verification Code',
+      text: `Your verification code is: ${code}\n\nThis code expires in 10 minutes.`,
+      html: `<p>Your verification code is: <strong>${code}</strong></p><p>This code expires in 10 minutes.</p>`,
+    });
 
     return NextResponse.json({
       success: true,

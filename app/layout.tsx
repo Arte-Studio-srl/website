@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import FloatingContact from "@/components/FloatingContact";
+import { getSiteConfig } from "@/lib/site-config";
 
 const cormorant = Cormorant_Garamond({
   weight: ['300', '400', '500', '600', '700'],
@@ -16,10 +17,14 @@ const inter = Inter({
   display: 'swap',
 });
 
+const site = getSiteConfig();
+
 export const metadata: Metadata = {
-  title: "ArteStudio - Event Structures & Scenography",
-  description: "Professional event structures, stages, exhibition stands, and scenography for conventions, exhibitions, fashion shows, and theater productions.",
-  keywords: "event structures, scenography, stage design, exhibition stands, fashion shows, theater, Milano",
+  title: site.seo.defaultMetaTitle,
+  description: site.seo.defaultMetaDescription,
+  icons: {
+    icon: site.faviconUrl,
+  },
 };
 
 export default function RootLayout({

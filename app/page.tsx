@@ -9,39 +9,22 @@ import Footer from '@/components/Footer';
 import ProjectCard from '@/components/ProjectCard';
 import { categories } from '@/data/projects';
 import { projects } from '@/data/projects';
+import { getSiteConfig } from '@/lib/site-config';
 
 export default function Home() {
+  const site = getSiteConfig();
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const featuredProjects = projects.slice(0, 6);
-  
-  // Hero images - using the most impactful final images from various projects
-  const heroImages = [
-    {
-      src: '/images/projects/siemens/thumb.jpg',
-      title: 'International Corporate Summit',
-      category: 'Conventions'
-    },
-    {
-      src: '/images/projects/siemens/final-1.jpg',
-      title: 'Summer Music Festival',
-      category: 'Events'
-    },
-    {
-      src: '/images/projects/fashion-week/final-1.jpg',
-      title: 'Fashion Week Runway',
-      category: 'Fashion Shows'
-    },
-    {
-      src: '/images/projects/opera/final-1.jpg',
-      title: 'Opera Production',
-      category: 'Theater'
-    },
-    {
-      src: '/images/projects/tech-expo/final-1.jpg',
-      title: 'Tech Expo Stand',
-      category: 'Exhibitions'
-    }
-  ];
+  const heroImages =
+    site.heroCarousel.length > 0
+      ? site.heroCarousel
+      : projects.slice(0, 5).map((p) => ({
+          projectId: p.id,
+          image: p.thumbnail,
+          title: p.title,
+          category: p.category,
+        }));
 
   // Auto-advance slides
   useEffect(() => {
@@ -68,7 +51,7 @@ export default function Home() {
             className="absolute inset-0"
           >
             <Image
-              src={heroImages[currentSlide].src}
+              src={heroImages[currentSlide].image}
               alt={heroImages[currentSlide].title}
               fill
               priority={currentSlide === 0}
@@ -103,8 +86,7 @@ export default function Home() {
 
             {/* Main headline */}
             <h1 className="font-display text-4xl md:text-6xl lg:text-7xl xl:text-8xl mb-6 tracking-tight drop-shadow-2xl">
-              Crafting Spaces<br />
-              <span className="text-bronze-300">That Inspire</span>
+              {heroImages[currentSlide].title}
             </h1>
 
             <motion.p
@@ -113,7 +95,7 @@ export default function Home() {
               transition={{ duration: 0.6, delay: 0.6 }}
               className="text-lg md:text-xl lg:text-2xl text-white/90 mb-12 leading-relaxed max-w-3xl mx-auto drop-shadow-lg"
             >
-              Professional scenography and event structures for conventions, exhibitions, fashion shows, and theater productions.
+              {site.tagline}
             </motion.p>
 
             <motion.div

@@ -6,9 +6,6 @@ import { canUseGithubContent, uploadGithubBinaryFile, deleteGithubFile } from '@
 import { getCurrentData, updateProjects } from '@/lib/data-utils';
 import { Project, ProjectStage } from '@/types';
 
-// Mark as dynamic for Next.js
-export const dynamic = 'force-dynamic';
-
 // Security constants
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];

@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { categories } from '@/data/projects';
+import { getSiteConfig, formatPhoneDisplay, formatTelHref } from '@/lib/site-config';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const site = getSiteConfig();
 
   return (
     <footer className="relative bg-charcoal text-cream pt-16 pb-20">
@@ -12,7 +14,7 @@ export default function Footer() {
           <div>
             <h3 className="font-display text-2xl mb-4 text-bronze-300">ArteStudio</h3>
             <p className="text-cream/80 leading-relaxed">
-              Professional scenography and event structures. Creating memorable spaces for conventions, exhibitions, fashion shows, and theater productions.
+              {site.tagline}
             </p>
           </div>
 
@@ -38,18 +40,18 @@ export default function Footer() {
             <h4 className="font-display text-xl mb-4 text-bronze-300">Contact</h4>
             <div className="space-y-3 text-cream/80">
               <p>
-                Vicolo San Giorgio 5<br />
-                20090 Buccinasco (MI)<br />
-                Italy
+                {site.address.split('\n').map((line, idx) => (
+                  <span key={idx} className="block">{line}</span>
+                ))}
               </p>
               <p>
-                <a href="tel:+390289031657" className="hover:text-bronze-300 transition-colors">
-                  +39 02 89031657
+                <a href={formatTelHref(site.phone)} className="hover:text-bronze-300 transition-colors">
+                  {formatPhoneDisplay(site.phone)}
                 </a>
               </p>
               <p>
-                <a href="mailto:info@progettoartestudio.it" className="hover:text-bronze-300 transition-colors">
-                  info@progettoartestudio.it
+                <a href={`mailto:${site.contactEmail}`} className="hover:text-bronze-300 transition-colors">
+                  {site.contactEmail}
                 </a>
               </p>
             </div>
@@ -60,12 +62,27 @@ export default function Footer() {
         <div className="border-t border-cream/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-cream/60 text-sm">
-              © {currentYear} ArteStudio s.r.l. - P.IVA e C.F. 02513970182
+              © {currentYear} {site.legal.companyName} - P.IVA e C.F. {site.legal.piva}
             </p>
             <div className="flex gap-6">
               <Link href="/contact" className="text-cream/60 hover:text-bronze-300 transition-colors text-sm">
                 Contact Us
               </Link>
+              {site.social.facebook && (
+                <a href={site.social.facebook} target="_blank" rel="noreferrer" className="text-cream/60 hover:text-bronze-300 transition-colors text-sm">
+                  Facebook
+                </a>
+              )}
+              {site.social.instagram && (
+                <a href={site.social.instagram} target="_blank" rel="noreferrer" className="text-cream/60 hover:text-bronze-300 transition-colors text-sm">
+                  Instagram
+                </a>
+              )}
+              {site.social.linkedin && (
+                <a href={site.social.linkedin} target="_blank" rel="noreferrer" className="text-cream/60 hover:text-bronze-300 transition-colors text-sm">
+                  LinkedIn
+                </a>
+              )}
             </div>
           </div>
         </div>

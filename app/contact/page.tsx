@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { getSiteConfig, formatPhoneDisplay, formatTelHref } from '@/lib/site-config';
 
 interface ContactForm {
   name: string;
@@ -14,6 +15,8 @@ interface ContactForm {
 }
 
 export default function ContactPage() {
+  const site = getSiteConfig();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState<ContactForm>({
@@ -124,63 +127,77 @@ export default function ContactPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <h2 className="font-display text-3xl text-charcoal mb-8">
-                Contact Information
-              </h2>
+            <h2 className="font-display text-3xl text-charcoal mb-8">
+              Contact Information
+            </h2>
 
               <div className="space-y-8">
                 <div>
                   <h3 className="font-display text-xl text-bronze-600 mb-3">Address</h3>
                   <p className="text-charcoal/80 leading-relaxed">
-                    ArteStudio s.r.l.<br />
-                    Vicolo San Giorgio 5<br />
-                    20090 Buccinasco (MI)<br />
-                    Italy
+                    {site.address.split('\n').map((line, idx) => (
+                      <span key={idx} className="block">{line}</span>
+                    ))}
                   </p>
-                  <p className="text-charcoal/60 text-sm mt-2">
-                    Sede legale: Via Porro, 14 - 27100 - Pavia
-                  </p>
+                  {site.legal.legalAddress && (
+                    <p className="text-charcoal/60 text-sm mt-2">
+                      Sede legale: {site.legal.legalAddress}
+                    </p>
+                  )}
+                  <a
+                    href={site.googleMapsUrl}
+                    className="text-bronze-600 hover:text-bronze-700 transition-colors text-sm inline-flex items-center gap-2 mt-2"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View on Google Maps
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </a>
                 </div>
 
                 <div>
                   <h3 className="font-display text-xl text-bronze-600 mb-3">Phone</h3>
                   <a
-                    href="tel:+390289031657"
+                    href={formatTelHref(site.phone)}
                     className="text-charcoal/80 hover:text-bronze-600 transition-colors text-lg"
                   >
-                    +39 02 89031657
+                    {formatPhoneDisplay(site.phone)}
                   </a>
                 </div>
 
                 <div>
                   <h3 className="font-display text-xl text-bronze-600 mb-3">Email</h3>
                   <a
-                    href="mailto:info@progettoartestudio.it"
+                    href={`mailto:${site.contactEmail}`}
                     className="text-charcoal/80 hover:text-bronze-600 transition-colors text-lg"
                   >
-                    info@progettoartestudio.it
+                    {site.contactEmail}
                   </a>
                 </div>
 
                 <div>
                   <h3 className="font-display text-xl text-bronze-600 mb-3">Business Details</h3>
                   <p className="text-charcoal/60 text-sm">
-                    P.IVA e C.F. 02513970182
+                    {site.legal.companyName} — P.IVA e C.F. {site.legal.piva}
                   </p>
                 </div>
               </div>
 
               {/* Decorative element */}
-              <div className="mt-12 relative h-64 bg-white p-8 shadow-lg">
+              <div className="mt-12 relative bg-white p-8 shadow-lg">
                 <div className="absolute inset-0 blueprint-grid opacity-20" />
                 <div className="relative z-10">
                   <p className="font-display text-2xl text-charcoal mb-4">
                     Working Hours
                   </p>
                   <div className="space-y-2 text-charcoal/70">
-                    <p>Monday - Friday: 9:00 - 18:00</p>
-                    <p>Saturday: By appointment</p>
-                    <p>Sunday: Closed</p>
+                    {site.openingHours.map((entry) => (
+                      <p key={entry.day}>
+                        {entry.day}: {entry.closed ? 'Closed' : entry.note || `${entry.open} - ${entry.close}`}
+                      </p>
+                    ))}
                   </div>
                 </div>
               </div>

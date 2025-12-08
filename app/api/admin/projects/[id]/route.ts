@@ -2,14 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
 import { getCurrentData, updateProjects, validateProject } from '@/lib/data-utils';
 
-// Static export compatibility
-export const dynamic = 'force-static';
-
-export async function generateStaticParams() {
-  const { projects } = await getCurrentData();
-  return projects.map((project) => ({ id: project.id }));
-}
-
 // PUT - Update project - Requires authentication
 export async function PUT(
   request: NextRequest,

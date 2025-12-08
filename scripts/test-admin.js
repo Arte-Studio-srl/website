@@ -94,7 +94,6 @@ async function runTests() {
   checkFileExists('app/admin/projects/page.tsx', 'Projects List Page');
   checkFileExists('app/admin/projects/new/page.tsx', 'New Project Page');
   checkFileExists('app/admin/categories/page.tsx', 'Categories Page');
-  checkFileExists('app/admin/images/page.tsx', 'Images Page');
   checkFileExists('app/api/projects/route.ts', 'Projects API Route');
   checkFileExists('app/api/categories/route.ts', 'Categories API Route');
   checkFileExists('app/api/upload/route.ts', 'Upload API Route');
