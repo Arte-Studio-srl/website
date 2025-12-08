@@ -1,10 +1,11 @@
+import type { ReactElement } from 'react';
 import Link from 'next/link';
 import { categories } from '@/data/projects';
 import { getSiteConfig, formatPhoneDisplay, formatTelHref } from '@/lib/site-config';
 
 type SocialKey = 'facebook' | 'instagram' | 'linkedin';
 
-const socialIcons: Record<SocialKey, JSX.Element> = {
+const socialIcons: Record<SocialKey, ReactElement> = {
   facebook: (
     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
       <path d="M22 12.07C22 6.48 17.52 2 11.93 2S1.86 6.48 1.86 12.07c0 4.91 3.58 8.98 8.25 9.82v-6.94H7.9v-2.88h2.21V9.8c0-2.2 1.31-3.42 3.32-3.42.96 0 1.97.17 1.97.17v2.17h-1.11c-1.1 0-1.44.69-1.44 1.4v1.69h2.45l-.39 2.88h-2.06v6.94c4.67-.84 8.25-4.91 8.25-9.82Z" />
