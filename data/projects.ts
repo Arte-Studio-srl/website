@@ -162,8 +162,7 @@ export const projects: Project[] = [
         "type": "final",
         "title": "Concert Stages",
         "images": [
-          "/images/projects/concert-series/final-1.jpg",
-          "/images/projects/concert-series/final-2.jpg"
+          "/images/projects/concert-series/final-1.jpg"
         ],
         "description": "Stages across various locations"
       }
