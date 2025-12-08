@@ -140,9 +140,7 @@ export const projects: Project[] = [
       {
         "type": "final",
         "title": "Summit Venue",
-        "images": [
-          "/images/projects/startup-summit/final-1.jpg"
-        ],
+        "images": [],
         "description": "The summit in full swing"
       }
     ]
