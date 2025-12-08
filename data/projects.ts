@@ -189,10 +189,7 @@ export const projects: Project[] = [
       {
         "type": "drawing",
         "title": "Technical Drawings",
-        "images": [
-          "/images/projects/hgdf/drawing-1.jpg",
-          "/images/projects/hgdf/drawing-1.jpg"
-        ],
+        "images": [],
         "description": "",
         "id": "stage-1765148907754-68ec",
         "icon": "blueprint"
