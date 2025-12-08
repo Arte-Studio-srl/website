@@ -2,6 +2,11 @@ import { Project, Category } from '@/types';
 
 export const categories: Category[] = [
   {
+    "id": "category-1765206907146",
+    "name": "New Category",
+    "description": "Description here"
+  },
+  {
     "id": "conventions",
     "name": "Conventions",
     "description": "Corporate events, conferences, and business gatherings"
