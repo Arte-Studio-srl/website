@@ -56,7 +56,8 @@ export const projects: Project[] = [
         "images": [
           "/images/projects/resort-fashion-show/final-1.jpg",
           "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765227990330-fr6a.jpg",
-          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765228298810-du39.png"
+          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765228298810-du39.png",
+          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765229239723-ctw0.png"
         ],
         "description": "The outdoor fashion presentation",
         "id": "stage-1765134068255-490a",
