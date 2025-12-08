@@ -81,7 +81,9 @@ export const projects: Project[] = [
           "/images/projects/ballet-production/drawing-3.png",
           "/images/projects/ballet-production/drawing-4.jpg"
         ],
-        "description": "Scenic design and transformation mechanics"
+        "description": "Scenic design and transformation mechanics",
+        "id": "stage-1765235463884-0fb0",
+        "icon": "blueprint"
       },
       {
         "type": "final",
@@ -90,7 +92,9 @@ export const projects: Project[] = [
           "/images/projects/ballet-production/final-1.png",
           "/images/projects/ballet-production/final-2.png"
         ],
-        "description": "The ballet in full production"
+        "description": "The ballet in full production",
+        "id": "stage-1765235463884-cb4a",
+        "icon": "sparkles"
       }
     ]
   },
