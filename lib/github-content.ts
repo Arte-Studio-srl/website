@@ -136,7 +136,7 @@ export async function uploadGithubBinaryFile(params: {
     const existing = await fetchGithubFile(params.path);
     existingSha = existing.sha;
     console.log(`[GitHub] File exists, will update (SHA: ${existingSha.substring(0, 7)})`);
-  } catch (_error) {
+  } catch {
     console.log(`[GitHub] File doesn't exist, will create new`);
   }
 
@@ -200,7 +200,7 @@ export async function deleteGithubFile(params: {
   try {
     const existing = await fetchGithubFile(params.path);
     sha = existing.sha;
-  } catch (_error) {
+  } catch {
     console.log(`[GitHub] File doesn't exist, nothing to delete`);
     return; // File doesn't exist, consider it deleted
   }

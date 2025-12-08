@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { isAuthenticated } from '@/lib/auth';
-import { canUseGithubContent, uploadGithubBinaryFile, deleteGithubFile, getGithubRawUrl } from '@/lib/github-content';
+import { canUseGithubContent, uploadGithubBinaryFile, deleteGithubFile } from '@/lib/github-content';
 import { getCurrentData, updateProjects } from '@/lib/data-utils';
+import { Project, ProjectStage } from '@/types';
 
 // Mark as dynamic for Next.js
 export const dynamic = 'force-dynamic';
@@ -310,7 +311,7 @@ export async function DELETE(request: NextRequest) {
       let projectsUpdated = 0;
 
       // Update each project to remove this image path
-      const updatedProjects = projects.map((project: any) => {
+      const updatedProjects: Project[] = projects.map((project) => {
         let projectModified = false;
         
         // Check thumbnail
@@ -320,27 +321,30 @@ export async function DELETE(request: NextRequest) {
         }
         
         // Check all stage images
-        if (project.stages && Array.isArray(project.stages)) {
-          project.stages = project.stages.map((stage: any) => {
-            if (stage.images && Array.isArray(stage.images)) {
-              const originalLength = stage.images.length;
-              stage.images = stage.images.filter((img: string) => img !== imagePath);
-              
-              if (stage.images.length < originalLength) {
-                referencesRemoved += (originalLength - stage.images.length);
-                projectModified = true;
-                console.log(`[Delete] ✅ Removed reference from project "${project.id}" stage "${stage.title}"`);
-              }
-            }
-            return stage;
-          });
-        }
+        const updatedStages: ProjectStage[] = project.stages?.map((stage) => {
+          const originalLength = stage.images.length;
+          const filteredImages = stage.images.filter((img) => img !== imagePath);
+
+          if (filteredImages.length < originalLength) {
+            referencesRemoved += (originalLength - filteredImages.length);
+            projectModified = true;
+            console.log(`[Delete] ✅ Removed reference from project "${project.id}" stage "${stage.title}"`);
+          }
+
+          return {
+            ...stage,
+            images: filteredImages,
+          };
+        }) || project.stages;
         
         if (projectModified) {
           projectsUpdated++;
         }
         
-        return project;
+        return {
+          ...project,
+          stages: updatedStages,
+        };
       });
 
       // Save updated projects if any changes were made

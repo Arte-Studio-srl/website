@@ -43,11 +43,15 @@ export default function ImagesAdminPage() {
           
           // Stage images
           project.stages.forEach((stage: ProjectStage) => {
+            const stageType: ImageInfo['type'] =
+              stage.type === 'thumbnail' || stage.type === 'drawing' || stage.type === 'final'
+                ? stage.type
+                : 'final';
             stage.images.forEach((img: string) => {
               allImages.push({
                 path: img,
                 projectId: project.id,
-                type: stage.type
+                type: stageType
               });
             });
           });
