@@ -31,7 +31,7 @@ export const categories: Category[] = [
 export const projects: Project[] = [
   {
     "id": "resort-fashion-show",
-    "title": "Resort Collection Fashion Showtwrwerwpop",
+    "title": "Resort Collection Fashion Showtwrwerw",
     "category": "fashion-shows",
     "year": 2024,
     "client": "International Fashion Brand",
