@@ -2,6 +2,11 @@ import { Project, Category } from '@/types';
 
 export const categories: Category[] = [
   {
+    "id": "category-1765236902989",
+    "name": "New Category",
+    "description": "Description here"
+  },
+  {
     "id": "conventions",
     "name": "Conventions",
     "description": "Corporate events, conferences, and business gatherings"
@@ -30,42 +35,6 @@ export const categories: Category[] = [
 
 export const projects: Project[] = [
   {
-    "id": "resort-fashion-show",
-    "title": "Resort Collection Fashion Showtwrwerw",
-    "category": "fashion-shows",
-    "year": 2024,
-    "client": "International Fashion Brand",
-    "description": "Outdoor runway show with natural backdrop and sustainable materials integration.",
-    "thumbnail": "/images/projects/resort-fashion-show/thumb.webp",
-    "stages": [
-      {
-        "type": "drawing",
-        "title": "Outdoor Runway",
-        "images": [
-          "/images/projects/resort-fashion-show/drawing-1.jpg",
-          "/images/projects/resort-fashion-show/drawing-2.webp",
-          "/images/projects/resort-fashion-show/stage-1765134068255-688a-1.png"
-        ],
-        "description": "Site planning and sustainability features",
-        "id": "stage-1765134068255-688a",
-        "icon": "blueprint"
-      },
-      {
-        "type": "final",
-        "title": "Fashion Show",
-        "images": [
-          "/images/projects/resort-fashion-show/final-1.jpg",
-          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765227990330-fr6a.jpg",
-          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765228298810-du39.png",
-          "https://raw.githubusercontent.com/Arte-Studio-srl/website/main/public/images/projects/resort-fashion-show/stage-1765134068255-490a-1765229312614-qqob.png"
-        ],
-        "description": "The outdoor fashion presentation",
-        "id": "stage-1765134068255-490a",
-        "icon": "layers"
-      }
-    ]
-  },
-  {
     "id": "ballet-production",
     "title": "Classical Ballet Production",
     "category": "theater",
@@ -81,7 +50,9 @@ export const projects: Project[] = [
           "/images/projects/ballet-production/drawing-3.png",
           "/images/projects/ballet-production/drawing-4.jpg"
         ],
-        "description": "Scenic design and transformation mechanics"
+        "description": "Scenic design and transformation mechanics",
+        "id": "stage-1765235463884-0fb0",
+        "icon": "blueprint"
       },
       {
         "type": "final",
@@ -90,7 +61,9 @@ export const projects: Project[] = [
           "/images/projects/ballet-production/final-1.png",
           "/images/projects/ballet-production/final-2.png"
         ],
-        "description": "The ballet in full production"
+        "description": "The ballet in full production",
+        "id": "stage-1765235463884-cb4a",
+        "icon": "sparkles"
       }
     ]
   },
