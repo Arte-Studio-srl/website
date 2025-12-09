@@ -52,6 +52,11 @@ export default function ImageUpload({
         body: formData,
       });
 
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || `Upload failed with status ${response.status}`);
+      }
+
       const data = await response.json();
 
       if (data.success) {

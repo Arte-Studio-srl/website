@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { Category, Project, ProjectStage, StageIcon } from '@/types';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -23,7 +23,6 @@ const STAGE_ICON_OPTIONS: { value: StageIcon; label: string; helper: string }[] 
 ];
 
 const createStageId = () => `stage-${Date.now()}-${Math.random().toString(16).slice(2, 6)}`;
-
 const chooseIconForStage = (stage: ProjectStage, index: number): StageIcon => {
   if (stage.icon) return stage.icon;
   if (stage.type === 'drawing') return 'blueprint';
@@ -39,6 +38,20 @@ const createEmptyStage = (index: number): ProjectStage => ({
   icon: STAGE_ICON_OPTIONS[index % STAGE_ICON_OPTIONS.length].value,
 });
 
+const collectProjectImages = (project: ProjectFormData): string[] => {
+  const images: string[] = [];
+
+  if (project.thumbnail) {
+    images.push(project.thumbnail);
+  }
+
+  project.stages?.forEach((stage) => {
+    stage.images?.forEach((img) => images.push(img));
+  });
+
+  return images;
+};
+
 const normalizeStages = (stages: ProjectStage[] = []): ProjectStage[] => {
   if (stages.length === 0) return [createEmptyStage(1)];
   return stages.map((stage, index) => ({
@@ -47,6 +60,17 @@ const normalizeStages = (stages: ProjectStage[] = []): ProjectStage[] => {
     icon: chooseIconForStage(stage, index),
   }));
 };
+
+const createEmptyProjectForm = (): ProjectFormData => ({
+  id: '',
+  title: '',
+  category: '',
+  year: new Date().getFullYear(),
+  client: '',
+  description: '',
+  thumbnail: '',
+  stages: normalizeStages([]),
+});
 
 export default function ProjectFormPage() {
   const router = useRouter();
@@ -57,17 +81,15 @@ export default function ProjectFormPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(isEditMode);
   const [saving, setSaving] = useState(false);
+  const initialImagesRef = useRef<Set<string>>(new Set());
+  const pendingUploadsRef = useRef<Set<string>>(new Set());
+  const hasSavedRef = useRef(false);
 
-  const [formData, setFormData] = useState<ProjectFormData>(() => ({
-    id: '',
-    title: '',
-    category: '',
-    year: new Date().getFullYear(),
-    client: '',
-    description: '',
-    thumbnail: '',
-    stages: normalizeStages([]),
-  }));
+  const [formData, setFormData] = useState<ProjectFormData>(() => createEmptyProjectForm());
+
+  const markInitialImages = useCallback((project: ProjectFormData) => {
+    initialImagesRef.current = new Set(collectProjectImages(project));
+  }, []);
 
   const fetchData = useCallback(async () => {
     try {
@@ -80,16 +102,20 @@ export default function ProjectFormPage() {
         const categoriesData = await categoriesRes.json();
 
         if (projectData.success) {
-          setFormData({
+          const normalizedProject: ProjectFormData = {
             ...projectData.project,
             stages: normalizeStages(projectData.project.stages),
-          });
+          };
+          setFormData(normalizedProject);
+          markInitialImages(normalizedProject);
         }
         if (categoriesData.success) setCategories(categoriesData.categories);
       } else {
         const response = await fetch('/api/categories');
         const data = await response.json();
         if (data.success) setCategories(data.categories);
+        // New project: baseline has no images yet
+        markInitialImages(createEmptyProjectForm());
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -97,7 +123,7 @@ export default function ProjectFormPage() {
     } finally {
       setLoading(false);
     }
-  }, [isEditMode, projectId]);
+  }, [isEditMode, markInitialImages, projectId]);
 
   useEffect(() => {
     fetchData();
@@ -125,6 +151,52 @@ export default function ProjectFormPage() {
       return { ...prev, stages: updatedStages };
     });
   };
+
+  const deleteImage = useCallback(async (url: string) => {
+    if (!url) return;
+    try {
+      await fetch(`/api/admin/upload?path=${encodeURIComponent(url)}`, { method: 'DELETE' });
+    } catch (error) {
+      console.error('Failed to delete image', error);
+    }
+  }, []);
+
+  const cleanupPendingUploads = useCallback(async () => {
+    const pending = Array.from(pendingUploadsRef.current);
+    if (pending.length === 0) return;
+
+    pendingUploadsRef.current.clear();
+    await Promise.all(pending.map((url) => deleteImage(url)));
+  }, [deleteImage]);
+
+  const handleImageRemoval = useCallback(async (url: string) => {
+    if (!url) return;
+
+    // Only auto-delete images that were uploaded during this edit session
+    const isNewUpload = !initialImagesRef.current.has(url);
+    pendingUploadsRef.current.delete(url);
+
+    if (isNewUpload) {
+      await deleteImage(url);
+    }
+  }, [deleteImage]);
+
+  const recordUpload = useCallback((url: string) => {
+    if (!initialImagesRef.current.has(url)) {
+      pendingUploadsRef.current.add(url);
+    }
+  }, []);
+
+  const handleStageImageRemove = useCallback(
+    async (stageIndex: number, imgIndex: number, url: string) => {
+      handleStageUpdate(stageIndex, (current) => ({
+        ...current,
+        images: current.images.filter((_, idx) => idx !== imgIndex),
+      }));
+      await handleImageRemoval(url);
+    },
+    [handleImageRemoval, handleStageUpdate]
+  );
 
   const handleAddStage = () => {
     setFormData(prev => {
@@ -176,6 +248,8 @@ export default function ProjectFormPage() {
       const data = await response.json();
 
       if (data.success) {
+        hasSavedRef.current = true;
+        pendingUploadsRef.current.clear();
         alert(`Project ${isEditMode ? 'updated' : 'created'} successfully!`);
         router.push('/admin/projects');
       } else {
@@ -188,6 +262,19 @@ export default function ProjectFormPage() {
       setSaving(false);
     }
   };
+
+  const handleCancel = async () => {
+    await cleanupPendingUploads();
+    router.push('/admin/projects');
+  };
+
+  useEffect(() => {
+    return () => {
+      if (!hasSavedRef.current) {
+        cleanupPendingUploads();
+      }
+    };
+  }, [cleanupPendingUploads]);
 
   if (loading) {
     return <LoadingSpinner fullScreen message="Loading project..." />;
@@ -286,8 +373,14 @@ export default function ProjectFormPage() {
             projectId={formData.id}
             type="thumbnail"
             currentImage={formData.thumbnail}
-            onUploadComplete={(url) => setFormData(prev => ({ ...prev, thumbnail: url }))}
-            onRemove={() => setFormData(prev => ({ ...prev, thumbnail: '' }))}
+            onUploadComplete={(url) => {
+              recordUpload(url);
+              setFormData(prev => ({ ...prev, thumbnail: url }));
+            }}
+            onRemove={() => {
+              handleImageRemoval(formData.thumbnail);
+              setFormData(prev => ({ ...prev, thumbnail: '' }));
+            }}
             label="Main thumbnail (recommended: 16:9 aspect ratio)"
             disabled={!formData.id}
           />
@@ -399,23 +492,19 @@ export default function ProjectFormPage() {
                           type={uploadType}
                           currentImage={img}
                           onUploadComplete={() => {}}
-                          onRemove={() =>
-                            handleStageUpdate(stageIndex, (current) => ({
-                              ...current,
-                              images: current.images.filter((_, idx) => idx !== imgIndex),
-                            }))
-                          }
+                          onRemove={() => handleStageImageRemove(stageIndex, imgIndex, img)}
                         />
                       ))}
                       <ImageUpload
                         projectId={formData.id}
                         type={uploadType}
-                        onUploadComplete={(url) =>
+                        onUploadComplete={(url) => {
+                          recordUpload(url);
                           handleStageUpdate(stageIndex, (current) => ({
                             ...current,
                             images: [...current.images, url],
-                          }))
-                        }
+                          }));
+                        }}
                         disabled={!formData.id}
                       />
                     </div>
@@ -458,7 +547,7 @@ export default function ProjectFormPage() {
           />
           <button
             type="button"
-            onClick={() => router.push('/admin/projects')}
+            onClick={handleCancel}
             className="px-8 py-3 bg-gray-200 hover:bg-gray-300 text-charcoal rounded font-medium transition-colors"
           >
             Cancel
