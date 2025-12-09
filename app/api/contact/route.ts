@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { checkRateLimit } from '@/lib/rate-limiter';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,6 +44,22 @@ function validatePayload(body: Partial<ContactPayload>) {
 export async function POST(request: NextRequest) {
   try {
     const payload = (await request.json()) as Partial<ContactPayload>;
+    
+    // Rate limiting: 10 requests per 15 minutes per email
+    const email = payload.email?.toLowerCase().trim() || 'anonymous';
+    const rateLimit = checkRateLimit(`contact:${email}`, {
+      maxAttempts: 10,
+      windowMs: 15 * 60 * 1000,
+    });
+
+    if (!rateLimit.allowed) {
+      const resetInMinutes = Math.ceil((rateLimit.resetTime - Date.now()) / 60000);
+      return NextResponse.json(
+        { success: false, error: `Too many requests. Please try again in ${resetInMinutes} minutes.` },
+        { status: 429 }
+      );
+    }
+
     const validationErrors = validatePayload(payload);
     if (validationErrors.length > 0) {
       return NextResponse.json(

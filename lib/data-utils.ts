@@ -112,7 +112,9 @@ function parseDataFile(content: string): { projects: Project[]; categories: Cate
   try {
     // Helper function to extract array by counting brackets
     const extractArray = (content: string, varName: string): unknown[] => {
-      const regex = new RegExp(`export const ${varName}: \\w+\\[\\] = `);
+      // Improved regex to be more flexible with type annotations and spacing
+      // Matches: export const projects = ... OR export const projects: Project[] = ...
+      const regex = new RegExp(`export\\s+const\\s+${varName}\\s*(?::\\s*[^=]+)?\\s*=\\s*`);
       const match = content.match(regex);
       
       if (!match) return [];

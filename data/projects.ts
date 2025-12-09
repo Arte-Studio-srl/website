@@ -48,7 +48,8 @@ export const projects: Project[] = [
         "title": "Set Design",
         "images": [
           "/images/projects/ballet-production/drawing-3.png",
-          "/images/projects/ballet-production/drawing-4.jpg"
+          "/images/projects/ballet-production/drawing-4.jpg",
+          "/images/projects/ballet-production/stage-1765235463884-0fb0-1765301120555-zbkb.png"
         ],
         "description": "Scenic design and transformation mechanics",
         "id": "stage-1765235463884-0fb0",

@@ -1,6 +1,6 @@
 # ArteStudio Website
 
-Professional portfolio website for ArteStudio - Scenography and event structures company. Built with Next.js 15, TypeScript, and Tailwind CSS.
+A professional portfolio website template for companies in the **events and scenography** field. Built with Next.js 15, TypeScript, and Tailwind CSS.
 
 ## Features
 
@@ -9,7 +9,7 @@ Professional portfolio website for ArteStudio - Scenography and event structures
 - 🔐 Secure admin panel for content management
 - ⚡ **Instant updates** - Changes appear immediately without restart
 - 🔄 **GitHub integration** - Auto-commit changes and images to repository
-- 🖼️ **Dynamic image uploads** - Images instantly available via GitHub CDN
+- 🖼️ Dynamic image uploads with GitHub CDN
 - 🖼️ Image gallery with lightbox and keyboard navigation
 - ⚡ Optimized performance with Next.js
 - ♿ WCAG 2.1 Level AA accessibility compliance
@@ -26,6 +26,10 @@ Professional portfolio website for ArteStudio - Scenography and event structures
 ## Quick Start
 
 ```bash
+# Clone the repository
+git clone https://github.com/your-username/artestudio-website.git
+cd artestudio-website
+
 # Install dependencies
 npm install
 
@@ -41,42 +45,28 @@ Visit [http://localhost:3000](http://localhost:3000) to view the site.
 
 ## Environment Variables
 
-Create `.env.local`:
+See `.env.example` for all available configuration options.
 
-```env
-JWT_SECRET=your-secure-secret-key
-ADMIN_EMAILS=admin@example.com
-NODE_ENV=development
+**Required variables:**
 
-# Contact form email (SMTP)
-SMTP_HOST=smtp.yourprovider.com
-SMTP_PORT=587
-SMTP_USER=your-smtp-username
-SMTP_PASS=your-smtp-password
-CONTACT_FROM=Studio Website <no-reply@yourdomain.com>
-CONTACT_TO=owner@yourdomain.com
+- `JWT_SECRET` - Secure secret for JWT tokens
+- `ADMIN_EMAILS` - Comma-separated list of admin email addresses
+- `SMTP_*` - SMTP settings for contact form and auth emails
 
-# GitHub content storage (optional, enables writing via dashboard)
-# See GITHUB_INTEGRATION.md for detailed setup instructions
-GITHUB_CONTENT_OWNER=your-github-username-or-org
-GITHUB_CONTENT_REPO=your-repo-name
-GITHUB_CONTENT_BRANCH=main
-GITHUB_CONTENT_TOKEN=ghp_xxx # token with repo scope (https://github.com/settings/tokens/new)
-```
+**Optional (GitHub Integration):**
 
-Generate secure JWT secret:
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
+- `GITHUB_CONTENT_*` - Enable auto-commit of content changes
 
 ## Admin Panel
 
 Access the admin panel at `/admin` to manage:
+
 - Projects (create, edit, delete)
 - Categories
 - Image uploads
 
 **First time setup:**
+
 1. Set `ADMIN_EMAILS` in `.env.local`
 2. Navigate to `/admin`
 3. Enter your email
@@ -86,42 +76,57 @@ Access the admin panel at `/admin` to manage:
 
 ```
 ├── app/                    # Next.js app directory
-│   ├── admin/             # Admin panel pages
-│   ├── api/               # API routes
-│   └── (public pages)     # Public website pages
-├── components/            # React components
-├── lib/                   # Utilities and helpers
-├── data/                  # Project data
-└── public/                # Static assets
+│   ├── admin/              # Admin panel pages
+│   ├── api/                # API routes
+│   │   ├── admin/          # Protected admin API endpoints
+│   │   ├── contact/        # Contact form endpoint
+│   │   └── projects/       # Public projects API
+│   ├── project/[id]/       # Project detail pages
+│   └── projects/           # Project listing pages
+├── components/             # React components
+│   └── admin/              # Admin-specific components
+├── lib/                    # Utilities and helpers
+│   ├── auth.ts             # JWT authentication
+│   ├── data-utils.ts       # Data loading with caching
+│   ├── github-content.ts   # GitHub API integration
+│   └── rate-limiter.ts     # Rate limiting
+├── data/                   # Project data (TypeScript)
+├── public/                 # Static assets
+└── scripts/                # Utility scripts
 ```
 
 ## Deployment
 
-⚠️ **Important**: Read `DEPLOYMENT.md` before deploying to production.
+The project supports multiple deployment strategies:
 
-The current implementation uses file-based storage which has limitations in production environments. See deployment guide for solutions.
-
-### Quick Deploy to Vercel
+### Vercel (Recommended)
 
 ```bash
 vercel --prod
 ```
 
 **Required environment variables in Vercel:**
+
 - `JWT_SECRET`
 - `ADMIN_EMAILS`
 - `NODE_ENV=production`
 
-## Documentation
+### Production Considerations
 
-- `QUICKSTART.md` - Detailed setup guide
-- `GITHUB_INTEGRATION.md` - GitHub content management setup
-- `IMAGE_UPLOAD_GITHUB.md` - Image upload with GitHub integration
-- `DYNAMIC_DATA_LOADING.md` - How immediate updates work (no restart needed!)
-- `DEPLOYMENT.md` - Production deployment strategies
-- `SECURITY.md` - Security best practices
-- `AUTHENTICATION.md` - Auth system details
-- `DESIGN.md` - Design system documentation
+- **File-based storage**: Works well for portfolios with infrequent updates
+- **GitHub Integration**: Enable for persistent admin changes (recommended)
+- **Database**: Consider for high-frequency updates (see docs)
+
+## Security
+
+- JWT-based authentication with httpOnly cookies
+- Email verification system
+- Rate limiting on auth and contact endpoints
+- Secure file upload validation (size, type, extension)
+- Path traversal protection
+- Security headers (X-Frame-Options, X-Content-Type-Options)
+
+See `SECURITY.md` for detailed security documentation.
 
 ## Scripts
 
@@ -134,14 +139,13 @@ npm run lint         # Run ESLint
 
 ## Content Management
 
-### Option 1: Admin Panel (Development)
-Use the admin panel in local development, commit changes to git.
+### Option 1: Admin Panel (Recommended)
+
+Use the built-in admin panel. With GitHub integration enabled, changes are auto-committed.
 
 ### Option 2: Direct Editing
-Edit `data/projects.ts` directly for project content.
 
-### Option 3: Production Admin (Requires Setup)
-See `DEPLOYMENT.md` for database or git-based CMS options.
+Edit `data/projects.ts` directly and commit to git.
 
 ## Browser Support
 
@@ -150,29 +154,10 @@ See `DEPLOYMENT.md` for database or git-based CMS options.
 - Safari (latest)
 - Edge (latest)
 
-## Security
-
-- JWT-based authentication
-- Email verification system
-- Rate limiting on auth endpoints
-- Secure file upload validation
-- Path traversal protection
-
-See `SECURITY.md` for comprehensive security documentation.
-
 ## License
 
-© 2024 ArteStudio s.r.l. - All rights reserved  
-P.IVA e C.F. 02513970182
-
-## Contact
-
-- **Email**: info@progettoartestudio.it
-- **Phone**: +39 02 89031657
-- **Address**: Vicolo San Giorgio 5, 20090 Buccinasco (MI), Italy
+MIT License - See [LICENSE](./LICENSE) for details.
 
 ---
 
-Built with Next.js, TypeScript, and ❤️
-
-
+Built with Next.js, TypeScript, and Tailwind CSS.
