@@ -1,26 +1,17 @@
+'use client';
+
 import type { ReactElement } from 'react';
 import Link from 'next/link';
+import { Icon } from '@iconify/react';
 import { useSiteData } from '@/components/SiteDataProvider';
 import { formatPhoneDisplay, formatTelHref } from '@/lib/site-config';
 
 type SocialKey = 'facebook' | 'instagram' | 'linkedin';
 
-const socialIcons: Record<SocialKey, ReactElement> = {
-  facebook: (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M22 12.07C22 6.48 17.52 2 11.93 2S1.86 6.48 1.86 12.07c0 4.91 3.58 8.98 8.25 9.82v-6.94H7.9v-2.88h2.21V9.8c0-2.2 1.31-3.42 3.32-3.42.96 0 1.97.17 1.97.17v2.17h-1.11c-1.1 0-1.44.69-1.44 1.4v1.69h2.45l-.39 2.88h-2.06v6.94c4.67-.84 8.25-4.91 8.25-9.82Z" />
-    </svg>
-  ),
-  instagram: (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Zm0 2a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h10a2 2 0 0 0 2-2V7c0-1.1-.9-2-2-2H7Zm11.25 1.25a1.25 1.25 0 1 1-2.5 0a1.25 1.25 0 0 1 2.5 0ZM12 8.5A3.5 3.5 0 1 1 8.5 12A3.5 3.5 0 0 1 12 8.5Zm0 2a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 12 10.5Z" />
-    </svg>
-  ),
-  linkedin: (
-    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M20.45 20.45h-3.56v-5.32c0-1.27-.02-2.92-1.78-2.92c-1.78 0-2.05 1.39-2.05 2.82v5.42H9.5V9.5h3.42v1.5h.05c.48-.9 1.64-1.85 3.38-1.85c3.61 0 4.28 2.38 4.28 5.47v5.84ZM5.34 8a2.07 2.07 0 1 1 0-4.14a2.07 2.07 0 0 1 0 4.14Zm1.78 12.45H3.55V9.5h3.57v10.95Z" />
-    </svg>
-  ),
+const socialIconIds: Record<SocialKey, string> = {
+  facebook: 'ph:facebook-logo',
+  instagram: 'ph:instagram-logo',
+  linkedin: 'ph:linkedin-logo',
 };
 
 function SocialIcon({ href, label, type }: { href: string; label: string; type: SocialKey }) {
@@ -33,7 +24,7 @@ function SocialIcon({ href, label, type }: { href: string; label: string; type: 
       aria-label={label}
       title={label}
     >
-      {socialIcons[type]}
+      <Icon icon={socialIconIds[type]} className="w-5 h-5" aria-hidden />
     </a>
   );
 }
@@ -48,7 +39,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           {/* About */}
           <div>
-            <h3 className="font-display text-2xl mb-4 text-bronze-300">ArteStudio</h3>
+            <h3 className="font-display text-2xl mb-4 text-bronze-300">{site.siteName}</h3>
             <p className="text-cream/80 leading-relaxed">
               {site.tagline}
             </p>
@@ -62,8 +53,9 @@ export default function Footer() {
                 <li key={cat.id}>
                   <Link
                     href={`/projects/${cat.id}`}
-                    className="text-cream/80 hover:text-bronze-300 transition-colors"
+                    className="text-cream/80 hover:text-bronze-300 transition-colors inline-flex items-center gap-2 group"
                   >
+                    <Icon icon="ph:arrow-right" className="w-3 h-3 opacity-50 group-hover:opacity-100 transition-opacity" aria-hidden />
                     {cat.name}
                   </Link>
                 </li>
@@ -75,21 +67,26 @@ export default function Footer() {
           <div>
             <h4 className="font-display text-xl mb-4 text-bronze-300">Contact</h4>
             <div className="space-y-3 text-cream/80">
-              <p>
-                {site.address.split('\n').map((line, idx) => (
-                  <span key={idx} className="block">{line}</span>
-                ))}
-              </p>
-              <p>
+              <div className="flex items-start gap-2">
+                <Icon icon="ph:map-pin" className="w-4 h-4 text-bronze-400 mt-0.5 shrink-0" aria-hidden />
+                <p>
+                  {site.address.split('\n').map((line, idx) => (
+                    <span key={idx} className="block">{line}</span>
+                  ))}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Icon icon="ph:phone" className="w-4 h-4 text-bronze-400 shrink-0" aria-hidden />
                 <a href={formatTelHref(site.phone)} className="hover:text-bronze-300 transition-colors">
                   {formatPhoneDisplay(site.phone)}
                 </a>
-              </p>
-              <p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Icon icon="ph:envelope" className="w-4 h-4 text-bronze-400 shrink-0" aria-hidden />
                 <a href={`mailto:${site.contactEmail}`} className="hover:text-bronze-300 transition-colors">
                   {site.contactEmail}
                 </a>
-              </p>
+              </div>
             </div>
           </div>
         </div>
@@ -101,8 +98,9 @@ export default function Footer() {
               © {currentYear} {site.legal.companyName} - P.IVA e C.F. {site.legal.piva}
             </p>
             <div className="flex items-center gap-4">
-              <Link href="/contact" className="text-cream/60 hover:text-bronze-300 transition-colors text-sm">
+              <Link href="/contact" className="text-cream/60 hover:text-bronze-300 transition-colors text-sm inline-flex items-center gap-1.5 group">
                 Contact Us
+                <Icon icon="ph:arrow-right" className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" aria-hidden />
               </Link>
               <div className="flex items-center gap-3">
                 {site.social.facebook && (
@@ -128,4 +126,3 @@ export default function Footer() {
     </footer>
   );
 }
-

@@ -37,17 +37,18 @@ export default function AdminLayout({
 
   return (
     <AdminAuthGuard>
-      <div className="min-h-screen bg-cream">
+      <div className="min-h-screen bg-cream font-sans selection:bg-bronze-200 selection:text-charcoal">
         {/* Header */}
-        <header className="bg-charcoal text-cream border-b-4 border-bronze-500 sticky top-0 z-50">
-          <div className="container mx-auto px-4 py-3 sm:py-4">
-            <div className="flex flex-col gap-3 sm:gap-4">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+        <header className="bg-white/80 backdrop-blur-md text-charcoal border-b border-bronze-200/50 sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-6 py-4">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3">
                   {backHref && (
                     <Link
                       href={backHref}
-                      className="text-bronze-200 hover:text-bronze-100 transition-colors text-sm sm:text-base font-medium"
+                      className="text-charcoal/50 hover:text-bronze-600 transition-colors text-sm font-medium tracking-wide uppercase"
                     >
                       {backLabel}
                     </Link>
@@ -55,47 +56,47 @@ export default function AdminLayout({
                   {showViewLink && (
                     <Link 
                       href="/" 
-                      className="text-sm sm:text-base text-bronze-200 hover:text-bronze-100 transition-colors px-3 py-1 rounded-full border border-bronze-500/60 bg-white/5"
+                      className="text-xs font-medium tracking-widest uppercase text-charcoal/60 hover:text-bronze-600 transition-colors px-3 py-1 rounded-full border border-gray-200 hover:border-bronze-200"
                     >
-                      Site
+                      Live Site
                     </Link>
                   )}
                 </div>
+                
+                <div className="h-4 w-px bg-gray-200 hidden md:block"></div>
 
+                <div className="flex items-baseline gap-3">
+                  <span className="text-xs font-bold tracking-widest uppercase text-bronze-600">
+                    Admin
+                  </span>
+                  {title && (
+                    <h1 className="font-display text-xl sm:text-2xl text-charcoal leading-none">
+                      {title}
+                    </h1>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between md:justify-end gap-6">
+                {actions && (
+                  <div className="flex items-center gap-3">
+                    {actions}
+                  </div>
+                )}
                 <button
                   onClick={handleLogout}
-                  className="text-red-200 hover:text-red-100 transition-colors text-sm sm:text-base font-medium"
+                  className="text-xs font-medium tracking-widest uppercase text-charcoal/50 hover:text-red-600 transition-colors"
                 >
                   Logout
                 </button>
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className="px-3 py-1 text-xs font-semibold uppercase tracking-wide text-bronze-200 border border-bronze-500/60 rounded-full bg-white/5">
-                    Admin
-                  </span>
-                  {title && (
-                    <h1 className="font-display text-xl sm:text-2xl leading-tight">
-                      {title}
-                    </h1>
-                  )}
-                </div>
-
-                {actions && (
-                  <div className="flex w-full sm:w-auto justify-end">
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 bg-white/5 border border-white/10 rounded-full px-2 py-1 shadow-sm backdrop-blur-sm">
-                      {actions}
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="container mx-auto px-4 py-8">
+        <main className="max-w-7xl mx-auto px-6 py-12">
           {children}
         </main>
       </div>

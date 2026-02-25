@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isAuthenticated } from '@/lib/auth';
 import { readSiteConfig, writeSiteConfig } from '@/lib/site-config-storage';
 
 function validateConfig(config: any): { valid: boolean; error?: string } {
@@ -35,6 +36,10 @@ function validateConfig(config: any): { valid: boolean; error?: string } {
 
 export async function GET() {
   try {
+    const authenticated = await isAuthenticated();
+    if (!authenticated) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     const config = await readSiteConfig();
     return NextResponse.json({ success: true, config });
   } catch (error) {
@@ -45,6 +50,10 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    const authenticated = await isAuthenticated();
+    if (!authenticated) {
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     const body = await request.json();
     const validation = validateConfig(body);
     if (!validation.valid) {

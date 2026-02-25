@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { isAuthenticated } from '@/lib/auth';
 import { updateCategories, validateCategory } from '@/lib/data-utils';
 
@@ -40,6 +41,7 @@ export async function PUT(request: NextRequest) {
     }
 
     await updateCategories(newCategories);
+    revalidateTag('site-data', 'default');
     
     return NextResponse.json({
       success: true,

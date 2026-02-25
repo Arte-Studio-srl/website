@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Icon } from '@iconify/react';
 import { Project } from '@/types';
 
 interface ProjectCardProps {
@@ -41,7 +42,7 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
             
             {/* Category badge */}
             <div className="absolute top-4 right-4 z-20 px-4 py-1 bg-bronze-600 text-white text-xs uppercase tracking-wider font-display">
-              {project.category.replace('-', ' ')}
+              {project.category.replace(/-/g, ' ')}
             </div>
           </div>
 
@@ -51,12 +52,16 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
               <h3 className="font-display text-xl text-charcoal group-hover:text-bronze-600 transition-colors flex-1">
                 {project.title}
               </h3>
-              <span className="text-bronze-600 text-sm ml-4">{project.year}</span>
+              <span className="flex items-center gap-1 text-bronze-600 text-sm ml-4">
+                <Icon icon="ph:calendar-blank" className="w-3.5 h-3.5" aria-hidden />
+                {project.year}
+              </span>
             </div>
             
             {project.client && (
-              <p className="text-sm text-charcoal/60 mb-3 italic">
-                Client: {project.client}
+              <p className="flex items-center gap-1.5 text-sm text-charcoal/60 mb-3 italic">
+                <Icon icon="ph:user" className="w-3.5 h-3.5 shrink-0 not-italic" aria-hidden />
+                {project.client}
               </p>
             )}
             
@@ -67,9 +72,11 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
             {/* View project indicator */}
             <div className="mt-4 pt-4 border-t border-bronze-200 flex items-center justify-between">
               <span className="text-xs uppercase tracking-wide text-bronze-600">View Project</span>
-              <svg className="w-5 h-5 text-bronze-600 transform group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
+              <Icon
+                icon="ph:arrow-right"
+                className="w-5 h-5 text-bronze-600 group-hover:translate-x-2 transition-transform"
+                aria-hidden
+              />
             </div>
           </div>
 
@@ -80,4 +87,3 @@ export default function ProjectCard({ project, index }: ProjectCardProps) {
     </motion.div>
   );
 }
-

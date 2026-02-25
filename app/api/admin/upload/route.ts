@@ -80,6 +80,11 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Local deletions no longer supported' }, { status: 400 });
     }
 
+    // Validate that the key is scoped to the projects/ prefix only
+    if (!key.startsWith('projects/') || key.includes('..')) {
+      return NextResponse.json({ success: false, error: 'Invalid image path' }, { status: 400 });
+    }
+
     await deleteS3Object(key);
 
     return NextResponse.json({ success: true, message: 'Image deleted successfully' });

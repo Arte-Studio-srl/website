@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Icon } from '@iconify/react';
 import { usePathname } from 'next/navigation';
+import { useSiteData } from '@/components/SiteDataProvider';
 
 interface WidgetForm {
   name: string;
@@ -13,6 +15,7 @@ interface WidgetForm {
 type Status = 'idle' | 'success' | 'error';
 
 export default function FloatingContact() {
+  const { siteConfig: site } = useSiteData();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<Status>('idle');
@@ -118,24 +121,26 @@ export default function FloatingContact() {
             className="w-[320px] sm:w-96 rounded-2xl overflow-hidden shadow-2xl border border-bronze-100 bg-white"
           >
             <div className="flex items-start justify-between px-5 py-4 bg-charcoal text-cream">
-              <div>
-                <p className="font-display text-lg">Let&apos;s talk</p>
-                <p className="text-sm text-cream/80">We reply within one business day</p>
+              <div className="flex items-center gap-3">
+                <Icon icon="ph:chat-circle-dots" className="w-6 h-6 text-bronze-300" aria-hidden />
+                <div>
+                  <p className="font-display text-lg">Let&apos;s talk</p>
+                  <p className="text-sm text-cream/80">We reply within one business day</p>
+                </div>
               </div>
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Close contact form"
                 className="text-cream/80 hover:text-white transition-colors"
               >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <Icon icon="ph:x" className="w-5 h-5" aria-hidden />
               </button>
             </div>
 
             <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
               <div className="space-y-1">
-                <label htmlFor="name" className="text-sm font-display text-charcoal">
+                <label htmlFor="name" className="text-sm font-display text-charcoal flex items-center gap-1.5">
+                  <Icon icon="ph:user" className="w-3.5 h-3.5 text-bronze-500" aria-hidden />
                   Name *
                 </label>
                 <input
@@ -151,7 +156,8 @@ export default function FloatingContact() {
               </div>
 
               <div className="space-y-1">
-                <label htmlFor="email" className="text-sm font-display text-charcoal">
+                <label htmlFor="email" className="text-sm font-display text-charcoal flex items-center gap-1.5">
+                  <Icon icon="ph:envelope" className="w-3.5 h-3.5 text-bronze-500" aria-hidden />
                   Email *
                 </label>
                 <input
@@ -168,7 +174,8 @@ export default function FloatingContact() {
               </div>
 
               <div className="space-y-1">
-                <label htmlFor="message" className="text-sm font-display text-charcoal">
+                <label htmlFor="message" className="text-sm font-display text-charcoal flex items-center gap-1.5">
+                  <Icon icon="ph:note-pencil" className="w-3.5 h-3.5 text-bronze-500" aria-hidden />
                   Project details *
                 </label>
                 <textarea
@@ -187,23 +194,27 @@ export default function FloatingContact() {
               <div className="flex items-center justify-between text-xs text-charcoal/70">
                 <span>Prefer email?</span>
                 <a
-                  href="mailto:info@progettoartestudio.it"
-                  className="text-bronze-700 hover:text-bronze-600 font-display"
+                  href={`mailto:${site.contactEmail}`}
+                  className="text-bronze-700 hover:text-bronze-600 font-display inline-flex items-center gap-1"
                 >
-                  info@progettoartestudio.it
+                  <Icon icon="ph:envelope-simple" className="w-3 h-3" aria-hidden />
+                  {site.contactEmail}
                 </a>
               </div>
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full rounded-md py-3 font-display text-sm text-white transition focus:outline-none ${
+                className={`w-full rounded-md py-3 font-display text-sm text-white transition focus:outline-none flex items-center justify-center gap-2 ${
                   isSubmitting
                     ? 'bg-bronze-400 cursor-not-allowed'
                     : 'bg-bronze-600 hover:bg-bronze-700 shadow-md'
                 }`}
               >
-                {isSubmitting ? 'Sending...' : 'Send message'}
+                {isSubmitting
+                  ? <><Icon icon="ph:circle-notch" className="w-4 h-4 animate-spin" aria-hidden /> Sending...</>
+                  : <><Icon icon="ph:paper-plane-tilt" className="w-4 h-4" aria-hidden /> Send message</>
+                }
               </button>
 
               <AnimatePresence>
@@ -212,8 +223,9 @@ export default function FloatingContact() {
                     initial={{ opacity: 0, y: -6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
-                    className="rounded-md border border-green-300 bg-green-50 px-3 py-2 text-green-800 text-sm"
+                    className="rounded-md border border-green-300 bg-green-50 px-3 py-2 text-green-800 text-sm flex items-center gap-2"
                   >
+                    <Icon icon="ph:check-circle" className="w-4 h-4 shrink-0" aria-hidden />
                     Received! We will contact you shortly.
                   </motion.div>
                 )}
@@ -222,8 +234,9 @@ export default function FloatingContact() {
                     initial={{ opacity: 0, y: -6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
-                    className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-red-700 text-sm"
+                    className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-red-700 text-sm flex items-center gap-2"
                   >
+                    <Icon icon="ph:warning-circle" className="w-4 h-4 shrink-0" aria-hidden />
                     Something went wrong. Please try again.
                   </motion.div>
                 )}
@@ -252,17 +265,9 @@ export default function FloatingContact() {
           aria-hidden
         />
         <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur overflow-hidden">
-          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M21 8V7a2 2 0 00-2-2H5a2 2 0 00-2 2v1m18 0v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8m18 0l-9 6-9-6"
-            />
-          </svg>
+          <Icon icon="ph:chat-circle-dots" className="h-5 w-5" aria-hidden />
         </span>
       </motion.button>
     </div>
   );
 }
-

@@ -1,71 +1,57 @@
-// Simple in-memory rate limiter
-// For production, use Redis or a dedicated rate limiting service
+// DB-backed rate limiter — safe for serverless multi-container environments.
+// Uses the rate_limits PostgreSQL table. Falls back to allow if DB is unavailable
+// (fail-open is preferable to locking out users on DB transient errors).
 
-interface RateLimitEntry {
-  count: number;
-  resetTime: number;
-}
-
-const rateLimitStore = new Map<string, RateLimitEntry>();
-
-// Clean up expired entries every 5 minutes
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of rateLimitStore.entries()) {
-    if (now > entry.resetTime) {
-      rateLimitStore.delete(key);
-    }
-  }
-}, 5 * 60 * 1000);
+import { query } from './db';
 
 export interface RateLimitConfig {
   maxAttempts: number;
   windowMs: number;
 }
 
-export function checkRateLimit(
+export async function checkRateLimit(
   identifier: string,
   config: RateLimitConfig = { maxAttempts: 5, windowMs: 15 * 60 * 1000 }
-): { allowed: boolean; remaining: number; resetTime: number } {
+): Promise<{ allowed: boolean; remaining: number; resetTime: number }> {
+  const windowSeconds = Math.ceil(config.windowMs / 1000);
   const now = Date.now();
-  const entry = rateLimitStore.get(identifier);
+  const resetTime = now + config.windowMs;
 
-  if (!entry || now > entry.resetTime) {
-    // New window
-    const resetTime = now + config.windowMs;
-    rateLimitStore.set(identifier, {
-      count: 1,
-      resetTime
-    });
-    return {
-      allowed: true,
-      remaining: config.maxAttempts - 1,
-      resetTime
-    };
+  try {
+    const result = await query(
+      `INSERT INTO rate_limits (identifier, count, reset_at)
+       VALUES ($1, 1, NOW() + ($2 || ' seconds')::interval)
+       ON CONFLICT (identifier) DO UPDATE
+         SET count = CASE
+               WHEN rate_limits.reset_at < NOW() THEN 1
+               ELSE rate_limits.count + 1
+             END,
+             reset_at = CASE
+               WHEN rate_limits.reset_at < NOW() THEN NOW() + ($2 || ' seconds')::interval
+               ELSE rate_limits.reset_at
+             END
+       RETURNING count, extract(epoch from reset_at) * 1000 AS reset_ms`,
+      [identifier, windowSeconds]
+    );
+
+    const row = result.rows[0];
+    const count: number = Number(row.count);
+    const dbResetTime: number = Math.ceil(Number(row.reset_ms));
+    const allowed = count <= config.maxAttempts;
+    const remaining = Math.max(0, config.maxAttempts - count);
+
+    return { allowed, remaining, resetTime: dbResetTime };
+  } catch (error) {
+    console.error('[RateLimit] DB error, failing open:', error);
+    // Fail open to avoid locking out users during transient DB errors
+    return { allowed: true, remaining: config.maxAttempts - 1, resetTime };
   }
-
-  // Within window
-  if (entry.count >= config.maxAttempts) {
-    return {
-      allowed: false,
-      remaining: 0,
-      resetTime: entry.resetTime
-    };
-  }
-
-  entry.count++;
-  rateLimitStore.set(identifier, entry);
-
-  return {
-    allowed: true,
-    remaining: config.maxAttempts - entry.count,
-    resetTime: entry.resetTime
-  };
 }
 
-export function resetRateLimit(identifier: string): void {
-  rateLimitStore.delete(identifier);
+export async function resetRateLimit(identifier: string): Promise<void> {
+  try {
+    await query('DELETE FROM rate_limits WHERE identifier = $1', [identifier]);
+  } catch (error) {
+    console.error('[RateLimit] DB error on reset:', error);
+  }
 }
-
-
-

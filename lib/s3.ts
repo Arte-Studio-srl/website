@@ -7,6 +7,10 @@ const s3Client = new S3Client({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
+  // Prevent SDK v3 from injecting checksum headers (x-amz-checksum-crc32,
+  // x-amz-sdk-checksum-algorithm) into presigned URLs. The browser cannot
+  // reproduce those headers at upload time, which causes SignatureDoesNotMatch.
+  requestChecksumCalculation: 'WHEN_REQUIRED',
 });
 
 const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME!;
@@ -18,8 +22,16 @@ export async function getPresignedUploadUrl(key: string, contentType: string) {
     ContentType: contentType,
   });
 
-  const url = await getSignedUrl(s3Client, command, { expiresIn: 300 });
-  
+  const url = await getSignedUrl(s3Client, command, {
+    expiresIn: 300,
+    // Exclude any SDK-computed checksum headers from the signed headers list
+    // so the browser PUT request does not need to send them.
+    unhoistableHeaders: new Set([
+      'x-amz-checksum-crc32',
+      'x-amz-sdk-checksum-algorithm',
+    ]),
+  });
+
   return {
     url,
     publicUrl: `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${key}`,
@@ -31,6 +43,6 @@ export async function deleteS3Object(key: string) {
     Bucket: BUCKET_NAME,
     Key: key,
   });
-  
+
   await s3Client.send(command);
 }

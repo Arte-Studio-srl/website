@@ -1,26 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getCurrentData } from '@/lib/data-utils';
-
-export async function generateStaticParams() {
-  try {
-    const { projects } = await getCurrentData();
-    return projects.map((project) => ({ id: project.id }));
-  } catch (e) {
-    console.error('Error generating static params:', e);
-    return [];
-  }
-}
+import { getProjectById } from '@/lib/data-utils';
 
 // GET single project - Public endpoint
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const { projects } = await getCurrentData();
-    const project = projects.find((p) => p.id === id);
-    
+    const project = await getProjectById(id);
+
     if (!project) {
       return NextResponse.json(
         { success: false, error: 'Project not found' },
@@ -30,7 +19,7 @@ export async function GET(
 
     return NextResponse.json({
       success: true,
-      project
+      project,
     });
   } catch (error) {
     console.error('GET project error:', error);
@@ -40,4 +29,5 @@ export async function GET(
     );
   }
 }
+
 

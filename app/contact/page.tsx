@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Icon } from '@iconify/react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { formatPhoneDisplay, formatTelHref, getGoogleMapsEmbedUrl } from '@/lib/site-config';
@@ -133,56 +134,78 @@ export default function ContactPage() {
               </h2>
 
               <div className="space-y-8">
-                <div>
-                  <h3 className="font-display text-xl text-bronze-600 mb-3">Address</h3>
-                  <p className="text-charcoal/80 leading-relaxed">
-                    {site.address.split('\n').map((line, idx) => (
-                      <span key={idx} className="block">{line}</span>
-                    ))}
-                  </p>
-                  {site.legal.legalAddress && (
-                    <p className="text-charcoal/60 text-sm mt-2">
-                      Sede legale: {site.legal.legalAddress}
+                {/* Address */}
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-bronze-50 flex items-center justify-center shrink-0">
+                    <Icon icon="ph:map-pin" className="w-5 h-5 text-bronze-600" aria-hidden />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-xl text-bronze-600 mb-2">Address</h3>
+                    <p className="text-charcoal/80 leading-relaxed">
+                      {site.address.split('\n').map((line, idx) => (
+                        <span key={idx} className="block">{line}</span>
+                      ))}
                     </p>
-                  )}
-                  <a
-                    href={site.googleMapsUrl}
-                    className="text-bronze-600 hover:text-bronze-700 transition-colors text-sm inline-flex items-center gap-2 mt-2"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    View on Google Maps
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" />
-                    </svg>
-                  </a>
+                    {site.legal.legalAddress && (
+                      <p className="text-charcoal/60 text-sm mt-2">
+                        Sede legale: {site.legal.legalAddress}
+                      </p>
+                    )}
+                    <a
+                      href={site.googleMapsUrl}
+                      className="text-bronze-600 hover:text-bronze-700 transition-colors text-sm inline-flex items-center gap-1.5 mt-2"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      View on Google Maps
+                      <Icon icon="ph:arrow-square-out" className="w-3.5 h-3.5" aria-hidden />
+                    </a>
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="font-display text-xl text-bronze-600 mb-3">Phone</h3>
-                  <a
-                    href={formatTelHref(site.phone)}
-                    className="text-charcoal/80 hover:text-bronze-600 transition-colors text-lg"
-                  >
-                    {formatPhoneDisplay(site.phone)}
-                  </a>
+                {/* Phone */}
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-bronze-50 flex items-center justify-center shrink-0">
+                    <Icon icon="ph:phone" className="w-5 h-5 text-bronze-600" aria-hidden />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-xl text-bronze-600 mb-2">Phone</h3>
+                    <a
+                      href={formatTelHref(site.phone)}
+                      className="text-charcoal/80 hover:text-bronze-600 transition-colors text-lg"
+                    >
+                      {formatPhoneDisplay(site.phone)}
+                    </a>
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="font-display text-xl text-bronze-600 mb-3">Email</h3>
-                  <a
-                    href={`mailto:${site.contactEmail}`}
-                    className="text-charcoal/80 hover:text-bronze-600 transition-colors text-lg"
-                  >
-                    {site.contactEmail}
-                  </a>
+                {/* Email */}
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-bronze-50 flex items-center justify-center shrink-0">
+                    <Icon icon="ph:envelope" className="w-5 h-5 text-bronze-600" aria-hidden />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-xl text-bronze-600 mb-2">Email</h3>
+                    <a
+                      href={`mailto:${site.contactEmail}`}
+                      className="text-charcoal/80 hover:text-bronze-600 transition-colors text-lg"
+                    >
+                      {site.contactEmail}
+                    </a>
+                  </div>
                 </div>
 
-                <div>
-                  <h3 className="font-display text-xl text-bronze-600 mb-3">Business Details</h3>
-                  <p className="text-charcoal/60 text-sm">
-                    {site.legal.companyName} — P.IVA e C.F. {site.legal.piva}
-                  </p>
+                {/* Business Details */}
+                <div className="flex gap-4">
+                  <div className="w-10 h-10 rounded-full bg-bronze-50 flex items-center justify-center shrink-0">
+                    <Icon icon="ph:buildings" className="w-5 h-5 text-bronze-600" aria-hidden />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-xl text-bronze-600 mb-2">Business Details</h3>
+                    <p className="text-charcoal/60 text-sm">
+                      {site.legal.companyName} — P.IVA e C.F. {site.legal.piva}
+                    </p>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -197,7 +220,8 @@ export default function ContactPage() {
               <div className="relative bg-white p-8 shadow-lg">
                 <div className="absolute inset-0 blueprint-grid opacity-10" />
                 <div className="relative z-10">
-                  <p className="font-display text-2xl text-charcoal mb-4">
+                  <p className="font-display text-2xl text-charcoal mb-4 flex items-center gap-3">
+                    <Icon icon="ph:clock" className="w-6 h-6 text-bronze-600" aria-hidden />
                     Working Hours
                   </p>
                   <div className="space-y-2 text-charcoal/70">
@@ -211,7 +235,10 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <h3 className="font-display text-xl text-charcoal mb-3">Find Us</h3>
+                <h3 className="font-display text-xl text-charcoal mb-3 flex items-center gap-2">
+                  <Icon icon="ph:map-trifold" className="w-5 h-5 text-bronze-600" aria-hidden />
+                  Find Us
+                </h3>
                 <div className="relative overflow-hidden rounded-lg shadow-lg border border-bronze-100 bg-white">
                   <div className="aspect-[4/3]">
                     <iframe
@@ -228,12 +255,10 @@ export default function ContactPage() {
                   href={site.googleMapsUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 text-bronze-600 hover:text-bronze-700 transition-colors text-sm mt-3"
+                  className="inline-flex items-center gap-1.5 text-bronze-600 hover:text-bronze-700 transition-colors text-sm mt-3"
                 >
                   Open in Google Maps
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
+                  <Icon icon="ph:arrow-square-out" className="w-3.5 h-3.5" aria-hidden />
                 </a>
               </div>
             </motion.div>
@@ -264,7 +289,8 @@ export default function ContactPage() {
                   <div className="space-y-6">
                     {/* Name */}
                     <div>
-                      <label htmlFor="name" className="block text-charcoal font-display mb-2">
+                      <label htmlFor="name" className="block text-charcoal font-display mb-2 flex items-center gap-1.5">
+                        <Icon icon="ph:user" className="w-4 h-4 text-bronze-500" aria-hidden />
                         Name *
                       </label>
                       <input
@@ -284,7 +310,8 @@ export default function ContactPage() {
 
                     {/* Email */}
                     <div>
-                      <label htmlFor="email" className="block text-charcoal font-display mb-2">
+                      <label htmlFor="email" className="block text-charcoal font-display mb-2 flex items-center gap-1.5">
+                        <Icon icon="ph:envelope" className="w-4 h-4 text-bronze-500" aria-hidden />
                         Email *
                       </label>
                       <input
@@ -304,7 +331,8 @@ export default function ContactPage() {
 
                     {/* Phone */}
                     <div>
-                      <label htmlFor="phone" className="block text-charcoal font-display mb-2">
+                      <label htmlFor="phone" className="block text-charcoal font-display mb-2 flex items-center gap-1.5">
+                        <Icon icon="ph:phone" className="w-4 h-4 text-bronze-500" aria-hidden />
                         Phone
                       </label>
                       <input
@@ -321,7 +349,8 @@ export default function ContactPage() {
                   <div className="space-y-6">
                     {/* Subject */}
                     <div>
-                      <label htmlFor="subject" className="block text-charcoal font-display mb-2">
+                      <label htmlFor="subject" className="block text-charcoal font-display mb-2 flex items-center gap-1.5">
+                        <Icon icon="ph:tag" className="w-4 h-4 text-bronze-500" aria-hidden />
                         Subject *
                       </label>
                       <input
@@ -341,7 +370,8 @@ export default function ContactPage() {
 
                     {/* Message */}
                     <div>
-                      <label htmlFor="message" className="block text-charcoal font-display mb-2">
+                      <label htmlFor="message" className="block text-charcoal font-display mb-2 flex items-center gap-1.5">
+                        <Icon icon="ph:note-pencil" className="w-4 h-4 text-bronze-500" aria-hidden />
                         Message *
                       </label>
                       <textarea
@@ -364,13 +394,16 @@ export default function ContactPage() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className={`w-full py-4 font-display text-lg transition-all ${
+                      className={`w-full py-4 font-display text-lg transition-all flex items-center justify-center gap-2 ${
                         isSubmitting
                           ? 'bg-bronze-400 cursor-not-allowed'
                           : 'bg-bronze-600 hover:bg-bronze-700 hover:shadow-lg'
                       } text-white`}
                     >
-                      {isSubmitting ? 'Sending...' : 'Send Message'}
+                      {isSubmitting
+                        ? <><Icon icon="ph:circle-notch" className="w-5 h-5 animate-spin" aria-hidden /> Sending...</>
+                        : <><Icon icon="ph:paper-plane-tilt" className="w-5 h-5" aria-hidden /> Send Message</>
+                      }
                     </button>
                   </div>
 
@@ -379,8 +412,9 @@ export default function ContactPage() {
                       <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="p-4 bg-green-100 border border-green-400 text-green-700"
+                        className="p-4 bg-green-100 border border-green-400 text-green-700 flex items-center gap-3"
                       >
+                        <Icon icon="ph:check-circle" className="w-5 h-5 shrink-0" aria-hidden />
                         Thank you! Your message has been sent successfully. We&apos;ll get back to you soon.
                       </motion.div>
                     )}
@@ -389,8 +423,9 @@ export default function ContactPage() {
                       <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="p-4 bg-red-100 border border-red-400 text-red-700"
+                        className="p-4 bg-red-100 border border-red-400 text-red-700 flex items-center gap-3"
                       >
+                        <Icon icon="ph:warning-circle" className="w-5 h-5 shrink-0" aria-hidden />
                         Sorry, there was an error sending your message. Please try again or contact us directly via email.
                       </motion.div>
                     )}
@@ -406,4 +441,3 @@ export default function ContactPage() {
     </main>
   );
 }
-

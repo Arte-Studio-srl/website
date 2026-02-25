@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { isAuthenticated } from '@/lib/auth';
 import { getCurrentData, createProject, validateProject } from '@/lib/data-utils';
 
@@ -29,6 +30,7 @@ export async function POST(request: NextRequest) {
     }
     
     await createProject(newProject);
+    revalidateTag('site-data', 'default');
     
     return NextResponse.json({
       success: true,

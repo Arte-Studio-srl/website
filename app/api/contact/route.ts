@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { checkRateLimit } from '@/lib/rate-limiter';
+import { createSmtpTransport, getMissingSmtpEnv } from '@/lib/email';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,25 +13,6 @@ type ContactPayload = {
   message: string;
   source?: string;
 };
-
-const requiredEnv = ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 'CONTACT_TO', 'CONTACT_FROM'] as const;
-
-function missingEnv(): string[] {
-  return requiredEnv.filter((key) => !process.env[key]);
-}
-
-function buildTransport() {
-  const port = Number(process.env.SMTP_PORT || 587);
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port,
-    secure: port === 465,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-}
 
 function validatePayload(body: Partial<ContactPayload>) {
   const errors: string[] = [];
@@ -44,10 +26,10 @@ function validatePayload(body: Partial<ContactPayload>) {
 export async function POST(request: NextRequest) {
   try {
     const payload = (await request.json()) as Partial<ContactPayload>;
-    
+
     // Rate limiting: 10 requests per 15 minutes per email
     const email = payload.email?.toLowerCase().trim() || 'anonymous';
-    const rateLimit = checkRateLimit(`contact:${email}`, {
+    const rateLimit = await checkRateLimit(`contact:${email}`, {
       maxAttempts: 10,
       windowMs: 15 * 60 * 1000,
     });
@@ -68,7 +50,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const missing = missingEnv();
+    // Also require CONTACT_TO for sending
+    const missing = [...getMissingSmtpEnv(), ...(!process.env.CONTACT_TO ? ['CONTACT_TO'] : [])];
     if (missing.length > 0) {
       return NextResponse.json(
         { success: false, error: `Missing server env: ${missing.join(', ')}` },
@@ -76,7 +59,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const transport = buildTransport();
+    const transport = createSmtpTransport();
 
     const textLines = [
       `Name: ${payload.name}`,
@@ -115,6 +98,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-
-

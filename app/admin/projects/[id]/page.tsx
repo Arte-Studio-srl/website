@@ -305,8 +305,8 @@ export default function ProjectFormPage() {
     >
       <form onSubmit={handleSubmit} className="max-w-4xl space-y-8">
         {/* Basic Information */}
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="font-display text-2xl text-charcoal mb-6">Basic Information</h2>
+        <div className="bg-white border border-gray-200 p-8">
+          <h2 className="font-display text-2xl text-charcoal mb-6 border-b border-gray-200 pb-4">Basic Information</h2>
           
           <div className="space-y-4">
             <FormField
@@ -367,8 +367,8 @@ export default function ProjectFormPage() {
         </div>
 
         {/* Thumbnail */}
-        <div className="bg-white p-6 rounded-lg shadow-lg">
-          <h2 className="font-display text-2xl text-charcoal mb-6">Thumbnail Image</h2>
+        <div className="bg-white border border-gray-200 p-8">
+          <h2 className="font-display text-2xl text-charcoal mb-6 border-b border-gray-200 pb-4">Thumbnail Image</h2>
           <ImageUpload
             projectId={formData.id}
             type="thumbnail"
@@ -394,7 +394,7 @@ export default function ProjectFormPage() {
           {formData.stages.map((stage, stageIndex) => {
             const uploadType = stage.id || `stage-${stageIndex + 1}`;
             return (
-              <div key={stage.id ?? stageIndex} className="bg-white p-6 rounded-lg shadow-lg">
+              <div key={stage.id ?? stageIndex} className="bg-white border border-gray-200 p-8">
                 <div className="flex items-start justify-between gap-4 mb-6">
                   <div>
                     <p className="text-xs uppercase tracking-[0.2em] text-charcoal/50">
@@ -447,7 +447,7 @@ export default function ProjectFormPage() {
                     />
 
                     <div>
-                      <p className="block text-sm font-medium text-charcoal mb-3">
+                      <p className="block text-xs font-bold text-charcoal/60 mb-3 uppercase tracking-widest">
                         Step icon (optional)
                       </p>
                       <div className="flex flex-wrap gap-2">
@@ -463,14 +463,14 @@ export default function ProjectFormPage() {
                                   icon: option.value,
                                 }))
                               }
-                              className={`rounded-md border px-3 py-2 text-left transition-colors ${
+                              className={`border px-4 py-3 text-left transition-colors ${
                                 active
-                                  ? 'border-bronze-500 bg-bronze-50 text-charcoal'
-                                  : 'border-gray-200 hover:border-bronze-400'
+                                  ? 'border-bronze-300 bg-white text-charcoal shadow-sm'
+                                  : 'border-transparent bg-gray-50 hover:bg-white hover:border-bronze-300'
                               }`}
                             >
-                              <span className="block text-sm font-semibold">{option.label}</span>
-                              <span className="block text-[11px] text-charcoal/60">
+                              <span className="block text-xs font-bold uppercase tracking-widest mb-1">{option.label}</span>
+                              <span className="block text-xs text-charcoal/50 font-light">
                                 {option.helper}
                               </span>
                             </button>
@@ -481,7 +481,7 @@ export default function ProjectFormPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-charcoal mb-4">
+                    <label className="block text-xs font-bold text-charcoal/60 mb-4 uppercase tracking-widest">
                       Images ({stage.images.length})
                     </label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -520,7 +520,7 @@ export default function ProjectFormPage() {
           })}
         </div>
 
-        <div className="bg-white p-4 rounded-lg border border-dashed border-bronze-300/60 shadow-inner flex items-center justify-between">
+        <div className="bg-gray-50 p-6 border border-dashed border-gray-300 flex items-center justify-between">
           <div>
             <p className="font-display text-lg text-charcoal">Add more steps</p>
             <p className="text-sm text-charcoal/60">Build your own flow — discovery, design, prototyping, delivery, anything.</p>
@@ -548,7 +548,7 @@ export default function ProjectFormPage() {
           <button
             type="button"
             onClick={handleCancel}
-            className="px-8 py-3 bg-gray-200 hover:bg-gray-300 text-charcoal rounded font-medium transition-colors"
+            className="px-8 py-3 border border-gray-200 bg-white hover:bg-gray-50 text-charcoal font-bold tracking-widest text-xs uppercase transition-colors"
           >
             Cancel
           </button>
