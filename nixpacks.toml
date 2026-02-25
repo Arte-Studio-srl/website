@@ -1,4 +1,0 @@
-# Disable Nixpacks build cache to avoid mount error: tsconfig.tsbuildinfo is a file,
-# but the cache system tries to mount it as a directory, causing "not a directory".
-[variables]
-NIXPACKS_NO_CACHE = "1"

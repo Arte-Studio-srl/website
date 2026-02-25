@@ -4,7 +4,6 @@ node_modules
 npm-debug.log
 README.md
 .next
-*.tsbuildinfo
 .git
 .env
 .env.*
