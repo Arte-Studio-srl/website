@@ -15,7 +15,7 @@ const emptyConfig: SiteConfig = {
   legal: { companyName: '', piva: '' },
   openingHours: [],
   social: { facebook: '', instagram: '', linkedin: '' },
-  seo: { defaultMetaTitle: '', defaultMetaDescription: '' },
+  seo: { defaultMetaTitle: '', defaultMetaDescription: '', siteUrl: '', ogImage: '', locale: 'it' },
   heroCarousel: [],
 };
 
@@ -217,6 +217,43 @@ export default function ConfigAdminPage() {
                     className="w-full px-4 py-3 bg-gray-50 border border-transparent focus:bg-white focus:border-bronze-300 focus:ring-0 text-sm font-medium outline-none transition-colors"
                     rows={3}
                   />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-charcoal/60 mb-2 uppercase tracking-widest">
+                    Site URL (canonical)
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://progettoartestudio.it"
+                    value={config.seo.siteUrl ?? ''}
+                    onChange={(e) => setConfig(prev => ({ ...prev, seo: { ...prev.seo, siteUrl: e.target.value || undefined } }))}
+                    className="w-full px-4 py-3 bg-gray-50 border border-transparent focus:bg-white focus:border-bronze-300 focus:ring-0 text-sm font-medium outline-none transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-charcoal/60 mb-2 uppercase tracking-widest">
+                    Default OG Image (for social sharing)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="/og-default.png or full URL"
+                    value={config.seo.ogImage ?? ''}
+                    onChange={(e) => setConfig(prev => ({ ...prev, seo: { ...prev.seo, ogImage: e.target.value || undefined } }))}
+                    className="w-full px-4 py-3 bg-gray-50 border border-transparent focus:bg-white focus:border-bronze-300 focus:ring-0 text-sm font-medium outline-none transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-charcoal/60 mb-2 uppercase tracking-widest">
+                    Locale
+                  </label>
+                  <select
+                    value={config.seo.locale ?? 'it'}
+                    onChange={(e) => setConfig(prev => ({ ...prev, seo: { ...prev.seo, locale: e.target.value as 'it' | 'en' } }))}
+                    className="w-full px-4 py-3 bg-gray-50 border border-transparent focus:bg-white focus:border-bronze-300 focus:ring-0 text-sm font-medium outline-none transition-colors"
+                  >
+                    <option value="it">Italiano</option>
+                    <option value="en">English</option>
+                  </select>
                 </div>
               </div>
             </div>

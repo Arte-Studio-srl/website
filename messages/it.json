@@ -1,0 +1,66 @@
+{
+  "metadata": {
+    "homeTitle": "ArteStudio | Architettura e Scenografia",
+    "homeDescription": "Progettazione e realizzazione di spazi espositivi, scenografie ed eventi.",
+    "contactTitle": "Contatti",
+    "contactDescription": "Contatta ArteStudio per progetti di architettura, scenografia e design degli spazi. Richiedi un preventivo o una consulenza.",
+    "allProjectsTitle": "Tutti i Progetti",
+    "allProjectsDescription": "Esplora il portfolio completo di ArteStudio: architettura, scenografia e design degli spazi. Progetti di spazi espositivi, scenografie ed eventi."
+  },
+  "common": {
+    "home": "Home",
+    "projects": "Progetti",
+    "contact": "Contatti",
+    "viewProjects": "Vedi Progetti",
+    "contactUs": "Contattaci",
+    "allProjects": "Tutti i Progetti"
+  },
+  "home": {
+    "viewProjects": "Vedi Progetti",
+    "exploreProjects": "Esplora i Progetti",
+    "getInTouch": "Scrivici",
+    "discover": "Scopri",
+    "ourExpertise": "Le Nostre Competenze",
+    "expertiseSubtitle": "Dal concept al completamento, creiamo spazi memorabili in diversi settori",
+    "featuredProjects": "Progetti in Evidenza",
+    "featuredSubtitle": "Esplora i nostri ultimi lavori in strutture per eventi e scenografia",
+    "viewAllProjects": "Vedi Tutti i Progetti",
+    "quote": "La nostra arte è spazio: vuoto o pieno, chiuso o aperto, reale o illusorio, buio, illuminato, razionale, folle. È lo spazio dell'apparizione.",
+    "quoteAuthor": "— Filosofia ArteStudio"
+  },
+  "footer": {
+    "ourWork": "I Nostri Lavori"
+  },
+  "contact": {
+    "title": "Contattaci",
+    "subtitle": "Parliamo del tuo prossimo progetto e diamo vita alla tua visione.",
+    "name": "Nome",
+    "email": "Email",
+    "phone": "Telefono",
+    "subject": "Oggetto",
+    "message": "Messaggio",
+    "send": "Invia Messaggio",
+    "sending": "Invio in corso...",
+    "success": "Messaggio inviato! Ti risponderemo al più presto.",
+    "error": "Errore nell'invio. Riprova più tardi.",
+    "validationName": "Il nome è obbligatorio",
+    "validationEmail": "L'email è obbligatoria",
+    "validationEmailInvalid": "Email non valida",
+    "validationSubject": "L'oggetto è obbligatorio",
+    "validationMessage": "Il messaggio è obbligatorio",
+    "mapTitle": "ArteStudio su Google Maps"
+  },
+  "notFound": {
+    "title": "Pagina non trovata",
+    "description": "La pagina che stai cercando non esiste o è stata spostata.",
+    "backHome": "Torna alla Home",
+    "viewProjects": "Vedi Progetti"
+  },
+  "projects": {
+    "noProjects": "Nessun progetto disponibile in questa categoria.",
+    "allTitle": "Tutti i Progetti",
+    "allSubtitle": "Esplora il portfolio completo di strutture per eventi e scenografia",
+    "projectsFound": "{count} progetto trovato",
+    "projectsFound_other": "{count} progetti trovati"
+  }
+}

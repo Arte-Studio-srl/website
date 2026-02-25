@@ -27,7 +27,9 @@ export const fallbackSiteConfig: SiteConfig = {
   },
   seo: {
     defaultMetaTitle: "ArteStudio | Architettura e Scenografia",
-    defaultMetaDescription: "Progettazione e realizzazione di spazi espositivi, scenografie ed eventi."
+    defaultMetaDescription: "Progettazione e realizzazione di spazi espositivi, scenografie ed eventi.",
+    siteUrl: "https://progettoartestudio.it",
+    locale: "it",
   },
   heroCarousel: []
 };

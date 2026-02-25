@@ -64,6 +64,14 @@ export type SiteConfig = {
   seo: {
     defaultMetaTitle: string;
     defaultMetaDescription: string;
+    /** Canonical site URL (e.g. https://progettoartestudio.it) - falls back to NEXT_PUBLIC_SITE_URL */
+    siteUrl?: string;
+    /** Default Open Graph image (relative or absolute) for social sharing */
+    ogImage?: string;
+    /** Primary locale: "it" | "en" - affects html lang and og:locale */
+    locale?: "it" | "en";
+    /** Comma-separated meta keywords (optional) */
+    keywords?: string;
   };
   heroCarousel: HeroSlide[];
 };

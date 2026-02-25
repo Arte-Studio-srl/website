@@ -1,13 +1,16 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import LocaleSwitcher from '@/components/LocaleSwitcher';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { useSiteData } from '@/components/SiteDataProvider';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 
 export default function Header() {
+  const t = useTranslations('common');
   const { categories } = useSiteData();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -67,11 +70,11 @@ export default function Header() {
               className={`transition-colors font-display text-lg flex items-center gap-1.5 ${
                 isScrolled 
                   ? 'text-charcoal hover:text-bronze-600' 
-                  : 'text-white hover:text-bronze-300'
+                  :               'text-white hover:text-bronze-300'
               }`}
             >
               <Icon icon="ph:house" className="w-4 h-4" aria-hidden />
-              Home
+              {t('home')}
             </Link>
             
             <div className="relative group">
@@ -112,8 +115,9 @@ export default function Header() {
               }`}
             >
               <Icon icon="ph:chat-dots" className="w-4 h-4" aria-hidden />
-              Contact
+              {t('contact')}
             </Link>
+            <LocaleSwitcher variant={isScrolled ? 'dark' : 'light'} />
           </div>
 
           {/* Mobile Menu Button */}
@@ -147,12 +151,12 @@ export default function Header() {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Icon icon="ph:house" className="w-5 h-5 text-bronze-500" aria-hidden />
-                  Home
+                  {t('home')}
                 </Link>
                 
                 <div className="px-4 py-2 font-display text-bronze-600 text-sm uppercase tracking-wide flex items-center gap-2">
                   <Icon icon="ph:squares-four" className="w-4 h-4" aria-hidden />
-                  Projects
+                  {t('projects')}
                 </div>
                 
                 {categories.map((cat) => (
@@ -173,8 +177,11 @@ export default function Header() {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Icon icon="ph:chat-dots" className="w-5 h-5" aria-hidden />
-                  Contact
+                  {t('contact')}
                 </Link>
+                <div className="px-4 pt-4 flex justify-center">
+                  <LocaleSwitcher variant="dark" />
+                </div>
               </div>
             </motion.div>
           )}

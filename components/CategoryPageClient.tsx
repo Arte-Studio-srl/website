@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import ProjectCard from '@/components/ProjectCard';
 import { Project, Category } from '@/types';
+import { useTranslations } from 'next-intl';
 
 interface CategoryPageClientProps {
   categoryData: Category;
@@ -10,6 +11,7 @@ interface CategoryPageClientProps {
 }
 
 export default function CategoryPageClient({ categoryData, projects }: CategoryPageClientProps) {
+  const t = useTranslations('projects');
   return (
     <>
       {/* Hero Section */}
@@ -68,7 +70,7 @@ export default function CategoryPageClient({ categoryData, projects }: CategoryP
               className="text-center py-20"
             >
               <p className="text-charcoal/60 text-xl">
-                No projects available in this category yet.
+                {t('noProjects')}
               </p>
             </motion.div>
           )}
