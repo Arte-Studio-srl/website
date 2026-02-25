@@ -2,6 +2,10 @@ import { unstable_cache } from 'next/cache';
 import { query } from './db';
 import { Project, Category } from '@/types';
 
+function isDatabaseConfigured(): boolean {
+  return !!(process.env.DATABASE_URL || process.env.POSTGRES_URL);
+}
+
 // ─── Private helpers ─────────────────────────────────────────────────────────
 
 function mapRowToProject(row: Record<string, any>): Project {
@@ -21,6 +25,9 @@ function mapRowToProject(row: Record<string, any>): Project {
 
 export const getCurrentData = unstable_cache(
   async (): Promise<{ projects: Project[]; categories: Category[] }> => {
+    if (!isDatabaseConfigured()) {
+      return { projects: [], categories: [] };
+    }
     try {
       const [projectsResult, categoriesResult] = await Promise.all([
         query('SELECT * FROM projects ORDER BY year DESC, created_at DESC'),
@@ -47,6 +54,7 @@ export const getCurrentData = unstable_cache(
 
 export const getProjectById = unstable_cache(
   async (id: string): Promise<Project | undefined> => {
+    if (!isDatabaseConfigured()) return undefined;
     try {
       const result = await query('SELECT * FROM projects WHERE id = $1', [id]);
       if (result.rows.length === 0) return undefined;
@@ -62,6 +70,7 @@ export const getProjectById = unstable_cache(
 
 export const getProjectsByCategory = unstable_cache(
   async (category: string): Promise<Project[]> => {
+    if (!isDatabaseConfigured()) return [];
     try {
       const result = await query(
         'SELECT * FROM projects WHERE category = $1 ORDER BY year DESC, created_at DESC',

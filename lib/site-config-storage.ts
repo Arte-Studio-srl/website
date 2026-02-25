@@ -3,7 +3,14 @@ import { query } from './db';
 import { SiteConfig } from '@/types';
 import { fallbackSiteConfig as fallbackConfig } from '@/lib/default-data';
 
+function isDatabaseConfigured(): boolean {
+  return !!(process.env.DATABASE_URL || process.env.POSTGRES_URL);
+}
+
 const _readSiteConfigRaw = async (): Promise<SiteConfig> => {
+  if (!isDatabaseConfigured()) {
+    return fallbackConfig;
+  }
   try {
     const result = await query("SELECT config FROM site_config WHERE id = 'default'");
     if (result.rows.length > 0) {
