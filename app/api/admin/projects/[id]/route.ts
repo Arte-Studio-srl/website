@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
-import { getCurrentData, updateProjects, validateProject } from '@/lib/data-utils';
+import { updateProject, deleteProject, validateProject, getProjectById } from '@/lib/data-utils';
 
-// PUT - Update project - Requires authentication
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -10,16 +9,12 @@ export async function PUT(
   try {
     const authenticated = await isAuthenticated();
     if (!authenticated) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
     const updatedProject = await request.json();
     
-    // Validate project data
     const validation = validateProject(updatedProject);
     if (!validation.valid) {
       return NextResponse.json(
@@ -28,20 +23,12 @@ export async function PUT(
       );
     }
 
-    // Get current projects
-    const { projects } = await getCurrentData();
-    const currentProjects = [...projects];
-    const index = currentProjects.findIndex((p) => p.id === id);
-    
-    if (index === -1) {
-      return NextResponse.json(
-        { success: false, error: 'Project not found' },
-        { status: 404 }
-      );
+    const existingProject = await getProjectById(id);
+    if (!existingProject) {
+      return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
     }
     
-    currentProjects[index] = updatedProject;
-    await updateProjects(currentProjects);
+    await updateProject(updatedProject);
     
     return NextResponse.json({
       success: true,
@@ -50,14 +37,10 @@ export async function PUT(
     });
   } catch (error) {
     console.error('PUT project error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to update project' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to update project' }, { status: 500 });
   }
 }
 
-// DELETE project - Requires authentication
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -65,38 +48,21 @@ export async function DELETE(
   try {
     const authenticated = await isAuthenticated();
     if (!authenticated) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const { id } = await params;
     
-    // Get current projects
-    const { projects } = await getCurrentData();
-    const currentProjects = [...projects];
-    const filteredProjects = currentProjects.filter((p) => p.id !== id);
-    
-    if (currentProjects.length === filteredProjects.length) {
-      return NextResponse.json(
-        { success: false, error: 'Project not found' },
-        { status: 404 }
-      );
+    const existingProject = await getProjectById(id);
+    if (!existingProject) {
+      return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
     }
     
-    await updateProjects(filteredProjects);
+    await deleteProject(id);
     
-    return NextResponse.json({
-      success: true,
-      message: 'Project deleted successfully'
-    });
+    return NextResponse.json({ success: true, message: 'Project deleted successfully' });
   } catch (error) {
     console.error('DELETE project error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to delete project' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to delete project' }, { status: 500 });
   }
 }
-

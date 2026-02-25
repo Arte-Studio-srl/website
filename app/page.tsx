@@ -7,12 +7,10 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProjectCard from '@/components/ProjectCard';
-import { categories } from '@/data/projects';
-import { projects } from '@/data/projects';
-import { getSiteConfig } from '@/lib/site-config';
+import { useSiteData } from '@/components/SiteDataProvider';
 
 export default function Home() {
-  const site = getSiteConfig();
+  const { siteConfig: site, projects, categories } = useSiteData();
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const featuredProjects = projects.slice(0, 6);

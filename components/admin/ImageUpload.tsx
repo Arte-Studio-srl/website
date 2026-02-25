@@ -42,14 +42,16 @@ export default function ImageUpload({
     setUploading(true);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('projectId', projectId);
-      formData.append('type', type);
-
+      // 1. Get presigned URL
       const response = await fetch('/api/admin/upload', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId,
+          type,
+          filename: file.name,
+          contentType: file.type,
+        }),
       });
 
       if (!response.ok) {
@@ -59,11 +61,25 @@ export default function ImageUpload({
 
       const data = await response.json();
 
-      if (data.success) {
-        onUploadComplete(data.url);
-      } else {
+      if (!data.success) {
         alert('Upload failed: ' + data.error);
+        return;
       }
+
+      // 2. Upload directly to S3
+      const uploadResponse = await fetch(data.presignedUrl, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': file.type,
+        },
+        body: file,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error(`S3 upload failed with status ${uploadResponse.status}`);
+      }
+
+      onUploadComplete(data.publicUrl);
     } catch (error) {
       console.error('Upload error:', error);
       alert('Failed to upload image');

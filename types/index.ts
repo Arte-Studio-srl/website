@@ -27,3 +27,45 @@ export interface Category {
   icon?: string;
 }
 
+export type OpeningHour = {
+  day: string;
+  open: string;
+  close: string;
+  closed?: boolean;
+  note?: string;
+};
+
+export type HeroSlide = {
+  projectId: string;
+  image: string;
+  title: string;
+  category?: string;
+};
+
+export type SiteConfig = {
+  siteName: string;
+  tagline: string;
+  faviconUrl: string;
+  contactEmail: string;
+  phone: string;
+  address: string;
+  googleMapsUrl: string;
+  legal: {
+    companyName: string;
+    piva: string;
+    legalAddress?: string;
+  };
+  openingHours: OpeningHour[];
+  social: {
+    facebook?: string;
+    instagram?: string;
+    linkedin?: string;
+  };
+  seo: {
+    defaultMetaTitle: string;
+    defaultMetaDescription: string;
+  };
+  heroCarousel: HeroSlide[];
+};
+
+

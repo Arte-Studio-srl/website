@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import Link from 'next/link';
-import { categories } from '@/data/projects';
-import { getSiteConfig, formatPhoneDisplay, formatTelHref } from '@/lib/site-config';
+import { useSiteData } from '@/components/SiteDataProvider';
+import { formatPhoneDisplay, formatTelHref } from '@/lib/site-config';
 
 type SocialKey = 'facebook' | 'instagram' | 'linkedin';
 
@@ -40,7 +40,7 @@ function SocialIcon({ href, label, type }: { href: string; label: string; type: 
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const site = getSiteConfig();
+  const { siteConfig: site, categories } = useSiteData();
 
   return (
     <footer className="relative bg-charcoal text-cream pt-16 pb-20">

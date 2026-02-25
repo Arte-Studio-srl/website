@@ -1,4 +1,5 @@
-import { siteConfig, SiteConfig } from '@/data/site-config';
+import { siteConfig } from '@/data/site-config';
+import type { SiteConfig } from '@/types';
 
 export function getSiteConfig(): SiteConfig {
   return siteConfig;

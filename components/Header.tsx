@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { categories } from '@/data/projects';
+import { useSiteData } from '@/components/SiteDataProvider';
 import Image from 'next/image';
 
 export default function Header() {
+  const { categories } = useSiteData();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 

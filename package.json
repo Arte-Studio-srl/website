@@ -12,16 +12,23 @@
     "generate:favicon": "node scripts/favicon/generate-favicon.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.997.0",
+    "@aws-sdk/lib-storage": "^3.997.0",
+    "@aws-sdk/s3-request-presigner": "^3.997.0",
+    "@vercel/functions": "^3.4.3",
+    "dotenv": "^17.3.1",
     "framer-motion": "^11.15.0",
     "jose": "^5.2.0",
     "next": "^15.1.0",
     "nodemailer": "^7.0.11",
+    "pg": "^8.18.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",
     "@types/nodemailer": "^7.0.4",
+    "@types/pg": "^8.16.0",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "autoprefixer": "^10.4.20",

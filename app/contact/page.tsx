@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { getSiteConfig, formatPhoneDisplay, formatTelHref, getGoogleMapsEmbedUrl } from '@/lib/site-config';
+import { formatPhoneDisplay, formatTelHref, getGoogleMapsEmbedUrl } from '@/lib/site-config';
+import { useSiteData } from '@/components/SiteDataProvider';
 
 interface ContactForm {
   name: string;
@@ -15,7 +16,7 @@ interface ContactForm {
 }
 
 export default function ContactPage() {
-  const site = getSiteConfig();
+  const { siteConfig: site } = useSiteData();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');

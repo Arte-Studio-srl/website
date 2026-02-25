@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { SiteConfig } from '@/data/site-config';
+import type { SiteConfig } from '@/types';
 
 const emptyConfig: SiteConfig = {
   siteName: '',
