@@ -10,6 +10,7 @@
     "lint": "next lint",
     "test:admin": "node scripts/test-admin.js",
     "setup:auth": "node scripts/setup-auth.js",
+    "init:db": "node scripts/init-db.js",
     "migrate:db": "node scripts/migrate-db.js",
     "generate:favicon": "node scripts/favicon/generate-favicon.js"
   },
