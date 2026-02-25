@@ -1,9 +1,10 @@
 'use client';
 
 import type { ReactElement } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { Icon } from '@iconify/react';
 import { useSiteData } from '@/components/SiteDataProvider';
+import { useTranslations } from 'next-intl';
 import { formatPhoneDisplay, formatTelHref } from '@/lib/site-config';
 
 type SocialKey = 'facebook' | 'instagram' | 'linkedin';
@@ -30,6 +31,8 @@ function SocialIcon({ href, label, type }: { href: string; label: string; type: 
 }
 
 export default function Footer() {
+  const t = useTranslations('common');
+  const tFooter = useTranslations('footer');
   const currentYear = new Date().getFullYear();
   const { siteConfig: site, categories } = useSiteData();
 
@@ -47,7 +50,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-display text-xl mb-4 text-bronze-300">Our Work</h4>
+            <h4 className="font-display text-xl mb-4 text-bronze-300">{tFooter('ourWork')}</h4>
             <ul className="space-y-2">
               {categories.map((cat) => (
                 <li key={cat.id}>
@@ -99,7 +102,7 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-4">
               <Link href="/contact" className="text-cream/60 hover:text-bronze-300 transition-colors text-sm inline-flex items-center gap-1.5 group">
-                Contact Us
+                {t('contactUs')}
                 <Icon icon="ph:arrow-right" className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" aria-hidden />
               </Link>
               <div className="flex items-center gap-3">

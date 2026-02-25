@@ -9,11 +9,11 @@ date: 2026-02-25
 
 ## Overview
 
-A complete backend and data storage rewrite of the existing website. This migration moves the application away from a brittle "Git-as-a-Database" pattern—which relied on parsing TypeScript files (`data/projects.ts`) and committing them via GitHub APIs—to a robust, simplified PostgreSQL and AWS S3 architecture. The goal is to eliminate TypeScript parsing fragility, decouple content from code, and standardize the architecture while keeping dependencies to a strict minimum (using raw SQL).
+A complete backend and data storage rewrite of the existing website. This migration moves the application away from a brittle "Git-as-a-Database" pattern—which relied on parsing TypeScript files (`data/projects.ts`) and committing them via external APIs—to a robust, simplified PostgreSQL and AWS S3 architecture. The goal is to eliminate TypeScript parsing fragility, decouple content from code, and standardize the architecture while keeping dependencies to a strict minimum (using raw SQL).
 
 ## Problem Statement / Motivation
 
-The current architecture uses GitHub APIs to read and write directly to `data/projects.ts` to manage site content (projects, categories, configuration). This causes several critical issues:
+The previous architecture used external APIs to read and write directly to `data/projects.ts` to manage site content (projects, categories, configuration). This causes several critical issues:
 1. **Fragility:** The application has to parse TypeScript code at runtime using Regex. Any slight formatting change (like a trailing comma or unexpected comment) breaks the site's data fetching.
 2. **Coupling:** Content updates require Git commits, blurring the line between code deployments and content management.
 3. **Image Storage:** Images are either committed directly to the repository or saved to the local filesystem, which is not scalable or ideal for Serverless deployments like Vercel.
@@ -23,7 +23,7 @@ The current architecture uses GitHub APIs to read and write directly to `data/pr
 
 1. **Database (PostgreSQL):** Migrate all structured data (Projects, Categories, Site Config) to a PostgreSQL database. We will use raw SQL via the standard `pg` driver to maintain extreme simplicity and avoid heavy ORM dependencies.
 2. **Image Storage (AWS S3):** Migrate all image assets to an AWS S3 bucket. We will update the image upload mechanism to use `@aws-sdk/client-s3`.
-3. **Admin API Rewrite:** Keep the existing custom Next.js admin dashboard UI (`app/admin/`) but rewrite the underlying API routes (`app/api/admin/*`) to interface with Postgres and S3 instead of the GitHub API.
+3. **Admin API Rewrite:** Keep the existing custom Next.js admin dashboard UI (`app/admin/`) but rewrite the underlying API routes (`app/api/admin/*`) to interface with Postgres and S3 instead of the legacy API.
 
 ## Technical Approach
 
@@ -50,7 +50,7 @@ The current architecture uses GitHub APIs to read and write directly to `data/pr
 - **Tasks:**
   - Install `@aws-sdk/client-s3` and `@aws-sdk/s3-request-presigner`.
   - Create `lib/s3.ts` with an initialized `S3Client`.
-  - Rewrite `app/api/admin/upload/route.ts` to generate and return S3 Presigned URLs instead of handling the file directly or pushing to GitHub.
+  - Rewrite `app/api/admin/upload/route.ts` to generate and return S3 Presigned URLs instead of handling the file directly.
   - Update the admin frontend upload component to use the Presigned URL to upload directly to S3.
 - **Success Criteria:** Images can be successfully uploaded to the S3 bucket via the admin panel, and the public S3 URL is returned.
 
@@ -60,13 +60,13 @@ The current architecture uses GitHub APIs to read and write directly to `data/pr
   - Write strongly-typed raw SQL queries for CRUD operations in `lib/data-utils.ts` (or a new `lib/repository.ts`), replacing the regex-based file parsing.
   - Rewrite all `app/api/admin/*` routes (`/projects`, `/categories`, `/config`) to use the new database queries.
   - Implement a data migration script (`scripts/migrate-data.ts`) to read the current `data/projects.ts` file and `INSERT` the records into the new Postgres database.
-- **Success Criteria:** The admin panel can fully manage projects and categories, saving changes to Postgres instead of GitHub.
+- **Success Criteria:** The admin panel can fully manage projects and categories, saving changes to Postgres.
 
 #### Phase 4: Frontend Integration & Cleanup
 
 - **Tasks:**
   - Update the public-facing frontend pages (`app/page.tsx`, `app/projects/[slug]/page.tsx`, etc.) to fetch data directly from Postgres.
-  - Remove all GitHub CMS related code (`lib/github-content.ts`, GitHub API environment variables).
+  - Remove all legacy CMS related code.
   - Delete `data/projects.ts` and `data/site-config.ts` once data is fully migrated.
 - **Success Criteria:** The public site renders correctly using data from Postgres and images from S3. The old Git-as-CMS code is completely removed.
 
@@ -110,7 +110,7 @@ The current architecture uses GitHub APIs to read and write directly to `data/pr
 
 ### Internal References
 - Architecture brainstorm: `docs/brainstorms/2026-02-25-website-architecture-brainstorm.md`
-- Current Data Layer: `lib/data-utils.ts`, `lib/github-content.ts`
+- Current Data Layer: `lib/data-utils.ts`
 
 ### External References
 - [AWS SDK for JavaScript v3 - S3](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/)

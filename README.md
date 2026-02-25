@@ -8,8 +8,7 @@ A professional portfolio website template for companies in the **events and scen
 - 🎨 Elegant blueprint-inspired design system
 - 🔐 Secure admin panel for content management
 - ⚡ **Instant updates** - Changes appear immediately without restart
-- 🔄 **GitHub integration** - Auto-commit changes and images to repository
-- 🖼️ Dynamic image uploads with GitHub CDN
+- 🖼️ Dynamic image uploads with AWS S3
 - 🖼️ Image gallery with lightbox and keyboard navigation
 - ⚡ Optimized performance with Next.js
 - ♿ WCAG 2.1 Level AA accessibility compliance
@@ -27,7 +26,7 @@ A professional portfolio website template for companies in the **events and scen
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/artestudio-website.git
+git clone <repository-url>
 cd artestudio-website
 
 # Install dependencies
@@ -53,9 +52,6 @@ See `.env.example` for all available configuration options.
 - `ADMIN_EMAILS` - Comma-separated list of admin email addresses
 - `SMTP_*` - SMTP settings for contact form and auth emails
 
-**Optional (GitHub Integration):**
-
-- `GITHUB_CONTENT_*` - Enable auto-commit of content changes
 
 ## Admin Panel
 
@@ -88,7 +84,6 @@ Access the admin panel at `/admin` to manage:
 ├── lib/                    # Utilities and helpers
 │   ├── auth.ts             # JWT authentication
 │   ├── data-utils.ts       # Data loading with caching
-│   ├── github-content.ts   # GitHub API integration
 │   └── rate-limiter.ts     # Rate limiting
 ├── data/                   # Project data (TypeScript)
 ├── public/                 # Static assets
@@ -114,7 +109,7 @@ vercel --prod
 ### Production Considerations
 
 - **File-based storage**: Works well for portfolios with infrequent updates
-- **GitHub Integration**: Enable for persistent admin changes (recommended)
+- **Database**: PostgreSQL for persistent admin changes
 - **Database**: Consider for high-frequency updates (see docs)
 
 ## Security
@@ -141,7 +136,7 @@ npm run lint         # Run ESLint
 
 ### Option 1: Admin Panel (Recommended)
 
-Use the built-in admin panel. With GitHub integration enabled, changes are auto-committed.
+Use the built-in admin panel. Changes are persisted to the database.
 
 ### Option 2: Direct Editing
 

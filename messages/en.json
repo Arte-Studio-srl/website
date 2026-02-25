@@ -1,0 +1,66 @@
+{
+  "metadata": {
+    "homeTitle": "ArteStudio | Architecture and Scenography",
+    "homeDescription": "Design and implementation of exhibition spaces, scenography and events.",
+    "contactTitle": "Contact",
+    "contactDescription": "Contact ArteStudio for architecture, scenography and spatial design projects. Request a quote or consultation.",
+    "allProjectsTitle": "All Projects",
+    "allProjectsDescription": "Explore ArteStudio's complete portfolio: architecture, scenography and spatial design. Exhibition spaces, scenography and events."
+  },
+  "common": {
+    "home": "Home",
+    "projects": "Projects",
+    "contact": "Contact",
+    "viewProjects": "View Projects",
+    "contactUs": "Contact Us",
+    "allProjects": "All Projects"
+  },
+  "home": {
+    "viewProjects": "View Projects",
+    "exploreProjects": "Explore Projects",
+    "getInTouch": "Get in Touch",
+    "discover": "Discover",
+    "ourExpertise": "Our Expertise",
+    "expertiseSubtitle": "From concept to completion, we create memorable spaces across diverse industries",
+    "featuredProjects": "Featured Projects",
+    "featuredSubtitle": "Explore our latest work in event structures and scenography",
+    "viewAllProjects": "View All Projects",
+    "quote": "Our art is space: empty or full, closed or open, real or illusory, dark, illuminated, rational, mad. It is the space of appearance.",
+    "quoteAuthor": "— ArteStudio Philosophy"
+  },
+  "footer": {
+    "ourWork": "Our Work"
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "subtitle": "Let's discuss your next project and bring your vision to life.",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "success": "Message sent! We'll get back to you soon.",
+    "error": "Failed to send. Please try again later.",
+    "validationName": "Name is required",
+    "validationEmail": "Email is required",
+    "validationEmailInvalid": "Invalid email address",
+    "validationSubject": "Subject is required",
+    "validationMessage": "Message is required",
+    "mapTitle": "ArteStudio on Google Maps"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "backHome": "Back to Home",
+    "viewProjects": "View Projects"
+  },
+  "projects": {
+    "noProjects": "No projects available in this category yet.",
+    "allTitle": "All Projects",
+    "allSubtitle": "Explore our complete portfolio of event structures and scenography",
+    "projectsFound": "{count} project found",
+    "projectsFound_other": "{count} projects found"
+  }
+}

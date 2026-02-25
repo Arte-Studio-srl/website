@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProjectCard from '@/components/ProjectCard';
 import { useSiteData } from '@/components/SiteDataProvider';
+import { useTranslations } from 'next-intl';
 
-export default function Home() {
+export default function HomeClient() {
+  const t = useTranslations('home');
   const { siteConfig: site, projects, categories } = useSiteData();
 
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -114,7 +116,7 @@ export default function Home() {
                 href="#projects"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-bronze-600 text-white hover:bg-bronze-700 transition-all font-display text-lg hover:shadow-2xl transform hover:scale-105"
               >
-                Explore Projects
+                {t('exploreProjects')}
                 <Icon icon="ph:arrow-right" className="w-5 h-5" aria-hidden />
               </Link>
               <Link
@@ -122,7 +124,7 @@ export default function Home() {
                 className="inline-flex items-center gap-2 px-8 py-4 border-2 border-white text-white hover:bg-white hover:text-charcoal transition-all font-display text-lg backdrop-blur-sm"
               >
                 <Icon icon="ph:chat-dots" className="w-5 h-5" aria-hidden />
-                Get in Touch
+                {t('getInTouch')}
               </Link>
             </motion.div>
           </motion.div>
@@ -157,7 +159,7 @@ export default function Home() {
             transition={{ duration: 1.5, repeat: Infinity }}
             className="flex flex-col items-center gap-2 text-white/80 hover:text-white transition-colors"
           >
-            <span className="text-xs uppercase tracking-widest">Discover</span>
+            <span className="text-xs uppercase tracking-widest">{t('discover')}</span>
             <Icon icon="ph:arrow-down" className="w-6 h-6" aria-hidden />
           </motion.a>
         </motion.div>
@@ -200,11 +202,11 @@ export default function Home() {
             className="text-center mb-16"
           >
             <h2 className="font-display text-4xl md:text-5xl text-charcoal mb-4">
-              Our Expertise
+              {t('ourExpertise')}
             </h2>
             <div className="w-24 h-1 bg-bronze-600 mx-auto mb-6" />
             <p className="text-lg text-charcoal/70 max-w-2xl mx-auto">
-              From concept to completion, we create memorable spaces across diverse industries
+              {t('expertiseSubtitle')}
             </p>
           </motion.div>
 
@@ -235,7 +237,7 @@ export default function Home() {
                       {category.description}
                     </p>
                     <div className="flex items-center gap-2 text-bronze-600 text-sm font-display">
-                      <span>View Projects</span>
+                      <span>{t('viewProjects')}</span>
                       <Icon icon="ph:arrow-right" className="w-4 h-4 group-hover:translate-x-2 transition-transform" aria-hidden />
                     </div>
                   </div>
@@ -257,11 +259,11 @@ export default function Home() {
             className="text-center mb-16"
           >
             <h2 className="font-display text-4xl md:text-5xl text-charcoal mb-4">
-              Featured Projects
+              {t('featuredProjects')}
             </h2>
             <div className="w-24 h-1 bg-bronze-600 mx-auto mb-6" />
             <p className="text-lg text-charcoal/70 max-w-2xl mx-auto">
-              Explore our latest work in event structures and scenography
+              {t('featuredSubtitle')}
             </p>
           </motion.div>
 
@@ -281,7 +283,7 @@ export default function Home() {
               href="/projects/all"
               className="inline-flex items-center gap-2 px-8 py-4 border-2 border-bronze-600 text-bronze-600 hover:bg-bronze-600 hover:text-white transition-all font-display text-lg group"
             >
-              View All Projects
+              {t('viewAllProjects')}
               <Icon icon="ph:arrow-right" className="w-5 h-5 group-hover:translate-x-1 transition-transform" aria-hidden />
             </Link>
           </motion.div>
@@ -300,10 +302,10 @@ export default function Home() {
             className="max-w-4xl mx-auto text-center"
           >
             <blockquote className="font-display text-2xl md:text-3xl lg:text-4xl leading-relaxed mb-8">
-              &ldquo;La nostra arte è spazio: vuoto o pieno, chiuso o aperto, reale o illusorio, buio, illuminato, razionale, folle. È lo spazio dell&apos;apparizione.&rdquo;
+              &ldquo;{t('quote')}&rdquo;
             </blockquote>
             <p className="text-bronze-300 text-lg">
-              — ArteStudio Philosophy
+              {t('quoteAuthor')}
             </p>
           </motion.div>
         </div>

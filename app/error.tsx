@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 const IconArrowClockwise = () => (
   <svg className="w-5 h-5" viewBox="0 0 256 256" fill="currentColor" aria-hidden>
