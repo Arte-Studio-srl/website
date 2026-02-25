@@ -5,10 +5,15 @@ import { getCurrentData, getProjectById } from '@/lib/data-utils';
 import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {
-  const { projects } = await getCurrentData();
-  return projects.map((project) => ({
-    id: project.id,
-  }));
+  try {
+    const { projects } = await getCurrentData();
+    return projects.map((project) => ({
+      id: project.id,
+    }));
+  } catch (e) {
+    console.error('Failed to load DB for static params', e);
+    return [];
+  }
 }
 
 export default async function ProjectDetailPage({ 

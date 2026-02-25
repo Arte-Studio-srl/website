@@ -17,12 +17,19 @@ export default function Home() {
   const heroImages =
     site.heroCarousel.length > 0
       ? site.heroCarousel
-      : projects.slice(0, 5).map((p) => ({
-          projectId: p.id,
-          image: p.thumbnail,
-          title: p.title,
-          category: p.category,
-        }));
+      : projects.length > 0 
+        ? projects.slice(0, 5).map((p) => ({
+            projectId: p.id,
+            image: p.thumbnail,
+            title: p.title,
+            category: p.category,
+          }))
+        : [{
+            projectId: 'placeholder',
+            image: '/placeholder.jpg',
+            title: 'ArteStudio',
+            category: 'Architecture',
+          }];
 
   // Auto-advance slides
   useEffect(() => {

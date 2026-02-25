@@ -1,5 +1,5 @@
-import { siteConfig } from '@/data/site-config';
 import type { SiteConfig } from '@/types';
+import { fallbackSiteConfig as siteConfig } from '@/lib/default-data';
 
 export function getSiteConfig(): SiteConfig {
   return siteConfig;

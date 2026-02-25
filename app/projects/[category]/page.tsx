@@ -5,10 +5,15 @@ import { getCurrentData, getProjectsByCategory } from '@/lib/data-utils';
 import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {
-  const { categories } = await getCurrentData();
-  return categories.map((category) => ({
-    category: category.id,
-  }));
+  try {
+    const { categories } = await getCurrentData();
+    return categories.map((category) => ({
+      category: category.id,
+    }));
+  } catch (e) {
+    console.error('Failed to load DB for static params', e);
+    return [];
+  }
 }
 
 export default async function CategoryPage({ 

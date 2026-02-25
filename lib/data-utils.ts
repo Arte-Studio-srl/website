@@ -1,70 +1,89 @@
 import { query } from './db';
 import { Project, Category, SiteConfig } from '@/types';
-import { siteConfig as fallbackSiteConfig } from '@/data/site-config';
+import { fallbackSiteConfig } from '@/lib/default-data';
 
 export async function getCurrentData(): Promise<{ projects: Project[]; categories: Category[] }> {
-  const [projectsResult, categoriesResult] = await Promise.all([
-    query('SELECT * FROM projects ORDER BY year DESC, created_at DESC'),
-    query('SELECT * FROM categories ORDER BY name ASC')
-  ]);
+  try {
+    const [projectsResult, categoriesResult] = await Promise.all([
+      query('SELECT * FROM projects ORDER BY year DESC, created_at DESC'),
+      query('SELECT * FROM categories ORDER BY name ASC')
+    ]);
 
-  const projects = projectsResult.rows.map((row): Project => ({
-    id: row.id,
-    title: row.title,
-    category: row.category,
-    year: row.year,
-    client: row.client,
-    description: row.description,
-    thumbnail: row.thumbnail,
-    stages: typeof row.stages === 'string' ? JSON.parse(row.stages) : row.stages
-  }));
+    const projects = projectsResult.rows.map((row): Project => ({
+      id: row.id,
+      title: row.title,
+      category: row.category,
+      year: row.year,
+      client: row.client,
+      description: row.description,
+      thumbnail: row.thumbnail,
+      stages: typeof row.stages === 'string' ? JSON.parse(row.stages) : row.stages
+    }));
 
-  const categories = categoriesResult.rows.map((row): Category => ({
-    id: row.id,
-    name: row.name,
-    description: row.description,
-    icon: row.icon
-  }));
+    const categories = categoriesResult.rows.map((row): Category => ({
+      id: row.id,
+      name: row.name,
+      description: row.description,
+      icon: row.icon
+    }));
 
-  return { projects, categories };
+    return { projects, categories };
+  } catch (error) {
+    console.error('Database connection failed in getCurrentData:', error);
+    return { projects: [], categories: [] };
+  }
 }
 
 export async function getProjectById(id: string): Promise<Project | undefined> {
-  const result = await query('SELECT * FROM projects WHERE id = $1', [id]);
-  if (result.rows.length === 0) return undefined;
-  
-  const row = result.rows[0];
-  return {
-    id: row.id,
-    title: row.title,
-    category: row.category,
-    year: row.year,
-    client: row.client,
-    description: row.description,
-    thumbnail: row.thumbnail,
-    stages: typeof row.stages === 'string' ? JSON.parse(row.stages) : row.stages
-  };
+  try {
+    const result = await query('SELECT * FROM projects WHERE id = $1', [id]);
+    if (result.rows.length === 0) return undefined;
+    
+    const row = result.rows[0];
+    return {
+      id: row.id,
+      title: row.title,
+      category: row.category,
+      year: row.year,
+      client: row.client,
+      description: row.description,
+      thumbnail: row.thumbnail,
+      stages: typeof row.stages === 'string' ? JSON.parse(row.stages) : row.stages
+    };
+  } catch (error) {
+    console.error('Database connection failed in getProjectById:', error);
+    return undefined;
+  }
 }
 
 export async function getProjectsByCategory(category: string): Promise<Project[]> {
-  const result = await query('SELECT * FROM projects WHERE category = $1 ORDER BY year DESC, created_at DESC', [category]);
-  return result.rows.map((row): Project => ({
-    id: row.id,
-    title: row.title,
-    category: row.category,
-    year: row.year,
-    client: row.client,
-    description: row.description,
-    thumbnail: row.thumbnail,
-    stages: typeof row.stages === 'string' ? JSON.parse(row.stages) : row.stages
-  }));
+  try {
+    const result = await query('SELECT * FROM projects WHERE category = $1 ORDER BY year DESC, created_at DESC', [category]);
+    return result.rows.map((row): Project => ({
+      id: row.id,
+      title: row.title,
+      category: row.category,
+      year: row.year,
+      client: row.client,
+      description: row.description,
+      thumbnail: row.thumbnail,
+      stages: typeof row.stages === 'string' ? JSON.parse(row.stages) : row.stages
+    }));
+  } catch (error) {
+    console.error('Database connection failed in getProjectsByCategory:', error);
+    return [];
+  }
 }
 
 export async function getSiteConfigFromDB(): Promise<SiteConfig> {
-  const result = await query("SELECT config FROM site_config WHERE id = 'default'");
-  if (result.rows.length > 0) {
-    const config = result.rows[0].config;
-    return typeof config === 'string' ? JSON.parse(config) : config;
+  try {
+    const result = await query("SELECT config FROM site_config WHERE id = 'default'");
+    if (result.rows.length > 0) {
+      const config = result.rows[0].config;
+      return typeof config === 'string' ? JSON.parse(config) : config;
+    }
+  } catch (error) {
+    console.error('Database connection failed in getSiteConfigFromDB:', error);
   }
   return fallbackSiteConfig as any;
 }

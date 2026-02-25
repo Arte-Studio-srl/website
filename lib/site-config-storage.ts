@@ -1,6 +1,6 @@
 import { query } from './db';
 import { SiteConfig } from '@/types';
-import { siteConfig as fallbackConfig } from '@/data/site-config';
+import { fallbackSiteConfig as fallbackConfig } from '@/lib/default-data';
 
 export async function readSiteConfig(): Promise<SiteConfig> {
   try {

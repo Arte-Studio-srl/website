@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentData } from '@/lib/data-utils';
 
-// Static export compatibility
-export const dynamic = 'force-static';
-
 export async function generateStaticParams() {
-  const { projects } = await getCurrentData();
-  return projects.map((project) => ({ id: project.id }));
+  try {
+    const { projects } = await getCurrentData();
+    return projects.map((project) => ({ id: project.id }));
+  } catch (e) {
+    console.error('Error generating static params:', e);
+    return [];
+  }
 }
 
 // GET single project - Public endpoint
