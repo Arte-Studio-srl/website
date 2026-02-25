@@ -95,7 +95,7 @@ export default function ProjectDetailClient({ project }: ProjectDetailClientProp
     };
   }, [lightboxOpen, handleKeyDown]);
 
-  const formatCategoryName = (category: string) => category.replace('-', ' ');
+  const formatCategoryName = (category: string) => category.replace(/-/g, ' ');
   const resolveStageIcon = (stage: Project['stages'][number], index: number): StageIcon => {
     if (stage.icon) return stage.icon;
     if (stage.type === 'drawing') return 'blueprint';

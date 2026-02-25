@@ -1,13 +1,19 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProjectDetailClient from '@/components/ProjectDetailClient';
-import { projects, getProjectById } from '@/data/projects';
+import { getCurrentData, getProjectById } from '@/lib/data-utils';
 import { notFound } from 'next/navigation';
 
-export function generateStaticParams() {
-  return projects.map((project) => ({
-    id: project.id,
-  }));
+export async function generateStaticParams() {
+  try {
+    const { projects } = await getCurrentData();
+    return projects.map((project) => ({
+      id: project.id,
+    }));
+  } catch (e) {
+    console.error('Failed to load DB for static params', e);
+    return [];
+  }
 }
 
 export default async function ProjectDetailPage({ 
@@ -16,7 +22,7 @@ export default async function ProjectDetailPage({
   params: Promise<{ id: string }> 
 }) {
   const { id } = await params;
-  const project = getProjectById(id);
+  const project = await getProjectById(id);
 
   if (!project) {
     notFound();

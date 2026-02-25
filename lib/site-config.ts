@@ -1,8 +1,4 @@
-import { siteConfig, SiteConfig } from '@/data/site-config';
-
-export function getSiteConfig(): SiteConfig {
-  return siteConfig;
-}
+import type { SiteConfig } from '@/types';
 
 export function formatPhoneDisplay(raw: string): string {
   const trimmed = raw.replace(/\s+/g, '');
@@ -36,4 +32,3 @@ export function getGoogleMapsEmbedUrl(config: SiteConfig): string {
 
   return `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
 }
-

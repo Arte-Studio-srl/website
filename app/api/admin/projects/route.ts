@@ -1,21 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { isAuthenticated } from '@/lib/auth';
-import { getCurrentData, updateProjects, validateProject } from '@/lib/data-utils';
+import { getCurrentData, createProject, validateProject } from '@/lib/data-utils';
 
-// POST - Create new project - Requires authentication
 export async function POST(request: NextRequest) {
   try {
     const authenticated = await isAuthenticated();
     if (!authenticated) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     const newProject = await request.json();
     
-    // Validate project data
     const validation = validateProject(newProject);
     if (!validation.valid) {
       return NextResponse.json(
@@ -24,10 +20,8 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Get current projects
     const { projects } = await getCurrentData();
     
-    // Check if project ID already exists
     if (projects.some(p => p.id === newProject.id)) {
       return NextResponse.json(
         { success: false, error: 'Project ID already exists' },
@@ -35,8 +29,8 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const currentProjects = [...projects, newProject];
-    await updateProjects(currentProjects);
+    await createProject(newProject);
+    revalidateTag('site-data', 'default');
     
     return NextResponse.json({
       success: true,
@@ -45,10 +39,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('POST project error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to create project' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to create project' }, { status: 500 });
   }
 }
-

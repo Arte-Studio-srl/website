@@ -1,13 +1,19 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CategoryPageClient from '@/components/CategoryPageClient';
-import { categories, getProjectsByCategory } from '@/data/projects';
+import { getCurrentData, getProjectsByCategory } from '@/lib/data-utils';
 import { notFound } from 'next/navigation';
 
-export function generateStaticParams() {
-  return categories.map((category) => ({
-    category: category.id,
-  }));
+export async function generateStaticParams() {
+  try {
+    const { categories } = await getCurrentData();
+    return categories.map((category) => ({
+      category: category.id,
+    }));
+  } catch (e) {
+    console.error('Failed to load DB for static params', e);
+    return [];
+  }
 }
 
 export default async function CategoryPage({ 
@@ -16,13 +22,14 @@ export default async function CategoryPage({
   params: Promise<{ category: string }> 
 }) {
   const { category } = await params;
+  const { categories } = await getCurrentData();
   
   const categoryData = categories.find(c => c.id === category);
   if (!categoryData) {
     notFound();
   }
 
-  const projects = getProjectsByCategory(category);
+  const projects = await getProjectsByCategory(category);
 
   return (
     <main className="min-h-screen">

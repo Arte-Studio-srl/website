@@ -5,9 +5,10 @@ import { motion } from 'framer-motion';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProjectCard from '@/components/ProjectCard';
-import { projects, categories } from '@/data/projects';
+import { useSiteData } from '@/components/SiteDataProvider';
 
 export default function AllProjectsPage() {
+  const { projects, categories } = useSiteData();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const filteredProjects = selectedCategory === 'all'

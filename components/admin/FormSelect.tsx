@@ -18,17 +18,18 @@ export default function FormSelect({
 }: FormSelectProps) {
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-charcoal">
-        {label} {required && <span className="text-red-600">*</span>}
+      <label className="block text-xs font-bold text-charcoal/60 uppercase tracking-widest">
+        {label} {required && <span className="text-red-500">*</span>}
       </label>
       <select
         {...props}
         required={required}
         className={`
-          w-full px-4 py-2 border rounded
-          focus:ring-2 focus:ring-bronze-500 focus:border-transparent
-          disabled:bg-gray-100 disabled:cursor-not-allowed
-          ${error ? 'border-red-500' : 'border-gray-300'}
+          w-full px-4 py-3 bg-gray-50 border border-transparent 
+          focus:bg-white focus:border-bronze-300 focus:ring-0 
+          text-sm font-medium outline-none transition-colors appearance-none
+          disabled:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-400
+          ${error ? '!border-red-500 !bg-red-50' : ''}
           ${className}
         `}
       >
@@ -39,10 +40,10 @@ export default function FormSelect({
         ))}
       </select>
       {error && (
-        <p className="text-sm text-red-600">{error}</p>
+        <p className="text-xs text-red-500 font-medium tracking-wide mt-1">{error}</p>
       )}
       {helpText && !error && (
-        <p className="text-xs text-charcoal/60">{helpText}</p>
+        <p className="text-xs text-charcoal/40 font-light mt-1">{helpText}</p>
       )}
     </div>
   );

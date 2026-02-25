@@ -4,27 +4,33 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Icon } from '@iconify/react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProjectCard from '@/components/ProjectCard';
-import { categories } from '@/data/projects';
-import { projects } from '@/data/projects';
-import { getSiteConfig } from '@/lib/site-config';
+import { useSiteData } from '@/components/SiteDataProvider';
 
 export default function Home() {
-  const site = getSiteConfig();
+  const { siteConfig: site, projects, categories } = useSiteData();
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const featuredProjects = projects.slice(0, 6);
   const heroImages =
     site.heroCarousel.length > 0
       ? site.heroCarousel
-      : projects.slice(0, 5).map((p) => ({
-          projectId: p.id,
-          image: p.thumbnail,
-          title: p.title,
-          category: p.category,
-        }));
+      : projects.length > 0 
+        ? projects.slice(0, 5).map((p) => ({
+            projectId: p.id,
+            image: p.thumbnail,
+            title: p.title,
+            category: p.category,
+          }))
+        : [{
+            projectId: 'placeholder',
+            image: '/placeholder.jpg',
+            title: 'ArteStudio',
+            category: 'Architecture',
+          }];
 
   // Auto-advance slides
   useEffect(() => {
@@ -106,14 +112,16 @@ export default function Home() {
             >
               <Link
                 href="#projects"
-                className="px-8 py-4 bg-bronze-600 text-white hover:bg-bronze-700 transition-all font-display text-lg hover:shadow-2xl transform hover:scale-105"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-bronze-600 text-white hover:bg-bronze-700 transition-all font-display text-lg hover:shadow-2xl transform hover:scale-105"
               >
                 Explore Projects
+                <Icon icon="ph:arrow-right" className="w-5 h-5" aria-hidden />
               </Link>
               <Link
                 href="/contact"
-                className="px-8 py-4 border-2 border-white text-white hover:bg-white hover:text-charcoal transition-all font-display text-lg backdrop-blur-sm"
+                className="inline-flex items-center gap-2 px-8 py-4 border-2 border-white text-white hover:bg-white hover:text-charcoal transition-all font-display text-lg backdrop-blur-sm"
               >
+                <Icon icon="ph:chat-dots" className="w-5 h-5" aria-hidden />
                 Get in Touch
               </Link>
             </motion.div>
@@ -150,9 +158,7 @@ export default function Home() {
             className="flex flex-col items-center gap-2 text-white/80 hover:text-white transition-colors"
           >
             <span className="text-xs uppercase tracking-widest">Discover</span>
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
+            <Icon icon="ph:arrow-down" className="w-6 h-6" aria-hidden />
           </motion.a>
         </motion.div>
       </section>
@@ -228,11 +234,9 @@ export default function Home() {
                     <p className="text-charcoal/70 mb-4">
                       {category.description}
                     </p>
-                    <div className="flex items-center text-bronze-600 text-sm font-display">
+                    <div className="flex items-center gap-2 text-bronze-600 text-sm font-display">
                       <span>View Projects</span>
-                      <svg className="w-4 h-4 ml-2 transform group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
+                      <Icon icon="ph:arrow-right" className="w-4 h-4 group-hover:translate-x-2 transition-transform" aria-hidden />
                     </div>
                   </div>
                 </Link>
@@ -275,9 +279,10 @@ export default function Home() {
           >
             <Link
               href="/projects/all"
-              className="inline-block px-8 py-4 border-2 border-bronze-600 text-bronze-600 hover:bg-bronze-600 hover:text-white transition-all font-display text-lg"
+              className="inline-flex items-center gap-2 px-8 py-4 border-2 border-bronze-600 text-bronze-600 hover:bg-bronze-600 hover:text-white transition-all font-display text-lg group"
             >
               View All Projects
+              <Icon icon="ph:arrow-right" className="w-5 h-5 group-hover:translate-x-1 transition-transform" aria-hidden />
             </Link>
           </motion.div>
         </div>

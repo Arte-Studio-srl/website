@@ -69,11 +69,11 @@ export default function ProjectsAdminPage() {
   }
 
   const actionButtonClass =
-    'inline-flex items-center gap-2 rounded-full bg-bronze-600 text-white px-4 py-2 text-sm font-semibold shadow-lg hover:bg-bronze-700 transition-colors';
+    'inline-flex items-center gap-2 border border-charcoal bg-charcoal text-white px-6 py-2 text-xs font-bold tracking-widest uppercase hover:bg-black transition-all';
 
   return (
     <AdminLayout 
-      title="Manage Projects"
+      title="Projects"
       actions={
         <div className="flex flex-wrap gap-2 justify-end w-full sm:w-auto">
           <Link href="/admin/projects/new" className={actionButtonClass}>
@@ -86,10 +86,10 @@ export default function ProjectsAdminPage() {
       }
     >
       {/* Filters */}
-      <div className="bg-white p-6 rounded-lg shadow-lg mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="bg-white border border-gray-200 p-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div>
-            <label className="block text-sm font-medium text-charcoal mb-2">
+            <label className="block text-xs font-bold text-charcoal/60 mb-3 uppercase tracking-widest">
               Search Projects
             </label>
             <input
@@ -97,17 +97,17 @@ export default function ProjectsAdminPage() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by title or description..."
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-gray-50 border border-transparent focus:bg-white focus:border-bronze-300 focus:ring-0 text-sm font-medium outline-none transition-colors"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-charcoal mb-2">
+            <label className="block text-xs font-bold text-charcoal/60 mb-3 uppercase tracking-widest">
               Filter by Category
             </label>
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-bronze-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-gray-50 border border-transparent focus:bg-white focus:border-bronze-300 focus:ring-0 text-sm font-medium outline-none transition-colors appearance-none"
             >
               <option value="all">All Categories</option>
               {categories.map(cat => (
@@ -119,27 +119,28 @@ export default function ProjectsAdminPage() {
       </div>
 
       {/* Projects Count */}
-      <div className="mb-6">
-        <p className="text-charcoal/70">
-          Showing {filteredProjects.length} of {projects.length} projects
+      <div className="mb-6 flex items-center justify-between border-b border-gray-200 pb-4">
+        <h2 className="font-display text-2xl text-charcoal">All Projects</h2>
+        <p className="text-xs uppercase tracking-widest text-charcoal/50 font-bold">
+          {filteredProjects.length} / {projects.length}
         </p>
       </div>
 
       {/* Projects Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredProjects.map(project => (
-          <div key={project.id} className="bg-white rounded-lg shadow-lg overflow-hidden group">
+          <div key={project.id} className="bg-white border border-gray-200 hover:border-bronze-300 transition-all group flex flex-col">
             {/* Thumbnail */}
-            <div className="relative h-48 bg-gray-200">
+            <div className="relative h-64 bg-gray-100 overflow-hidden border-b border-gray-200">
               <Image
                 src={project.thumbnail}
                 alt={project.title}
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
               />
               
               {/* Action Buttons - Top Right */}
-              <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <ActionButtons
                   viewHref={`/project/${project.id}`}
                   editHref={`/admin/projects/edit/${project.id}`}
@@ -150,30 +151,42 @@ export default function ProjectsAdminPage() {
             </div>
 
             {/* Content */}
-            <div className="p-6">
-              <div className="flex items-start justify-between mb-2">
-                <h3 className="font-display text-xl text-charcoal line-clamp-2 flex-1">
+            <div className="p-6 flex flex-col flex-grow">
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="font-display text-2xl text-charcoal line-clamp-2 leading-tight pr-4">
                   {project.title}
                 </h3>
-                <span className="text-sm text-bronze-600 font-medium ml-2">
+                <span className="text-xs font-bold tracking-widest text-bronze-600 mt-1.5">
                   {project.year}
                 </span>
               </div>
 
-              <p className="text-sm text-bronze-600 mb-2 capitalize">
-                {project.category.replace('-', ' ')}
-              </p>
+              <div className="mb-6">
+                <span className="inline-block px-3 py-1 bg-gray-50 border border-gray-100 text-xs font-bold tracking-widest text-charcoal/60 uppercase">
+                  {project.category.replace('-', ' ')}
+                </span>
+              </div>
 
-              <p className="text-sm text-charcoal/70 line-clamp-2 mb-4">
+              <p className="text-sm text-charcoal/60 line-clamp-3 mb-6 font-light leading-relaxed flex-grow">
                 {project.description}
               </p>
 
               {/* Stats */}
-              <div className="flex gap-4 text-xs text-charcoal/60">
-                <span>{project.stages.length} stages</span>
-                <span>
-                  {project.stages.reduce((acc, stage) => acc + stage.images.length, 0)} images
-                </span>
+              <div className="flex items-center gap-6 pt-4 border-t border-gray-100 mt-auto">
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-bronze-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  <span className="text-xs font-bold tracking-widest text-charcoal/60 uppercase">{project.stages.length} Stages</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <svg className="w-4 h-4 text-bronze-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-xs font-bold tracking-widest text-charcoal/60 uppercase">
+                    {project.stages.reduce((acc, stage) => acc + stage.images.length, 0)} Img
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -181,8 +194,8 @@ export default function ProjectsAdminPage() {
       </div>
 
       {filteredProjects.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-charcoal/60 text-lg">No projects found</p>
+        <div className="text-center py-20 border border-gray-200 bg-white mt-8">
+          <p className="text-charcoal/40 text-lg font-light">No projects found</p>
         </div>
       )}
     </AdminLayout>

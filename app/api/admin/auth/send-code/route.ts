@@ -1,27 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
 import { isEmailAllowed } from '@/lib/auth';
-import { verificationCodes } from '@/lib/verification-storage';
+import { setVerificationCode } from '@/lib/verification-storage';
 import { checkRateLimit } from '@/lib/rate-limiter';
-
-const smtpEnvVars = ['SMTP_HOST', 'SMTP_PORT', 'SMTP_USER', 'SMTP_PASS', 'CONTACT_FROM'] as const;
-
-function missingSmtpEnv() {
-  return smtpEnvVars.filter((key) => !process.env[key]);
-}
-
-function buildSmtpTransport() {
-  const port = Number(process.env.SMTP_PORT || 587);
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port,
-    secure: port === 465,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-}
+import { createSmtpTransport, getMissingSmtpEnv } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,38 +18,34 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = email.toLowerCase().trim();
 
     // Rate limiting - 5 attempts per 15 minutes per email
-    const rateLimit = checkRateLimit(`send-code:${normalizedEmail}`, {
+    const rateLimit = await checkRateLimit(`send-code:${normalizedEmail}`, {
       maxAttempts: 5,
-      windowMs: 15 * 60 * 1000
+      windowMs: 15 * 60 * 1000,
     });
 
     if (!rateLimit.allowed) {
       const resetInMinutes = Math.ceil((rateLimit.resetTime - Date.now()) / 60000);
       return NextResponse.json(
-        { 
-          success: false, 
-          error: `Too many attempts. Please try again in ${resetInMinutes} minutes.` 
-        },
+        { success: false, error: `Too many attempts. Please try again in ${resetInMinutes} minutes.` },
         { status: 429 }
       );
     }
 
-    // Check if email is allowed
+    // Check if email is allowed (don't reveal if it's not, for security)
     if (!isEmailAllowed(normalizedEmail)) {
-      // Don't reveal if email is not authorized for security
-      return NextResponse.json(
-        { success: true, message: 'If your email is authorized, you will receive a verification code' }
-      );
+      return NextResponse.json({
+        success: true,
+        message: 'If your email is authorized, you will receive a verification code',
+      });
     }
 
     // Generate 6-digit code
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 minutes
+    const expiresInMs = 10 * 60 * 1000; // 10 minutes
 
-    // Store code
-    verificationCodes.set(normalizedEmail, { code, expiresAt });
+    // Store code in DB
+    await setVerificationCode(normalizedEmail, code, expiresInMs);
 
-    // In production, send email with the code
     if (process.env.NODE_ENV !== 'production') {
       console.info('[AuthCode] Verification code issued', {
         email: normalizedEmail,
@@ -78,7 +55,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const missingEnv = missingSmtpEnv();
+    const missingEnv = getMissingSmtpEnv();
     if (missingEnv.length > 0) {
       console.error(`SMTP not configured; missing: ${missingEnv.join(', ')}`);
       return NextResponse.json(
@@ -87,7 +64,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const transport = buildSmtpTransport();
+    const transport = createSmtpTransport();
     await transport.sendMail({
       from: process.env.CONTACT_FROM,
       to: normalizedEmail,
@@ -99,7 +76,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Verification code sent to your email',
-      // In development, return the code (REMOVE IN PRODUCTION!)
+      // Only return code in development for local testing
       ...(process.env.NODE_ENV === 'development' && { code }),
     });
   } catch (error) {
@@ -110,4 +87,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

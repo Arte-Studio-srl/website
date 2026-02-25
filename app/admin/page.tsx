@@ -91,60 +91,68 @@ export default function AdminPage() {
 
   return (
     <AdminLayout 
-      title="Admin"
-      backHref="/"
-      backLabel="View Site"
+      title="Dashboard"
+      backHref=""
+      backLabel=""
     >
-      {/* Dashboard Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-        {dashboardCards.map((card) => (
-          <Link 
-            key={card.href}
-            href={card.href}
-            className="bg-white p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow border-l-4 border-bronze-500 group"
-          >
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 bg-bronze-100 rounded-lg flex items-center justify-center group-hover:bg-bronze-200 transition-colors">
-                <svg className="w-6 h-6 text-bronze-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  {card.icon}
-                </svg>
-              </div>
-              <h2 className="font-display text-2xl text-charcoal">{card.title}</h2>
-            </div>
-            <p className="text-charcoal/70">
-              {card.description}
-            </p>
-          </Link>
-        ))}
-      </div>
-
       {/* Quick Stats */}
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="font-display text-2xl text-charcoal mb-6">Quick Overview</h2>
+      <div className="mb-12">
+        <h2 className="font-display text-2xl text-charcoal mb-6 border-b border-gray-200 pb-4">Quick Overview</h2>
         {loading ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-bronze-600"></div>
+          <div className="flex py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-bronze-600"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="text-3xl font-display text-bronze-600 mb-2">{stats.totalProjects}</div>
-              <div className="text-charcoal/70">Total Projects</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white border border-gray-100 p-6 flex flex-col justify-center">
+              <div className="text-4xl font-display text-charcoal mb-1">{stats.totalProjects}</div>
+              <div className="text-xs uppercase tracking-widest text-bronze-600 font-medium">Total Projects</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-display text-bronze-600 mb-2">{stats.totalCategories}</div>
-              <div className="text-charcoal/70">Categories</div>
+            <div className="bg-white border border-gray-100 p-6 flex flex-col justify-center">
+              <div className="text-4xl font-display text-charcoal mb-1">{stats.totalCategories}</div>
+              <div className="text-xs uppercase tracking-widest text-bronze-600 font-medium">Categories</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-display text-bronze-600 mb-2">{stats.latestProjectYear}</div>
-              <div className="text-charcoal/70">Latest Project</div>
+            <div className="bg-white border border-gray-100 p-6 flex flex-col justify-center">
+              <div className="text-4xl font-display text-charcoal mb-1">{stats.latestProjectYear}</div>
+              <div className="text-xs uppercase tracking-widest text-bronze-600 font-medium">Latest Project</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-display text-bronze-600 mb-2">{stats.totalImages}</div>
-              <div className="text-charcoal/70">Total Images</div>
+            <div className="bg-white border border-gray-100 p-6 flex flex-col justify-center">
+              <div className="text-4xl font-display text-charcoal mb-1">{stats.totalImages}</div>
+              <div className="text-xs uppercase tracking-widest text-bronze-600 font-medium">Total Images</div>
             </div>
           </div>
         )}
+      </div>
+
+      {/* Dashboard Cards */}
+      <div>
+        <h2 className="font-display text-2xl text-charcoal mb-6 border-b border-gray-200 pb-4">Manage Section</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {dashboardCards.map((card) => (
+            <Link 
+              key={card.href}
+              href={card.href}
+              className="bg-white p-8 border border-gray-200 hover:border-bronze-300 hover:shadow-sm transition-all group block relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                 <svg className="w-5 h-5 text-bronze-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                 </svg>
+              </div>
+              <div className="flex flex-col gap-4 mb-4">
+                <div className="w-10 h-10 border border-gray-100 flex items-center justify-center text-bronze-600 group-hover:bg-bronze-50 transition-colors">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    {card.icon}
+                  </svg>
+                </div>
+                <h2 className="font-display text-2xl text-charcoal">{card.title}</h2>
+              </div>
+              <p className="text-sm text-charcoal/60 leading-relaxed font-light">
+                {card.description}
+              </p>
+            </Link>
+          ))}
+        </div>
       </div>
     </AdminLayout>
   );
