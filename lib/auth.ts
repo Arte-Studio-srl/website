@@ -2,10 +2,6 @@ import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-if (!process.env.JWT_SECRET) {
-  throw new Error('JWT_SECRET environment variable is required but not set.');
-}
-const JWT_SECRET = process.env.JWT_SECRET;
 const ADMIN_EMAILS = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim()) || [];
 const AUTH_COOKIE_NAME = 'admin_token';
 const AUTH_COOKIE_OPTIONS = {
@@ -16,21 +12,26 @@ const AUTH_COOKIE_OPTIONS = {
   path: '/',
 };
 
-const secret = new TextEncoder().encode(JWT_SECRET);
+function getSecret() {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is required but not set.');
+  }
+  return new TextEncoder().encode(process.env.JWT_SECRET);
+}
 
 export async function createToken(email: string) {
   const token = await new SignJWT({ email })
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('7d')
     .setIssuedAt()
-    .sign(secret);
+    .sign(getSecret());
   
   return token;
 }
 
 export async function verifyToken(token: string) {
   try {
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, getSecret());
     return payload.email as string;
   } catch {
     return null;
