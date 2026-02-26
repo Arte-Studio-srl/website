@@ -83,9 +83,9 @@ Access the admin panel at `/admin` to manage:
 │   └── admin/              # Admin-specific components
 ├── lib/                    # Utilities and helpers
 │   ├── auth.ts             # JWT authentication
-│   ├── data-utils.ts       # Data loading with caching
+│   ├── data-utils.ts       # Data loading (Postgres + caching)
+│   ├── db.ts               # Postgres connection pool
 │   └── rate-limiter.ts     # Rate limiting
-├── data/                   # Project data (TypeScript)
 ├── public/                 # Static assets
 └── scripts/                # Utility scripts
 ```
@@ -134,13 +134,7 @@ npm run lint         # Run ESLint
 
 ## Content Management
 
-### Option 1: Admin Panel (Recommended)
-
-Use the built-in admin panel. Changes are persisted to the database.
-
-### Option 2: Direct Editing
-
-Edit `data/projects.ts` directly and commit to git.
+Use the built-in admin panel at `/admin`. Changes are persisted to the PostgreSQL database.
 
 ## Browser Support
 

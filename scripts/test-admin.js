@@ -96,9 +96,8 @@ async function runTests() {
   checkFileExists('app/admin/categories/page.tsx', 'Categories Page');
   checkFileExists('app/api/projects/route.ts', 'Projects API Route');
   checkFileExists('app/api/categories/route.ts', 'Categories API Route');
-  checkFileExists('app/api/upload/route.ts', 'Upload API Route');
-  checkFileExists('data/projects.ts', 'Projects Data File');
-  checkFileExists('public/images/projects', 'Images Directory');
+  checkFileExists('app/api/admin/upload/route.ts', 'Admin Upload API Route');
+  checkFileExists('lib/db.ts', 'Database Layer');
 
   log('\n🌐 Testing Server Connectivity...', 'blue');
   log('Make sure your dev server is running (npm run dev)\n', 'yellow');

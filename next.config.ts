@@ -5,6 +5,10 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 // Standard SSR/ISR build (no static export) to support API routes.
 const nextConfig: NextConfig = {
+  // Include @swc/helpers ESM subpath in standalone output (fixes Docker "Cannot find module" errors)
+  outputFileTracingIncludes: {
+    "/*": ["node_modules/@swc/helpers/**/*"],
+  },
   images: {
     remotePatterns: [
       {
