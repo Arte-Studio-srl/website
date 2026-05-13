@@ -32,23 +32,32 @@ const siteConfigQuery = `*[_type == "siteConfig"][0] {
   }, [])
 }`;
 
+// Strip null/undefined so partial Sanity documents don't overwrite fallback
+// values via spread (GROQ returns explicit `null` for unset fields).
+function stripNulls<T extends object>(obj: T | null | undefined): Partial<T> {
+  if (!obj) return {};
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== null && v !== undefined),
+  ) as Partial<T>;
+}
+
 function mergeSiteConfig(config: SanitySiteConfig | null): SiteConfig {
   if (!config) return fallbackSiteConfig;
 
   return {
     ...fallbackSiteConfig,
-    ...config,
+    ...stripNulls(config),
     legal: {
       ...fallbackSiteConfig.legal,
-      ...config.legal,
+      ...stripNulls(config.legal),
     },
     social: {
       ...fallbackSiteConfig.social,
-      ...config.social,
+      ...stripNulls(config.social),
     },
     seo: {
       ...fallbackSiteConfig.seo,
-      ...config.seo,
+      ...stripNulls(config.seo),
     },
     openingHours: config.openingHours || fallbackSiteConfig.openingHours,
     heroCarousel: config.heroCarousel || fallbackSiteConfig.heroCarousel,
