@@ -1,27 +1,49 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { useSiteData } from '@/components/SiteDataProvider';
+import { EMAIL_REGEX, useContactForm } from '@/lib/use-contact-form';
 
-interface WidgetForm {
+interface WidgetForm extends Record<string, string | undefined> {
   name: string;
   email: string;
   message: string;
 }
 
-type Status = 'idle' | 'success' | 'error';
+const INITIAL: WidgetForm = { name: '', email: '', message: '' };
 
 export default function FloatingContact() {
   const { siteConfig: site } = useSiteData();
   const [open, setOpen] = useState(false);
-  const [status, setStatus] = useState<Status>('idle');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [form, setForm] = useState<WidgetForm>({ name: '', email: '', message: '' });
-  const [errors, setErrors] = useState<Partial<Record<keyof WidgetForm, string>>>({});
   const panelRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
+
+  const validate = useCallback((values: WidgetForm) => {
+    const errors: Partial<Record<keyof WidgetForm, string>> = {};
+    if (!values.name.trim()) errors.name = 'Required';
+    if (!values.email.trim()) errors.email = 'Required';
+    else if (!EMAIL_REGEX.test(values.email)) errors.email = 'Invalid email';
+    if (!values.message.trim()) errors.message = 'Required';
+    return errors;
+  }, []);
+
+  const buildPayload = useCallback((values: WidgetForm) => ({
+    ...values,
+    subject: 'Website inquiry',
+    source: 'floating-widget',
+  }), []);
+
+  const {
+    values: form,
+    errors,
+    status,
+    isSubmitting,
+    handleChange,
+    handleSubmit,
+    resetStatus,
+  } = useContactForm<WidgetForm>({ initialValues: INITIAL, validate, buildPayload });
 
   useEffect(() => {
     if (!open) return;
@@ -50,56 +72,6 @@ export default function FloatingContact() {
       document.removeEventListener('keydown', handleEscape);
     };
   }, [open]);
-
-  const validate = () => {
-    const nextErrors: Partial<Record<keyof WidgetForm, string>> = {};
-    if (!form.name.trim()) nextErrors.name = 'Required';
-    if (!form.email.trim()) nextErrors.email = 'Required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) nextErrors.email = 'Invalid email';
-    if (!form.message.trim()) nextErrors.message = 'Required';
-    setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
-  };
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    if (!validate()) return;
-    setIsSubmitting(true);
-    setStatus('idle');
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...form,
-          subject: 'Website inquiry',
-          source: 'floating-widget',
-        })
-      });
-
-      const data = await response.json();
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Send failed');
-      }
-
-      setStatus('success');
-      setForm({ name: '', email: '', message: '' });
-      setTimeout(() => setStatus('idle'), 3500);
-    } catch (error) {
-      console.error('Contact send error', error);
-      setStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    if (errors[name as keyof WidgetForm]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
-    }
-  };
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
@@ -243,7 +215,7 @@ export default function FloatingContact() {
         ref={toggleRef}
         onClick={() => {
           setOpen((prev) => !prev);
-          setStatus('idle');
+          resetStatus();
         }}
         aria-expanded={open}
         aria-label="Open contact form"

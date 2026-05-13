@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import Header from '@/components/Header';
@@ -8,8 +8,9 @@ import Footer from '@/components/Footer';
 import { formatPhoneDisplay, formatTelHref, getGoogleMapsEmbedUrl } from '@/lib/site-config';
 import { useSiteData } from '@/components/SiteDataProvider';
 import { useTranslations } from 'next-intl';
+import { EMAIL_REGEX, useContactForm } from '@/lib/use-contact-form';
 
-interface ContactForm {
+interface ContactForm extends Record<string, string | undefined> {
   name: string;
   email: string;
   phone?: string;
@@ -17,62 +18,40 @@ interface ContactForm {
   message: string;
 }
 
+const INITIAL: ContactForm = { name: '', email: '', phone: '', subject: '', message: '' };
+
 export default function ContactPage() {
   const t = useTranslations('contact');
   const { siteConfig: site } = useSiteData();
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [formData, setFormData] = useState<ContactForm>({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: '',
+  const validate = useCallback((values: ContactForm) => {
+    const errors: Partial<Record<keyof ContactForm, string>> = {};
+    if (!values.name.trim()) errors.name = t('validationName');
+    if (!values.email.trim()) errors.email = t('validationEmail');
+    else if (!EMAIL_REGEX.test(values.email)) errors.email = t('validationEmailInvalid');
+    if (!values.subject.trim()) errors.subject = t('validationSubject');
+    if (!values.message.trim()) errors.message = t('validationMessage');
+    return errors;
+  }, [t]);
+
+  const buildPayload = useCallback((values: ContactForm) => ({
+    ...values,
+    source: 'contact-page',
+  }), []);
+
+  const {
+    values: formData,
+    errors,
+    status: submitStatus,
+    isSubmitting,
+    handleChange,
+    handleSubmit: onSubmit,
+  } = useContactForm<ContactForm>({
+    initialValues: INITIAL,
+    validate,
+    buildPayload,
+    successResetMs: 5000,
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof ContactForm, string>>>({});
-
-  const validateForm = (): boolean => {
-    const newErrors: Partial<Record<keyof ContactForm, string>> = {};
-    if (!formData.name.trim()) newErrors.name = t('validationName');
-    if (!formData.email.trim()) newErrors.email = t('validationEmail');
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = t('validationEmailInvalid');
-    if (!formData.subject.trim()) newErrors.subject = t('validationSubject');
-    if (!formData.message.trim()) newErrors.message = t('validationMessage');
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name as keyof ContactForm]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
-    }
-  };
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    setIsSubmitting(true);
-    setSubmitStatus('idle');
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, source: 'contact-page' }),
-      });
-      const data = await response.json();
-      if (!response.ok || !data.success) throw new Error(data.error || 'Failed to send message');
-      setSubmitStatus('success');
-      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-      setTimeout(() => setSubmitStatus('idle'), 5000);
-    } catch {
-      setSubmitStatus('error');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   return (
     <main className="min-h-screen">
