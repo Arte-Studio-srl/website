@@ -3,24 +3,19 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
-// Standard SSR/ISR build (no static export) to support API routes.
+// Standard SSR/ISR build with a tiny contact route.
 const nextConfig: NextConfig = {
-  // Include @swc/helpers ESM subpath in standalone output (fixes Docker "Cannot find module" errors)
-  outputFileTracingIncludes: {
-    "/*": ["node_modules/@swc/helpers/**/*"],
-  },
   images: {
+    qualities: [75, 95],
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'artestudio.s3.*.amazonaws.com',
+        hostname: 'cdn.sanity.io',
         port: '',
         pathname: '/**',
       },
     ],
   },
-  trailingSlash: true,
-  output: 'standalone',
   async headers() {
     return [
       {
@@ -36,4 +31,3 @@ const nextConfig: NextConfig = {
 };
 
 export default withNextIntl(nextConfig);
-

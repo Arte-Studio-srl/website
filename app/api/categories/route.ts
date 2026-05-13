@@ -1,14 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentData } from '@/lib/data-utils';
 
 // Force dynamic so updates are visible without rebuilds
 export const dynamic = 'force-dynamic';
 
 // GET all categories - Public endpoint
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const { categories } = await getCurrentData();
-    
+    const locale = request.nextUrl.searchParams.get('locale') ?? undefined;
+    const { categories } = await getCurrentData(locale);
+
     return NextResponse.json({
       success: true,
       categories
@@ -21,4 +22,3 @@ export async function GET() {
     );
   }
 }
-

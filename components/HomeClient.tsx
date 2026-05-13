@@ -29,7 +29,7 @@ export default function HomeClient() {
           }))
         : [{
             projectId: 'placeholder',
-            image: '/placeholder.jpg',
+            image: '/logo.png',
             title: 'ArteStudio',
             category: 'Architecture',
           }];

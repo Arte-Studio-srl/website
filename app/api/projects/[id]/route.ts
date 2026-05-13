@@ -3,12 +3,13 @@ import { getProjectById } from '@/lib/data-utils';
 
 // GET single project - Public endpoint
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    const project = await getProjectById(id);
+    const locale = request.nextUrl.searchParams.get('locale') ?? undefined;
+    const project = await getProjectById(id, locale);
 
     if (!project) {
       return NextResponse.json(
@@ -29,5 +30,3 @@ export async function GET(
     );
   }
 }
-
-

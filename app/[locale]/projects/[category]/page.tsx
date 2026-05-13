@@ -14,10 +14,10 @@ type Props = {
 
 export async function generateMetadata({ params }: Props) {
   const { locale, category: categoryId } = await params;
-  const { categories } = await getCurrentData();
+  const { categories } = await getCurrentData(locale);
   const categoryData = categories.find((c) => c.id === categoryId);
   if (!categoryData) return {};
-  const projects = await getProjectsByCategory(categoryId);
+  const projects = await getProjectsByCategory(categoryId, locale);
   const site = await readSiteConfig();
   return buildCategoryMetadata(categoryData, projects.length, site, locale);
 }
@@ -25,9 +25,9 @@ export async function generateMetadata({ params }: Props) {
 export async function generateStaticParams() {
   const locs = routing.locales.map((locale) => ({ locale }));
   try {
-    const { categories } = await getCurrentData();
     const params: { locale: string; category: string }[] = [];
     for (const { locale } of locs) {
+      const { categories } = await getCurrentData(locale);
       for (const cat of categories) {
         params.push({ locale, category: cat.id });
       }
@@ -42,11 +42,11 @@ export default async function CategoryPage({ params }: Props) {
   const { locale, category } = await params;
   setRequestLocale(locale);
 
-  const { categories } = await getCurrentData();
+  const { categories } = await getCurrentData(locale);
   const categoryData = categories.find((c) => c.id === category);
   if (!categoryData) notFound();
 
-  const projects = await getProjectsByCategory(category);
+  const projects = await getProjectsByCategory(category, locale);
 
   return (
     <main className="min-h-screen">

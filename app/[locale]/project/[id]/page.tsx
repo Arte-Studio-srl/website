@@ -16,7 +16,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props) {
   const { locale, id } = await params;
-  const project = await getProjectById(id);
+  const project = await getProjectById(id, locale);
   if (!project) return {};
   const site = await readSiteConfig();
   return buildProjectMetadata(project, site, locale);
@@ -25,9 +25,9 @@ export async function generateMetadata({ params }: Props) {
 export async function generateStaticParams() {
   const locs = routing.locales.map((locale) => ({ locale }));
   try {
-    const { projects } = await getCurrentData();
     const params: { locale: string; id: string }[] = [];
     for (const { locale } of locs) {
+      const { projects } = await getCurrentData(locale);
       for (const project of projects) {
         params.push({ locale, id: project.id });
       }
@@ -42,7 +42,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   const { locale, id } = await params;
   setRequestLocale(locale);
 
-  const project = await getProjectById(id);
+  const project = await getProjectById(id, locale);
   if (!project) notFound();
 
   const site = await readSiteConfig();

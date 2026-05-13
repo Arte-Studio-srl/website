@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
-import { usePathname } from 'next/navigation';
 import { useSiteData } from '@/components/SiteDataProvider';
 
 interface WidgetForm {
@@ -16,13 +15,11 @@ type Status = 'idle' | 'success' | 'error';
 
 export default function FloatingContact() {
   const { siteConfig: site } = useSiteData();
-  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<Status>('idle');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState<WidgetForm>({ name: '', email: '', message: '' });
   const [errors, setErrors] = useState<Partial<Record<keyof WidgetForm, string>>>({});
-  const isAdminRoute = pathname?.startsWith('/admin');
   const panelRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
@@ -103,10 +100,6 @@ export default function FloatingContact() {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
-
-  if (isAdminRoute) {
-    return null;
-  }
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">

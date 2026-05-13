@@ -68,7 +68,6 @@ function approximateWidth(letter) {
 }
 
 function createLayout(size, overlap, tiltDegrees) {
-  const phi = 1.618;
   const baseSpacing = size * 0.4;
   const separation = baseSpacing * (1 - overlap);
   const center = size / 2;
@@ -114,11 +113,6 @@ function generateFaviconSvg(options = {}) {
   const shift = layout.center - currentCentroid;
   const leftX = baseLeftX + shift;
   const rightX = baseRightX + shift;
-
-  const topCut = `${size * -0.08},${size * 0.08} ${size * 1.08},${size *
-    0.36} ${size * 1.08},${size * 0.66} ${size * -0.08},${size * 0.38}`;
-  const bottomCut = `${size * -0.08},${size * 0.82} ${size * 1.08},${size *
-    0.54} ${size * 1.08},${size * 0.24} ${size * -0.08},${size * 0.52}`;
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="${viewBox}" role="img" aria-label="${safeInitials.trim()} monogram">
@@ -234,4 +228,3 @@ if (require.main === module) {
 }
 
 module.exports = { generateFaviconSvg };
-

@@ -1,6 +1,5 @@
 'use client';
 
-import type { ReactElement } from 'react';
 import { Link } from '@/i18n/navigation';
 import { Icon } from '@iconify/react';
 import { useSiteData } from '@/components/SiteDataProvider';

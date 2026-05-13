@@ -39,13 +39,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const siteConfig = await readSiteConfig();
-  const { projects, categories } = await getCurrentData();
   let htmlLang = "it";
   try {
     htmlLang = await getLocale();
   } catch {
     // Admin or non-i18n routes
   }
+  const { projects, categories } = await getCurrentData(htmlLang);
 
   const siteUrl = siteConfig.seo?.siteUrl || process.env.NEXT_PUBLIC_SITE_URL || "https://progettoartestudio.it";
 

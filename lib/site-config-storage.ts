@@ -1,43 +1,72 @@
 import { unstable_cache } from 'next/cache';
-import { query } from './db';
-import { SiteConfig } from '@/types';
-import { fallbackSiteConfig as fallbackConfig } from '@/lib/default-data';
+import type { SiteConfig } from '@/types';
+import { fallbackSiteConfig } from '@/lib/default-data';
+import { isSanityConfigured, sanityFetch } from '@/lib/sanity';
 
-function isDatabaseConfigured(): boolean {
-  return !!(process.env.DATABASE_URL || process.env.POSTGRES_URL);
-}
-
-const _readSiteConfigRaw = async (): Promise<SiteConfig> => {
-  if (!isDatabaseConfigured()) {
-    return fallbackConfig;
-  }
-  try {
-    const result = await query("SELECT config FROM site_config WHERE id = 'default'");
-    if (result.rows.length > 0) {
-      return typeof result.rows[0].config === 'string'
-        ? JSON.parse(result.rows[0].config) as SiteConfig
-        : result.rows[0].config as SiteConfig;
-    }
-
-    // First run: seed the DB with the fallback config
-    await writeSiteConfig(fallbackConfig);
-    return fallbackConfig;
-  } catch (error) {
-    console.error('Error reading site config from DB', error);
-    return fallbackConfig;
-  }
+type SanitySiteConfig = Partial<SiteConfig> & {
+  heroCarousel?: Array<{
+    projectId?: string;
+    image?: string;
+    title?: string;
+    category?: string;
+  }>;
 };
 
+const siteConfigQuery = `*[_type == "siteConfig"][0] {
+  siteName,
+  tagline,
+  faviconUrl,
+  contactEmail,
+  phone,
+  address,
+  googleMapsUrl,
+  legal,
+  openingHours,
+  social,
+  seo,
+  "heroCarousel": coalesce(heroCarousel[]{
+    "projectId": coalesce(project->slug.current, projectId),
+    "image": coalesce(image.asset->url, imageUrl, ""),
+    title,
+    category
+  }, [])
+}`;
+
+function mergeSiteConfig(config: SanitySiteConfig | null): SiteConfig {
+  if (!config) return fallbackSiteConfig;
+
+  return {
+    ...fallbackSiteConfig,
+    ...config,
+    legal: {
+      ...fallbackSiteConfig.legal,
+      ...config.legal,
+    },
+    social: {
+      ...fallbackSiteConfig.social,
+      ...config.social,
+    },
+    seo: {
+      ...fallbackSiteConfig.seo,
+      ...config.seo,
+    },
+    openingHours: config.openingHours || fallbackSiteConfig.openingHours,
+    heroCarousel: config.heroCarousel || fallbackSiteConfig.heroCarousel,
+  };
+}
+
 export const readSiteConfig = unstable_cache(
-  _readSiteConfigRaw,
-  ['site-config'],
+  async (): Promise<SiteConfig> => {
+    if (!isSanityConfigured) return fallbackSiteConfig;
+
+    try {
+      const config = await sanityFetch<SanitySiteConfig>(siteConfigQuery);
+      return mergeSiteConfig(config);
+    } catch (error) {
+      console.error('Sanity site config fetch failed:', error);
+      return fallbackSiteConfig;
+    }
+  },
+  ['sanity-site-config'],
   { tags: ['site-data'], revalidate: 3600 }
 );
-
-export async function writeSiteConfig(config: SiteConfig): Promise<void> {
-  await query(
-    `INSERT INTO site_config (id, config) VALUES ($1, $2)
-     ON CONFLICT (id) DO UPDATE SET config = EXCLUDED.config, updated_at = CURRENT_TIMESTAMP`,
-    ['default', JSON.stringify(config)]
-  );
-}

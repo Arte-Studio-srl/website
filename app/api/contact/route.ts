@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
 import { checkRateLimit } from '@/lib/rate-limiter';
 import { createSmtpTransport, getMissingSmtpEnv } from '@/lib/email';
 
@@ -85,12 +84,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    const details = error instanceof Error
+      ? { message: error.message }
+      : { message: 'Unknown contact error' };
     console.error('[Contact] send error', {
-      message: (error as any)?.message,
-      code: (error as any)?.code,
-      response: (error as any)?.response,
-      responseCode: (error as any)?.responseCode,
-      command: (error as any)?.command,
+      ...details,
     });
     return NextResponse.json(
       { success: false, error: 'Failed to send message' },

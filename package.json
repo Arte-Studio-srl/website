@@ -9,44 +9,34 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "test:admin": "node scripts/test-admin.js",
-    "setup:auth": "node scripts/setup-auth.js",
-    "init:db": "node scripts/init-db.js",
-    "migrate:db": "node scripts/migrate-db.js",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "sanity:dev": "sanity dev",
+    "sanity:deploy": "sanity deploy",
     "generate:favicon": "node scripts/favicon/generate-favicon.js"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.997.0",
-    "@aws-sdk/lib-storage": "^3.997.0",
-    "@aws-sdk/s3-request-presigner": "^3.997.0",
     "@iconify/react": "^6.0.2",
-    "@vercel/functions": "^3.4.3",
-    "dotenv": "^17.3.1",
     "framer-motion": "^12.34.3",
-    "jose": "^6.1.3",
-    "next": "^16.1.6",
-    "next-intl": "^4.8.3",
-    "nodemailer": "^8.0.1",
-    "pg": "^8.18.0",
+    "next": "^16.2.6",
+    "next-intl": "^4.11.2",
+    "next-sanity": "^12.4.5",
+    "nodemailer": "^8.0.7",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
-  },
-  "overrides": {
-    "yocto-queue": "1.0.0",
-    "@swc/helpers": "0.5.19"
+    "react-dom": "^19.2.4",
+    "sanity": "^5.25.0",
+    "styled-components": "^6.4.1"
   },
   "devDependencies": {
-    "@types/node": "^22.10.1",
-    "@types/nodemailer": "^7.0.4",
-    "@types/pg": "^8.16.0",
-    "@types/react": "^19.0.1",
-    "@types/react-dom": "^19.0.2",
+    "@types/node": "^22.19.11",
+    "@types/nodemailer": "^7.0.11",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.16.0",
-    "eslint-config-next": "^15.1.0",
-    "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.15",
-    "typescript": "^5.7.2"
+    "eslint-config-next": "^16.2.6",
+    "postcss": "^8.5.14",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3"
   }
 }
