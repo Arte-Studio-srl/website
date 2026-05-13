@@ -26,19 +26,22 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export async function generateStaticParams() {
-  const locs = routing.locales.map((locale) => ({ locale }));
-  try {
-    const params: { locale: string; category: string }[] = [];
-    for (const { locale } of locs) {
+  const params: { locale: string; category: string }[] = [];
+  for (const locale of routing.locales) {
+    try {
       const { categories } = await getCurrentData(locale);
       for (const cat of categories) {
         params.push({ locale, category: cat.id });
       }
-    }
-    return params;
-  } catch {
-    return [];
+    } catch {}
   }
+  // Static export requires at least one param. Fall back to a placeholder per
+  // locale when Sanity has no categories (or env vars aren't wired), so the
+  // build doesn't fail. The placeholder route 404s via notFound() below.
+  if (params.length === 0) {
+    return routing.locales.map((locale) => ({ locale, category: '__placeholder__' }));
+  }
+  return params;
 }
 
 export default async function CategoryPage({ params }: Props) {
