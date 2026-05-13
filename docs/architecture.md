@@ -6,7 +6,6 @@ This is a simplified public Next.js site:
 
 - `app/[locale]`: localized public pages.
 - `app/api/contact`: lightweight SMTP contact route.
-- `app/api/projects` and `app/api/categories`: read-only compatibility endpoints.
 - `app/studio`: embedded Sanity Studio.
 - `components`: public UI.
 - `lib/sanity.ts`: Sanity client setup.
