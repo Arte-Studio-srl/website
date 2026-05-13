@@ -1,11 +1,9 @@
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 import { hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { readSiteConfig } from "@/lib/site-config-storage";
-import { getCurrentData } from "@/lib/data-utils";
-import { SiteDataProvider } from "@/components/SiteDataProvider";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import FloatingContact from "@/components/FloatingContact";
 
@@ -26,10 +24,9 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   setRequestLocale(locale);
 
-  const [messages, siteConfig, { projects, categories }] = await Promise.all([
-    getMessages(),
+  const [messages, siteConfig] = await Promise.all([
+    import(`@/messages/${locale}.json`).then((m) => m.default),
     readSiteConfig(),
-    getCurrentData(locale),
   ]);
 
   const siteUrl =
@@ -38,7 +35,7 @@ export default async function LocaleLayout({ children, params }: Props) {
     "https://progettoartestudio.it";
 
   return (
-    <NextIntlClientProvider messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages}>
       <OrganizationJsonLd
         siteName={siteConfig.siteName}
         tagline={siteConfig.tagline}
@@ -46,11 +43,10 @@ export default async function LocaleLayout({ children, params }: Props) {
         contactEmail={siteConfig.contactEmail}
         address={siteConfig.address}
         social={siteConfig.social}
+        locale={locale}
       />
-      <SiteDataProvider data={{ siteConfig, projects, categories }}>
-        {children}
-        <FloatingContact />
-      </SiteDataProvider>
+      {children}
+      <FloatingContact contactEmail={siteConfig.contactEmail} />
     </NextIntlClientProvider>
   );
 }

@@ -1,5 +1,4 @@
 import { cache } from 'react';
-import { unstable_cache } from 'next/cache';
 import type { SiteConfig } from '@/types';
 import { fallbackSiteConfig } from '@/lib/default-data';
 import { isSanityConfigured, sanityFetch } from '@/lib/sanity';
@@ -56,20 +55,16 @@ function mergeSiteConfig(config: SanitySiteConfig | null): SiteConfig {
   };
 }
 
-const _readSiteConfig = unstable_cache(
-  async (): Promise<SiteConfig> => {
-    if (!isSanityConfigured) return fallbackSiteConfig;
+async function _readSiteConfig(): Promise<SiteConfig> {
+  if (!isSanityConfigured) return fallbackSiteConfig;
 
-    try {
-      const config = await sanityFetch<SanitySiteConfig>(siteConfigQuery);
-      return mergeSiteConfig(config);
-    } catch (error) {
-      console.error('Sanity site config fetch failed:', error);
-      return fallbackSiteConfig;
-    }
-  },
-  ['sanity-site-config'],
-  { tags: ['site-data'], revalidate: 3600 }
-);
+  try {
+    const config = await sanityFetch<SanitySiteConfig>(siteConfigQuery);
+    return mergeSiteConfig(config);
+  } catch (error) {
+    console.error('Sanity site config fetch failed:', error);
+    return fallbackSiteConfig;
+  }
+}
 
 export const readSiteConfig = cache(_readSiteConfig);

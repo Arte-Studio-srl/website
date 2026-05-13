@@ -4,13 +4,12 @@ import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
 import { schemaTypes } from './sanity/schemaTypes';
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'dummyprojectid';
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
+const projectId = 'l9howtog';
+const dataset = 'production';
 
 export default defineConfig({
   name: 'default',
   title: 'ArteStudio',
-  basePath: '/studio',
   projectId,
   dataset,
   plugins: [

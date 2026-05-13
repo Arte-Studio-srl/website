@@ -26,10 +26,12 @@
     "featuredSubtitle": "Esplora i nostri ultimi lavori in strutture per eventi e scenografia",
     "viewAllProjects": "Vedi Tutti i Progetti",
     "quote": "La nostra arte è spazio: vuoto o pieno, chiuso o aperto, reale o illusorio, buio, illuminato, razionale, folle. È lo spazio dell'apparizione.",
-    "quoteAuthor": "— Filosofia ArteStudio"
+    "quoteAuthor": "— Filosofia ArteStudio",
+    "goToSlide": "Vai alla slide {n}"
   },
   "footer": {
-    "ourWork": "I Nostri Lavori"
+    "ourWork": "I Nostri Lavori",
+    "contact": "Contatti"
   },
   "contact": {
     "title": "Contattaci",
@@ -48,7 +50,45 @@
     "validationEmailInvalid": "Email non valida",
     "validationSubject": "L'oggetto è obbligatorio",
     "validationMessage": "Il messaggio è obbligatorio",
-    "mapTitle": "ArteStudio su Google Maps"
+    "validationRequired": "Obbligatorio",
+    "mapTitle": "ArteStudio su Google Maps",
+    "infoHeading": "Informazioni di Contatto",
+    "address": "Indirizzo",
+    "legalAddress": "Sede legale",
+    "viewOnMaps": "Vedi su Google Maps",
+    "openInMaps": "Apri in Google Maps",
+    "businessDetails": "Dettagli Aziendali",
+    "workingHours": "Orari di Apertura",
+    "closed": "Chiuso",
+    "findUs": "Dove Siamo",
+    "formHeading": "Inviaci un Messaggio",
+    "formSubtitle": "Rispondiamo entro un giorno lavorativo."
+  },
+  "floating": {
+    "title": "Parliamone",
+    "subtitle": "Rispondiamo entro un giorno lavorativo",
+    "messageLabel": "Dettagli del progetto",
+    "preferEmail": "Preferisci l'email?",
+    "open": "Apri il modulo di contatto",
+    "close": "Chiudi il modulo di contatto"
+  },
+  "project": {
+    "timeline": "Timeline del Progetto",
+    "phase": "Fase {n}",
+    "step": "Passo {n}",
+    "year": "Anno",
+    "client": "Cliente",
+    "category": "Categoria",
+    "clickToEnlarge": "Clicca per ingrandire",
+    "assets": "{count, plural, one {# contenuto} other {# contenuti}}",
+    "imageViewer": "Visualizzatore immagini",
+    "keyboardHint": "Usa le frecce o i pulsanti per navigare • Premi ESC per chiudere",
+    "openLightbox": "Apri immagine ingrandita",
+    "closeLightbox": "Chiudi",
+    "previousImage": "Immagine precedente",
+    "nextImage": "Immagine successiva",
+    "openStage": "Apri fase {title}",
+    "viewImage": "Vedi immagine {n}"
   },
   "notFound": {
     "title": "Pagina non trovata",
@@ -60,7 +100,7 @@
     "noProjects": "Nessun progetto disponibile in questa categoria.",
     "allTitle": "Tutti i Progetti",
     "allSubtitle": "Esplora il portfolio completo di strutture per eventi e scenografia",
-    "projectsFound": "{count} progetto trovato",
-    "projectsFound_other": "{count} progetti trovati"
+    "projectsFound": "{count, plural, one {# progetto trovato} other {# progetti trovati}}",
+    "viewProject": "Vedi Progetto"
   }
 }

@@ -47,7 +47,7 @@ export function useContactForm<T extends Values>({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(buildPayload(values)),
       });
-      const data = await response.json();
+      const data = (await response.json()) as { success?: boolean; error?: string };
       if (!response.ok || !data.success) {
         throw new Error(data.error || 'Send failed');
       }

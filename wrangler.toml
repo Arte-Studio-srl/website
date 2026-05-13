@@ -1,0 +1,23 @@
+name = "artestudio-website"
+compatibility_date = "2025-04-01"
+pages_build_output_dir = "out"
+
+# Workers Rate Limiting binding used by functions/api/contact.ts.
+# Limits to 3 requests per 60 seconds, keyed by submitter email.
+# This binding can also be configured via the Cloudflare Pages dashboard:
+#   Settings → Functions → Bindings → Rate Limiting
+[[unsafe.bindings]]
+name = "RATE_LIMITER"
+type = "ratelimit"
+namespace_id = "1001"
+simple = { limit = 3, period = 60 }
+
+# Required environment variables (configure as Production/Preview secrets in CF Pages):
+#   SANITY_PROJECT_ID          – Sanity project id (build-time)
+#   SANITY_DATASET             – Sanity dataset name (build-time)
+#   NEXT_PUBLIC_SANITY_PROJECT_ID – mirror of SANITY_PROJECT_ID
+#   NEXT_PUBLIC_SANITY_DATASET    – mirror of SANITY_DATASET
+#   NEXT_PUBLIC_SITE_URL       – canonical site URL (build-time)
+#   RESEND_API_KEY             – Resend API key (Function runtime)
+#   CONTACT_FROM               – verified Resend sender (e.g. "ArteStudio <no-reply@yourdomain.it>")
+#   CONTACT_TO                 – inbox that receives contact submissions

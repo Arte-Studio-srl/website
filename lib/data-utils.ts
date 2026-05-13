@@ -1,5 +1,4 @@
 import { cache } from 'react';
-import { unstable_cache } from 'next/cache';
 import { sanityFetch, isSanityConfigured } from './sanity';
 import type { Category, Project, ProjectStage, StageIcon } from '@/types';
 
@@ -112,35 +111,31 @@ function normalizeCategory(category: SanityCategory): Category | null {
   };
 }
 
-const _getCurrentData = unstable_cache(
-  async (locale: Locale): Promise<{ projects: Project[]; categories: Category[] }> => {
-    if (!isSanityConfigured) {
-      return { projects: [], categories: [] };
-    }
+async function _getCurrentData(locale: Locale): Promise<{ projects: Project[]; categories: Category[] }> {
+  if (!isSanityConfigured) {
+    return { projects: [], categories: [] };
+  }
 
-    try {
-      const [projectsRaw, categoriesRaw] = await Promise.all([
-        sanityFetch<SanityProject[]>(buildProjectsQuery(locale)),
-        sanityFetch<SanityCategory[]>(buildCategoriesQuery(locale)),
-      ]);
+  try {
+    const [projectsRaw, categoriesRaw] = await Promise.all([
+      sanityFetch<SanityProject[]>(buildProjectsQuery(locale)),
+      sanityFetch<SanityCategory[]>(buildCategoriesQuery(locale)),
+    ]);
 
-      const projects = (projectsRaw || [])
-        .map(normalizeProject)
-        .filter((project): project is Project => Boolean(project));
+    const projects = (projectsRaw || [])
+      .map(normalizeProject)
+      .filter((project): project is Project => Boolean(project));
 
-      const categories = (categoriesRaw || [])
-        .map(normalizeCategory)
-        .filter((category): category is Category => Boolean(category));
+    const categories = (categoriesRaw || [])
+      .map(normalizeCategory)
+      .filter((category): category is Category => Boolean(category));
 
-      return { projects, categories };
-    } catch (error) {
-      console.error('Sanity data fetch failed:', error);
-      return { projects: [], categories: [] };
-    }
-  },
-  ['sanity-site-data'],
-  { tags: ['site-data'], revalidate: 3600 }
-);
+    return { projects, categories };
+  } catch (error) {
+    console.error('Sanity data fetch failed:', error);
+    return { projects: [], categories: [] };
+  }
+}
 
 export const getCurrentData = cache((locale?: string) =>
   _getCurrentData(normalizeLocale(locale ?? DEFAULT_LOCALE))

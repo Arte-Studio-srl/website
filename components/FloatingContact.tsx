@@ -1,9 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
-import { useSiteData } from '@/components/SiteDataProvider';
+import { useTranslations } from 'next-intl';
 import { EMAIL_REGEX, useContactForm } from '@/lib/use-contact-form';
 
 interface WidgetForm extends Record<string, string | undefined> {
@@ -14,20 +14,28 @@ interface WidgetForm extends Record<string, string | undefined> {
 
 const INITIAL: WidgetForm = { name: '', email: '', message: '' };
 
-export default function FloatingContact() {
-  const { siteConfig: site } = useSiteData();
+interface Props {
+  contactEmail: string;
+}
+
+export default function FloatingContact({ contactEmail }: Props) {
+  const t = useTranslations('contact');
+  const tFloat = useTranslations('floating');
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
+  const required = useMemo(() => t('validationRequired'), [t]);
+  const invalidEmail = useMemo(() => t('validationEmailInvalid'), [t]);
+
   const validate = useCallback((values: WidgetForm) => {
     const errors: Partial<Record<keyof WidgetForm, string>> = {};
-    if (!values.name.trim()) errors.name = 'Required';
-    if (!values.email.trim()) errors.email = 'Required';
-    else if (!EMAIL_REGEX.test(values.email)) errors.email = 'Invalid email';
-    if (!values.message.trim()) errors.message = 'Required';
+    if (!values.name.trim()) errors.name = required;
+    if (!values.email.trim()) errors.email = required;
+    else if (!EMAIL_REGEX.test(values.email)) errors.email = invalidEmail;
+    if (!values.message.trim()) errors.message = required;
     return errors;
-  }, []);
+  }, [required, invalidEmail]);
 
   const buildPayload = useCallback((values: WidgetForm) => ({
     ...values,
@@ -89,13 +97,13 @@ export default function FloatingContact() {
               <div className="flex items-center gap-3">
                 <Icon icon="ph:chat-circle-dots" className="w-6 h-6 text-bronze-300" aria-hidden />
                 <div>
-                  <p className="font-display text-lg">Let&apos;s talk</p>
-                  <p className="text-sm text-cream/80">We reply within one business day</p>
+                  <p className="font-display text-lg">{tFloat('title')}</p>
+                  <p className="text-sm text-cream/80">{tFloat('subtitle')}</p>
                 </div>
               </div>
               <button
                 onClick={() => setOpen(false)}
-                aria-label="Close contact form"
+                aria-label={tFloat('close')}
                 className="text-cream/80 hover:text-white transition-colors"
               >
                 <Icon icon="ph:x" className="w-5 h-5" aria-hidden />
@@ -106,7 +114,7 @@ export default function FloatingContact() {
               <div className="space-y-1">
                 <label htmlFor="name" className="text-sm font-display text-charcoal flex items-center gap-1.5">
                   <Icon icon="ph:user" className="w-3.5 h-3.5 text-bronze-500" aria-hidden />
-                  Name *
+                  {t('name')} *
                 </label>
                 <input
                   id="name"
@@ -123,7 +131,7 @@ export default function FloatingContact() {
               <div className="space-y-1">
                 <label htmlFor="email" className="text-sm font-display text-charcoal flex items-center gap-1.5">
                   <Icon icon="ph:envelope" className="w-3.5 h-3.5 text-bronze-500" aria-hidden />
-                  Email *
+                  {t('email')} *
                 </label>
                 <input
                   id="email"
@@ -141,7 +149,7 @@ export default function FloatingContact() {
               <div className="space-y-1">
                 <label htmlFor="message" className="text-sm font-display text-charcoal flex items-center gap-1.5">
                   <Icon icon="ph:note-pencil" className="w-3.5 h-3.5 text-bronze-500" aria-hidden />
-                  Project details *
+                  {tFloat('messageLabel')} *
                 </label>
                 <textarea
                   id="message"
@@ -157,13 +165,13 @@ export default function FloatingContact() {
               </div>
 
               <div className="flex items-center justify-between text-xs text-charcoal/70">
-                <span>Prefer email?</span>
+                <span>{tFloat('preferEmail')}</span>
                 <a
-                  href={`mailto:${site.contactEmail}`}
+                  href={`mailto:${contactEmail}`}
                   className="text-bronze-700 hover:text-bronze-600 font-display inline-flex items-center gap-1"
                 >
                   <Icon icon="ph:envelope-simple" className="w-3 h-3" aria-hidden />
-                  {site.contactEmail}
+                  {contactEmail}
                 </a>
               </div>
 
@@ -177,8 +185,8 @@ export default function FloatingContact() {
                 }`}
               >
                 {isSubmitting
-                  ? <><Icon icon="ph:circle-notch" className="w-4 h-4 animate-spin" aria-hidden /> Sending...</>
-                  : <><Icon icon="ph:paper-plane-tilt" className="w-4 h-4" aria-hidden /> Send message</>
+                  ? <><Icon icon="ph:circle-notch" className="w-4 h-4 animate-spin" aria-hidden /> {t('sending')}</>
+                  : <><Icon icon="ph:paper-plane-tilt" className="w-4 h-4" aria-hidden /> {t('send')}</>
                 }
               </button>
 
@@ -191,7 +199,7 @@ export default function FloatingContact() {
                     className="rounded-md border border-green-300 bg-green-50 px-3 py-2 text-green-800 text-sm flex items-center gap-2"
                   >
                     <Icon icon="ph:check-circle" className="w-4 h-4 shrink-0" aria-hidden />
-                    Received! We will contact you shortly.
+                    {t('success')}
                   </motion.div>
                 )}
                 {status === 'error' && (
@@ -202,7 +210,7 @@ export default function FloatingContact() {
                     className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-red-700 text-sm flex items-center gap-2"
                   >
                     <Icon icon="ph:warning-circle" className="w-4 h-4 shrink-0" aria-hidden />
-                    Something went wrong. Please try again.
+                    {t('error')}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -218,7 +226,7 @@ export default function FloatingContact() {
           resetStatus();
         }}
         aria-expanded={open}
-        aria-label="Open contact form"
+        aria-label={tFloat('open')}
         className="relative flex items-center justify-center rounded-full bg-bronze-600 p-3 text-white shadow-xl transition hover:bg-bronze-700 focus:outline-none focus:ring-2 focus:ring-bronze-300 h-14 w-14"
         whileTap={{ scale: 0.96 }}
       >

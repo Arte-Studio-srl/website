@@ -1,10 +1,9 @@
-'use client';
-
 import { Link } from '@/i18n/navigation';
 import { Icon } from '@iconify/react';
-import { useSiteData } from '@/components/SiteDataProvider';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { formatPhoneDisplay, formatTelHref } from '@/lib/site-config';
+import { readSiteConfig } from '@/lib/site-config-storage';
+import { getCurrentData } from '@/lib/data-utils';
 
 type SocialKey = 'facebook' | 'instagram' | 'linkedin';
 
@@ -29,17 +28,19 @@ function SocialIcon({ href, label, type }: { href: string; label: string; type: 
   );
 }
 
-export default function Footer() {
-  const t = useTranslations('common');
-  const tFooter = useTranslations('footer');
+export default async function Footer({ locale }: { locale: string }) {
+  const t = await getTranslations({ locale, namespace: 'common' });
+  const tFooter = await getTranslations({ locale, namespace: 'footer' });
+  const [site, { categories }] = await Promise.all([
+    readSiteConfig(),
+    getCurrentData(locale),
+  ]);
   const currentYear = new Date().getFullYear();
-  const { siteConfig: site, categories } = useSiteData();
 
   return (
     <footer className="relative bg-charcoal text-cream pt-16 pb-20">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-          {/* About */}
           <div>
             <h3 className="font-display text-2xl mb-4 text-bronze-300">{site.siteName}</h3>
             <p className="text-cream/80 leading-relaxed">
@@ -47,7 +48,6 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Quick Links */}
           <div>
             <h4 className="font-display text-xl mb-4 text-bronze-300">{tFooter('ourWork')}</h4>
             <ul className="space-y-2">
@@ -65,9 +65,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact Info */}
           <div>
-            <h4 className="font-display text-xl mb-4 text-bronze-300">Contact</h4>
+            <h4 className="font-display text-xl mb-4 text-bronze-300">{tFooter('contact')}</h4>
             <div className="space-y-3 text-cream/80">
               <div className="flex items-start gap-2">
                 <Icon icon="ph:map-pin" className="w-4 h-4 text-bronze-400 mt-0.5 shrink-0" aria-hidden />
@@ -93,7 +92,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
         <div className="border-t border-cream/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-cream/60 text-sm">
@@ -120,7 +118,6 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Blueprint decoration */}
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 h-[3px] bg-gradient-to-r from-transparent via-bronze-600 to-transparent opacity-50"
         aria-hidden="true"

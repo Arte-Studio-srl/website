@@ -19,6 +19,7 @@ export function OrganizationJsonLd({
   contactEmail,
   address,
   social,
+  locale,
 }: {
   siteName: string;
   tagline: string;
@@ -26,8 +27,10 @@ export function OrganizationJsonLd({
   contactEmail: string;
   address: string;
   social?: { facebook?: string; instagram?: string; linkedin?: string };
+  locale?: string;
 }) {
   const sameAs = [social?.facebook, social?.instagram, social?.linkedin].filter(Boolean) as string[];
+  const inLanguage = locale === "en" ? "en-US" : "it-IT";
 
   const data = {
     "@context": "https://schema.org",
@@ -52,7 +55,7 @@ export function OrganizationJsonLd({
         name: siteName,
         description: tagline,
         publisher: { "@id": `${siteUrl}/#organization` },
-        inLanguage: "it-IT",
+        inLanguage,
       },
     ],
   };

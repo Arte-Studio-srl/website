@@ -5,7 +5,7 @@ import { getCurrentData } from "@/lib/data-utils";
 const DEFAULT_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://progettoartestudio.it";
 const LOCALES = ["it", "en"];
 
-export const revalidate = 3600; // 1 hour
+export const dynamic = "force-static";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const site = await readSiteConfig();
