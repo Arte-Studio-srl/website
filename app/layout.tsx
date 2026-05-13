@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
-import FloatingContact from "@/components/FloatingContact";
 import { readSiteConfig } from "@/lib/site-config-storage";
-import { getCurrentData } from "@/lib/data-utils";
-import { SiteDataProvider } from "@/components/SiteDataProvider";
 import { buildBaseMetadata } from "@/lib/seo";
-import { OrganizationJsonLd } from "@/components/JsonLd";
 import { getLocale } from "next-intl/server";
+import { routing } from "@/i18n/routing";
 
 const cormorant = Cormorant_Garamond({
   weight: ['300', '400', '500', '600', '700'],
@@ -38,33 +35,16 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const siteConfig = await readSiteConfig();
-  let htmlLang = "it";
+  // /studio and other non-localized routes don't go through the next-intl
+  // middleware, so getLocale() throws there — fall back to the default locale.
+  let htmlLang: string = routing.defaultLocale;
   try {
     htmlLang = await getLocale();
-  } catch {
-    // Admin or non-i18n routes
-  }
-  const { projects, categories } = await getCurrentData(htmlLang);
-
-  const siteUrl = siteConfig.seo?.siteUrl || process.env.NEXT_PUBLIC_SITE_URL || "https://progettoartestudio.it";
+  } catch {}
 
   return (
     <html lang={htmlLang} className={`${cormorant.variable} ${inter.variable}`}>
-      <body className="font-sans">
-        <OrganizationJsonLd
-          siteName={siteConfig.siteName}
-          tagline={siteConfig.tagline}
-          siteUrl={siteUrl}
-          contactEmail={siteConfig.contactEmail}
-          address={siteConfig.address}
-          social={siteConfig.social}
-        />
-        <SiteDataProvider data={{ siteConfig, projects, categories }}>
-          {children}
-          <FloatingContact />
-        </SiteDataProvider>
-      </body>
+      <body className="font-sans">{children}</body>
     </html>
   );
 }

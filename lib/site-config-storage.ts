@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
 import type { SiteConfig } from '@/types';
 import { fallbackSiteConfig } from '@/lib/default-data';
@@ -55,7 +56,7 @@ function mergeSiteConfig(config: SanitySiteConfig | null): SiteConfig {
   };
 }
 
-export const readSiteConfig = unstable_cache(
+const _readSiteConfig = unstable_cache(
   async (): Promise<SiteConfig> => {
     if (!isSanityConfigured) return fallbackSiteConfig;
 
@@ -70,3 +71,5 @@ export const readSiteConfig = unstable_cache(
   ['sanity-site-config'],
   { tags: ['site-data'], revalidate: 3600 }
 );
+
+export const readSiteConfig = cache(_readSiteConfig);

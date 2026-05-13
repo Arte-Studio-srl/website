@@ -1,59 +1,25 @@
 'use client';
 
-import { useState, useEffect, useCallback, type ReactElement } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { Icon } from '@iconify/react';
 import { Project, StageIcon } from '@/types';
 
 const FALLBACK_ICON_ORDER: StageIcon[] = ['compass', 'blueprint', 'layers', 'camera', 'sparkles', 'flag'];
 
-const ICON_SHAPES: Record<StageIcon, ReactElement> = {
-  compass: (
-    <>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M10 10l5-2-2 5-5 2 2-5z" />
-    </>
-  ),
-  blueprint: (
-    <>
-      <path d="M9 12h6" />
-      <path d="M9 16h6" />
-      <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-    </>
-  ),
-  layers: (
-    <>
-      <path d="M3 7l9 5 9-5-9-5-9 5z" />
-      <path d="M3 12l9 5 9-5" />
-      <path d="M3 17l9 5 9-5" />
-    </>
-  ),
-  camera: (
-    <>
-      <path d="M4 7h4l2-2h4l2 2h4v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7z" />
-      <circle cx="12" cy="12" r="3.5" />
-    </>
-  ),
-  sparkles: (
-    <>
-      <path d="M12 4l1.4 3.5L17 9l-3.6 1.5L12 14l-1.4-3.5L7 9l3.6-1.5L12 4z" />
-      <path d="M5 16l0.8 2 2 .8-2 .8L5 22l-0.8-2-2-.8 2-.8L5 16z" />
-      <path d="M19 12l0.7 1.6L21 14l-1.3.5L19 16l-0.7-1.5L17 14l1.3-.5L19 12z" />
-    </>
-  ),
-  flag: (
-    <>
-      <path d="M6 4v16" />
-      <path d="M8 4h9l-2 4 2 4H8" />
-    </>
-  ),
+const STAGE_ICON_IDS: Record<StageIcon, string> = {
+  compass: 'ph:compass',
+  blueprint: 'ph:file-text',
+  layers: 'ph:stack',
+  camera: 'ph:camera',
+  sparkles: 'ph:sparkle',
+  flag: 'ph:flag',
 };
 
 const renderIcon = (icon: StageIcon) => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    {ICON_SHAPES[icon]}
-  </svg>
+  <Icon icon={STAGE_ICON_IDS[icon]} className="w-5 h-5" aria-hidden />
 );
 
 interface ProjectDetailClientProps {
@@ -339,9 +305,7 @@ export default function ProjectDetailClient({ project }: ProjectDetailClientProp
               className="absolute top-4 right-4 text-white hover:text-bronze-300 transition-colors z-10"
               aria-label="Close lightbox"
             >
-              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <Icon icon="ph:x" className="w-8 h-8" aria-hidden />
             </button>
 
             {/* Keyboard hint */}
@@ -375,9 +339,7 @@ export default function ProjectDetailClient({ project }: ProjectDetailClientProp
                   className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-4 rounded transition-colors"
                   aria-label="Previous image"
                 >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
+                  <Icon icon="ph:caret-left" className="w-6 h-6" aria-hidden />
                 </button>
                 <button
                   onClick={(e) => {
@@ -387,9 +349,7 @@ export default function ProjectDetailClient({ project }: ProjectDetailClientProp
                   className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-4 rounded transition-colors"
                   aria-label="Next image"
                 >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  <Icon icon="ph:caret-right" className="w-6 h-6" aria-hidden />
                 </button>
 
                 {/* Image counter */}

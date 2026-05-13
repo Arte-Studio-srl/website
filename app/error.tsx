@@ -2,18 +2,7 @@
 
 import { useEffect } from 'react';
 import { Link } from '@/i18n/navigation';
-
-const IconArrowClockwise = () => (
-  <svg className="w-5 h-5" viewBox="0 0 256 256" fill="currentColor" aria-hidden>
-    <path d="M240,56v48a8,8,0,0,1-8,8H184a8,8,0,0,1,0-16h28.7L196,79.3a80,80,0,1,0,1.8,113.1,8,8,0,1,1,11.3,11.3A96,96,0,1,1,195.5,68.5L216,89.3V56a8,8,0,0,1,16,0Z" />
-  </svg>
-);
-
-const IconHouse = () => (
-  <svg className="w-5 h-5" viewBox="0 0 256 256" fill="currentColor" aria-hidden>
-    <path d="M219.3,108.7l-80-80a16,16,0,0,0-22.6,0l-80,80A15.9,15.9,0,0,0,32,120v96a8,8,0,0,0,8,8H96a8,8,0,0,0,8-8V160h48v56a8,8,0,0,0,8,8h56a8,8,0,0,0,8-8V120A15.9,15.9,0,0,0,219.3,108.7Z" />
-  </svg>
-);
+import { Icon } from '@iconify/react';
 
 export default function Error({
   error,
@@ -40,14 +29,14 @@ export default function Error({
             onClick={reset}
             className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-bronze-600 text-white hover:bg-bronze-700 transition-all font-display text-lg"
           >
-            <IconArrowClockwise />
+            <Icon icon="ph:arrow-clockwise" className="w-5 h-5" aria-hidden />
             Try Again
           </button>
           <Link
             href="/"
             className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-bronze-600 text-bronze-600 hover:bg-bronze-600 hover:text-white transition-all font-display text-lg"
           >
-            <IconHouse />
+            <Icon icon="ph:house" className="w-5 h-5" aria-hidden />
             Back to Home
           </Link>
         </div>

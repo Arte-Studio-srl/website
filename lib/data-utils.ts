@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
 import { sanityFetch, isSanityConfigured } from './sanity';
 import type { Category, Project, ProjectStage, StageIcon } from '@/types';
@@ -141,8 +142,9 @@ const _getCurrentData = unstable_cache(
   { tags: ['site-data'], revalidate: 3600 }
 );
 
-export const getCurrentData = (locale?: string) =>
-  _getCurrentData(normalizeLocale(locale ?? DEFAULT_LOCALE));
+export const getCurrentData = cache((locale?: string) =>
+  _getCurrentData(normalizeLocale(locale ?? DEFAULT_LOCALE))
+);
 
 export const getProjectById = async (id: string, locale?: string): Promise<Project | undefined> => {
   const { projects } = await getCurrentData(locale);
