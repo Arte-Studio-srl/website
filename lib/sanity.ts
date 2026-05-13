@@ -6,6 +6,10 @@ const apiVersion = process.env.SANITY_API_VERSION || '2025-02-25';
 
 export const isSanityConfigured = Boolean(projectId && dataset);
 
+if (typeof window === 'undefined') {
+  console.log(`[sanity] configured=${isSanityConfigured} projectId=${projectId ? 'set' : 'MISSING'} dataset=${dataset ? 'set' : 'MISSING'}`);
+}
+
 export const sanityClient = isSanityConfigured
   ? createClient({
       projectId,
