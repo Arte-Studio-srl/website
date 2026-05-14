@@ -3,6 +3,7 @@ import { Icon } from '@iconify/react';
 import { getTranslations } from 'next-intl/server';
 import { formatPhoneDisplay, formatTelHref } from '@/lib/site-config';
 import type { Category, SiteConfig } from '@/types';
+import type { Locale } from '@/i18n/routing';
 
 type SocialKey = 'facebook' | 'instagram' | 'linkedin';
 
@@ -32,7 +33,7 @@ export default async function Footer({
   site,
   categories,
 }: {
-  locale: string;
+  locale: Locale;
   site: SiteConfig;
   categories: Category[];
 }) {

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { Link } from '@/i18n/navigation';
 import { Icon } from '@iconify/react';
+import ButtonLink, { buttonVariants } from '@/components/ui/ButtonLink';
 
 export default function Error({
   error,
@@ -27,18 +27,18 @@ export default function Error({
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={reset}
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-bronze-600 text-white hover:bg-bronze-700 transition-all font-display text-lg"
+            className={buttonVariants()}
           >
             <Icon icon="ph:arrow-clockwise" className="w-5 h-5" aria-hidden />
             Try Again
           </button>
-          <Link
+          <ButtonLink
             href="/"
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-bronze-600 text-bronze-600 hover:bg-bronze-600 hover:text-white transition-all font-display text-lg"
+            variant="outlineBronze"
           >
             <Icon icon="ph:house" className="w-5 h-5" aria-hidden />
             Back to Home
-          </Link>
+          </ButtonLink>
         </div>
         {error.digest && (
           <p className="text-xs text-charcoal/40 mt-6">Error ID: {error.digest}</p>

@@ -1,5 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { Icon } from '@iconify/react';
+import SectionHeading from '@/components/SectionHeading';
+import type { Locale } from '@/i18n/routing';
 
 const STEPS = [
   { key: 'project', icon: 'ph:compass-tool' },
@@ -8,7 +10,7 @@ const STEPS = [
 ] as const;
 
 interface Props {
-  locale: string;
+  locale: Locale;
 }
 
 export default async function ProcessSection({ locale }: Props) {
@@ -23,15 +25,11 @@ export default async function ProcessSection({ locale }: Props) {
       />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
-        <div className="text-center mb-20">
-          <h2 className="font-display text-4xl md:text-5xl text-charcoal mb-4">
-            {t('processTitle')}
-          </h2>
-          <div className="w-24 h-1 bg-bronze-600 mx-auto mb-6" />
-          <p className="text-lg text-charcoal/70 max-w-2xl mx-auto">
-            {t('processSubtitle')}
-          </p>
-        </div>
+        <SectionHeading
+          title={t('processTitle')}
+          subtitle={t('processSubtitle')}
+          className="mb-20"
+        />
 
         <div className="relative">
           <ConnectorLine />

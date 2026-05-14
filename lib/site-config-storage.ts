@@ -2,8 +2,7 @@ import { cache } from 'react';
 import type { SiteConfig } from '@/types';
 import { fallbackSiteConfig } from '@/lib/default-data';
 import { isSanityConfigured, sanityFetch } from '@/lib/sanity';
-
-type Locale = 'it' | 'en';
+import type { Locale } from '@/i18n/routing';
 
 type SanitySiteConfig = Partial<SiteConfig> & {
   heroCarousel?: Array<{
@@ -54,7 +53,7 @@ function buildSiteConfigQuery(locale: Locale): string {
 }`;
 }
 
-function normalizeLocale(input?: string | null): Locale {
+function normalizeLocale(input?: Locale | string | null): Locale {
   return input === 'en' ? 'en' : 'it';
 }
 
@@ -103,6 +102,6 @@ async function _readSiteConfig(locale: Locale): Promise<SiteConfig> {
   }
 }
 
-export const readSiteConfig = cache((locale?: string) =>
+export const readSiteConfig = cache((locale?: Locale | string) =>
   _readSiteConfig(normalizeLocale(locale)),
 );

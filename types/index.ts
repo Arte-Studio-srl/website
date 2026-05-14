@@ -40,6 +40,16 @@ export interface Category {
   updatedAt?: string;
 }
 
+export interface Faq {
+  id: string;
+  question: string;
+  answer: string;
+  featured: boolean;
+  sortOrder: number;
+  /** ISO timestamp from Sanity `_updatedAt`, used for sitemap lastmod */
+  updatedAt?: string;
+}
+
 export type OpeningHour = {
   day: string;
   open: string;

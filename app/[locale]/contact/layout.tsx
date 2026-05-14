@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { readSiteConfig } from "@/lib/site-config-storage";
 import { buildPageMetadata } from "@/lib/seo";
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import { routing } from "@/i18n/routing";
+import { routing, type Locale } from "@/i18n/routing";
 
 type Props = {
   children: React.ReactNode;
@@ -14,7 +14,10 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: localeParam } = await params;
+  const locale = routing.locales.includes(localeParam as Locale)
+    ? (localeParam as Locale)
+    : routing.defaultLocale;
   const t = await getTranslations({ locale, namespace: "metadata" });
   const site = await readSiteConfig(locale);
   return buildPageMetadata(
@@ -29,7 +32,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ContactLayout({ children, params }: Props) {
-  const { locale } = await params;
+  const { locale: localeParam } = await params;
+  const locale = routing.locales.includes(localeParam as Locale)
+    ? (localeParam as Locale)
+    : routing.defaultLocale;
   setRequestLocale(locale);
   return <>{children}</>;
 }

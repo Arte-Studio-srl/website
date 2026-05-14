@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
 import type { SiteConfig, Project, Category } from "@/types";
+import type { Locale } from "@/i18n/routing";
 
 const DEFAULT_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://progettoartestudio.it";
 const MAX_DESCRIPTION_LENGTH = 160;
-const LOCALES = ["it", "en"] as const;
+const LOCALES: readonly Locale[] = ["it", "en"];
 
-const OG_LOCALE: Record<string, string> = {
+const OG_LOCALE: Record<Locale, string> = {
   it: "it_IT",
   en: "en_US",
 };
 
 /** Open Graph locale metadata for multilingual SEO */
-function getOgLocales(locale?: string) {
+function getOgLocales(locale?: Locale) {
   if (!locale) return {};
   const otherLocales = LOCALES.filter((l) => l !== locale);
   return {
@@ -21,7 +22,7 @@ function getOgLocales(locale?: string) {
 }
 
 /** Build path with locale prefix (e.g. /it/contact/) */
-export function pathWithLocale(path: string, locale: string): string {
+export function pathWithLocale(path: string, locale: Locale): string {
   const clean = path.startsWith("/") ? path.slice(1) : path;
   return `/${locale}/${clean}`.replace(/\/+/g, "/");
 }
@@ -110,7 +111,7 @@ export function buildBaseMetadata(site: SiteConfig): Metadata {
 export function buildProjectMetadata(
   project: Project,
   site: SiteConfig,
-  locale?: string,
+  locale?: Locale,
   descriptionFallback?: string
 ): Metadata {
   const siteUrl = site.seo?.siteUrl || DEFAULT_SITE_URL;
@@ -169,7 +170,7 @@ export function buildCategoryMetadata(
   category: Category,
   projectCount: number,
   site: SiteConfig,
-  locale?: string,
+  locale?: Locale,
   descriptionFallback?: string
 ): Metadata {
   const siteUrl = site.seo?.siteUrl || DEFAULT_SITE_URL;
@@ -224,7 +225,7 @@ export function buildPageMetadata(
     absoluteTitle?: boolean;
   },
   site: SiteConfig,
-  locale?: string
+  locale?: Locale
 ): Metadata {
   const siteUrl = site.seo?.siteUrl || DEFAULT_SITE_URL;
   const path = opts.path.startsWith("/") ? opts.path : `/${opts.path}`;

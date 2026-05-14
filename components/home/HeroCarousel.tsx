@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { useTranslations } from 'next-intl';
+import ButtonLink from '@/components/ui/ButtonLink';
 import type { HeroSlide } from '@/types';
 
 interface Props {
@@ -88,20 +88,21 @@ export default function HeroCarousel({ slides, tagline }: Props) {
             transition={{ duration: 0.6, delay: 0.9 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <Link
+            <ButtonLink
               href="#projects"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-bronze-600 text-white hover:bg-bronze-700 transition-all font-display text-lg hover:shadow-2xl transform hover:scale-105"
+              variant="primary"
+              className="hover:shadow-2xl transform hover:scale-105"
             >
               {t('exploreProjects')}
               <Icon icon="ph:arrow-right" className="w-5 h-5" aria-hidden />
-            </Link>
-            <Link
+            </ButtonLink>
+            <ButtonLink
               href="/contact"
-              className="inline-flex items-center gap-2 px-8 py-4 border-2 border-white text-white hover:bg-white hover:text-charcoal transition-all font-display text-lg backdrop-blur-sm"
+              variant="outlineLight"
             >
               <Icon icon="ph:chat-dots" className="w-5 h-5" aria-hidden />
               {t('getInTouch')}
-            </Link>
+            </ButtonLink>
           </motion.div>
         </motion.div>
       </div>

@@ -7,11 +7,13 @@ import CategoriesSection from "@/components/home/CategoriesSection";
 import ProcessSection from "@/components/home/ProcessSection";
 import FeaturedProjects from "@/components/home/FeaturedProjects";
 import Quote from "@/components/home/Quote";
+import FaqSection from "@/components/home/FaqSection";
 import { readSiteConfig } from "@/lib/site-config-storage";
 import { getCurrentData } from "@/lib/data-utils";
 import { buildPageMetadata } from "@/lib/seo";
 import { setRequestLocale, getTranslations } from "next-intl/server";
-import { routing } from "@/i18n/routing";
+import { isLocale, routing, type Locale } from "@/i18n/routing";
+import { notFound } from "next/navigation";
 import type { HeroSlide } from "@/types";
 
 const PLACEHOLDER_SLIDE: HeroSlide = {
@@ -30,7 +32,8 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
+  const { locale: localeParam } = await params;
+  const locale = isLocale(localeParam) ? localeParam : routing.defaultLocale;
   const t = await getTranslations({ locale, namespace: "metadata" });
   const site = await readSiteConfig(locale);
   return buildPageMetadata(
@@ -46,7 +49,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function HomePage({ params }: Props) {
-  const { locale } = await params;
+  const { locale: localeParam } = await params;
+  if (!isLocale(localeParam)) notFound();
+  const locale: Locale = localeParam;
   setRequestLocale(locale);
 
   const [siteConfig, { projects, categories }] = await Promise.all([
@@ -76,6 +81,7 @@ export default async function HomePage({ params }: Props) {
       <ProcessSection locale={locale} />
       <FeaturedProjects projects={projects} locale={locale} />
       <Quote locale={locale} />
+      <FaqSection locale={locale} />
       <Footer locale={locale} site={siteConfig} categories={categories} />
     </main>
   );

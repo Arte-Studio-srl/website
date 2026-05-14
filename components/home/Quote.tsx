@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
+import type { Locale } from '@/i18n/routing';
 
-export default async function Quote({ locale }: { locale: string }) {
+export default async function Quote({ locale }: { locale: Locale }) {
   const t = await getTranslations({ locale, namespace: 'home' });
 
   return (

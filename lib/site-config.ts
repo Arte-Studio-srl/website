@@ -1,7 +1,6 @@
 import type { SiteConfig } from '@/types';
 
-const DAY_KEYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const;
-export type DayKey = (typeof DAY_KEYS)[number];
+export type DayKey = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
 
 const DAY_ALIASES: Record<string, DayKey> = {
   monday: 'monday', mon: 'monday',

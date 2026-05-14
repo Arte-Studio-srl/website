@@ -106,6 +106,17 @@ export default function ProjectDetailClient({ project }: ProjectDetailClientProp
         </section>
       )}
 
+      {!currentStage && (
+        <section className="relative bg-charcoal text-cream py-16">
+          <div className="absolute inset-0 blueprint-grid opacity-10" />
+          <div className="container mx-auto px-4 lg:px-8 relative z-10">
+            <div className="rounded-xl border border-cream/15 bg-white/5 px-6 py-12 text-center text-cream/70">
+              {t('noProjectStages')}
+            </div>
+          </div>
+        </section>
+      )}
+
       <Lightbox
         open={lightboxOpen}
         images={currentImages}

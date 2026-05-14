@@ -1,13 +1,13 @@
 import { cache } from 'react';
 import { sanityFetch, isSanityConfigured } from './sanity';
-import type { Category, Project, ProjectImage, ProjectStage, StageIcon } from '@/types';
+import type { Category, Faq, Project, ProjectImage, ProjectStage, StageIcon } from '@/types';
+import type { Locale } from '@/i18n/routing';
 
 const stageIcons: StageIcon[] = ['compass', 'blueprint', 'layers', 'camera', 'sparkles', 'flag'];
 
-export type Locale = 'it' | 'en';
 const DEFAULT_LOCALE: Locale = 'it';
 
-function normalizeLocale(input?: string | null): Locale {
+function normalizeLocale(input?: Locale | string | null): Locale {
   return input === 'en' ? 'en' : 'it';
 }
 
@@ -44,6 +44,15 @@ type SanityCategory = {
   name?: string;
   description?: string;
   icon?: string;
+  updatedAt?: string;
+};
+
+type SanityFaq = {
+  id?: string;
+  question?: string;
+  answer?: string;
+  featured?: boolean;
+  sortOrder?: number;
   updatedAt?: string;
 };
 
@@ -87,6 +96,18 @@ function buildCategoriesQuery(locale: Locale): string {
 }`;
 }
 
+function buildFaqsQuery(locale: Locale, featuredOnly: boolean): string {
+  const filter = featuredOnly ? ' && featured == true' : '';
+  return `*[_type == "faq"${filter}] | order(coalesce(sortOrder, 100) asc, _createdAt asc) {
+  "id": _id,
+  "question": coalesce(question_${locale}, question_en, question_it, ""),
+  "answer": coalesce(answer_${locale}, answer_en, answer_it, ""),
+  "featured": coalesce(featured, false),
+  "sortOrder": coalesce(sortOrder, 100),
+  "updatedAt": _updatedAt
+}`;
+}
+
 function normalizeImage(raw: SanityImage | string | null | undefined): ProjectImage | null {
   if (!raw) return null;
   if (typeof raw === 'string') return { url: raw, alt: '' };
@@ -102,8 +123,6 @@ function normalizeStage(stage: SanityStage, index: number): ProjectStage | null 
   const images = Array.isArray(stage.images)
     ? stage.images.map(normalizeImage).filter((img): img is ProjectImage => Boolean(img))
     : [];
-
-  if (images.length === 0) return null;
 
   return {
     id: stage.id || `stage-${index + 1}`,
@@ -133,11 +152,9 @@ function normalizeProject(project: SanityProject): Project | null {
       : '/logo.png',
     thumbnailAlt: project.thumbnailAlt || '',
     stages: Array.isArray(project.stages)
-      ? project.stages.reduce<ProjectStage[]>((acc, stage) => {
-          const normalized = normalizeStage(stage, acc.length);
-          if (normalized) acc.push(normalized);
-          return acc;
-        }, [])
+      ? project.stages
+          .map(normalizeStage)
+          .filter((stage): stage is ProjectStage => Boolean(stage))
       : [],
     updatedAt: project.updatedAt,
   };
@@ -151,6 +168,18 @@ function normalizeCategory(category: SanityCategory): Category | null {
     description: category.description || '',
     icon: category.icon,
     updatedAt: category.updatedAt,
+  };
+}
+
+function normalizeFaq(faq: SanityFaq): Faq | null {
+  if (!faq.id || !faq.question || !faq.answer) return null;
+  return {
+    id: faq.id,
+    question: faq.question,
+    answer: faq.answer,
+    featured: Boolean(faq.featured),
+    sortOrder: typeof faq.sortOrder === 'number' ? faq.sortOrder : 100,
+    updatedAt: faq.updatedAt,
   };
 }
 
@@ -180,16 +209,34 @@ async function _getCurrentData(locale: Locale): Promise<{ projects: Project[]; c
   }
 }
 
-export const getCurrentData = cache((locale?: string) =>
+export const getCurrentData = cache((locale?: Locale | string) =>
   _getCurrentData(normalizeLocale(locale ?? DEFAULT_LOCALE))
 );
 
-export const getProjectById = async (id: string, locale?: string): Promise<Project | undefined> => {
+export const getProjectById = async (id: string, locale?: Locale | string): Promise<Project | undefined> => {
   const { projects } = await getCurrentData(locale);
   return projects.find((project) => project.id === id);
 };
 
-export const getProjectsByCategory = async (category: string, locale?: string): Promise<Project[]> => {
+export const getProjectsByCategory = async (category: string, locale?: Locale | string): Promise<Project[]> => {
   const { projects } = await getCurrentData(locale);
   return projects.filter((project) => project.category === category);
 };
+
+async function _getFaqs(locale: Locale, featuredOnly: boolean): Promise<Faq[]> {
+  if (!isSanityConfigured) return [];
+
+  try {
+    const raw = await sanityFetch<SanityFaq[]>(buildFaqsQuery(locale, featuredOnly));
+    return (raw || [])
+      .map(normalizeFaq)
+      .filter((faq): faq is Faq => Boolean(faq));
+  } catch (error) {
+    console.error('Sanity FAQ fetch failed:', error);
+    return [];
+  }
+}
+
+export const getFaqs = cache((locale?: Locale | string, options?: { featuredOnly?: boolean }) =>
+  _getFaqs(normalizeLocale(locale ?? DEFAULT_LOCALE), Boolean(options?.featuredOnly)),
+);

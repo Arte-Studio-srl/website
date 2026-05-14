@@ -1,14 +1,14 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProjectCard from '@/components/ProjectCard';
-import { Link } from '@/i18n/navigation';
+import PageHero from '@/components/PageHero';
 import { getCurrentData, getProjectsByCategory } from '@/lib/data-utils';
 import { readSiteConfig } from '@/lib/site-config-storage';
 import { buildAbsoluteUrl, buildCategoryMetadata } from '@/lib/seo';
 import { BreadcrumbListJsonLd } from '@/components/JsonLd';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { routing } from '@/i18n/routing';
+import { isLocale, routing, type Locale } from '@/i18n/routing';
 
 export const dynamicParams = false;
 export const dynamic = 'force-static';
@@ -18,7 +18,8 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props) {
-  const { locale, category: categoryId } = await params;
+  const { locale: localeParam, category: categoryId } = await params;
+  const locale = isLocale(localeParam) ? localeParam : routing.defaultLocale;
   const { categories } = await getCurrentData(locale);
   const categoryData = categories.find((c) => c.id === categoryId);
   if (!categoryData) return {};
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export async function generateStaticParams() {
-  const params: { locale: string; category: string }[] = [];
+  const params: { locale: Locale; category: string }[] = [];
   for (const locale of routing.locales) {
     try {
       const { categories } = await getCurrentData(locale);
@@ -49,7 +50,9 @@ export async function generateStaticParams() {
 }
 
 export default async function CategoryPage({ params }: Props) {
-  const { locale, category } = await params;
+  const { locale: localeParam, category } = await params;
+  if (!isLocale(localeParam)) notFound();
+  const locale: Locale = localeParam;
   setRequestLocale(locale);
 
   const { projects: allProjects, categories } = await getCurrentData(locale);
@@ -73,27 +76,14 @@ export default async function CategoryPage({ params }: Props) {
     <main className="min-h-screen">
       <BreadcrumbListJsonLd items={breadcrumbs} />
       <Header categories={categories} />
-      <section className="relative pt-32 pb-20 bg-charcoal text-cream">
-        <div className="absolute inset-0 blueprint-grid opacity-10" />
-        <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-sm text-cream/60">
-            <Link href="/" className="hover:text-bronze-300 transition-colors">
-              {tCommon('home')}
-            </Link>
-            <span aria-hidden>/</span>
-            <span className="text-cream capitalize">{categoryData.name}</span>
-          </nav>
-          <div className="max-w-4xl">
-            <div className="h-1 w-20 bg-bronze-500 mb-6" />
-            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl mb-6">
-              {categoryData.name}
-            </h1>
-            <p className="text-xl md:text-2xl text-cream/80 leading-relaxed">
-              {categoryData.description}
-            </p>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title={categoryData.name}
+        subtitle={categoryData.description}
+        breadcrumbs={[
+          { label: tCommon('home'), href: '/' },
+          { label: categoryData.name },
+        ]}
+      />
 
       <section className="py-20 bg-cream">
         <div className="container mx-auto px-4 lg:px-8">

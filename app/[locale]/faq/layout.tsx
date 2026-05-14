@@ -22,16 +22,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const site = await readSiteConfig(locale);
   return buildPageMetadata(
     {
-      title: t("allProjectsTitle"),
-      description: t("allProjectsDescription"),
-      path: `/${locale}/projects/all/`,
+      title: t("faqTitle"),
+      description: t("faqDescription"),
+      path: `/${locale}/faq/`,
     },
     site,
-    locale
+    locale,
   );
 }
 
-export default async function AllProjectsLayout({ children, params }: Props) {
+export default async function FaqLayout({ children, params }: Props) {
   const { locale: localeParam } = await params;
   const locale = routing.locales.includes(localeParam as Locale)
     ? (localeParam as Locale)

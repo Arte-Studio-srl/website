@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import ProjectCard from '@/components/ProjectCard';
+import { buttonVariants } from '@/components/ui/ButtonLink';
 import type { Project, Category } from '@/types';
 
 interface Props {
@@ -39,9 +40,7 @@ export default function AllProjectsFilter({ projects, categories }: Props) {
           <div className="flex gap-3 overflow-x-auto py-6">
             <button
               onClick={() => setSelectedCategory('all')}
-              className={`px-6 py-2 whitespace-nowrap font-display transition-all ${
-                selectedCategory === 'all' ? 'bg-bronze-600 text-white' : 'bg-cream text-charcoal hover:bg-bronze-100'
-              }`}
+              className={buttonVariants({ variant: 'filterChip', active: selectedCategory === 'all' })}
             >
               {t('allTitle')}
             </button>
@@ -49,9 +48,7 @@ export default function AllProjectsFilter({ projects, categories }: Props) {
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-6 py-2 whitespace-nowrap font-display transition-all ${
-                  selectedCategory === cat.id ? 'bg-bronze-600 text-white' : 'bg-cream text-charcoal hover:bg-bronze-100'
-                }`}
+                className={buttonVariants({ variant: 'filterChip', active: selectedCategory === cat.id })}
               >
                 {cat.name}
               </button>

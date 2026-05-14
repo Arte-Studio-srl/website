@@ -4,7 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { useTranslations } from 'next-intl';
-import { EMAIL_REGEX, submitSiteContact, useContactForm } from '@/lib/use-contact-form';
+import { useContactForm } from '@/lib/use-contact-form';
+import { submitSiteContact } from '@/lib/contact-transport';
+import {
+  CONTACT_FIELD_LIMITS,
+  createContactFieldErrors,
+} from '@/lib/contact-validation';
+import { FormAlert, TextareaField, TextField } from '@/components/contact/FormFields';
 
 interface WidgetForm extends Record<string, string | undefined> {
   name: string;
@@ -29,13 +35,12 @@ export default function FloatingContact({ contactEmail }: Props) {
   const invalidEmail = useMemo(() => t('validationEmailInvalid'), [t]);
 
   const validate = useCallback((values: WidgetForm) => {
-    const errors: Partial<Record<keyof WidgetForm, string>> = {};
-    if (!values.name.trim()) errors.name = required;
-    if (!values.email.trim()) errors.email = required;
-    else if (!EMAIL_REGEX.test(values.email)) errors.email = invalidEmail;
-    if (!values.message.trim()) errors.message = required;
-    return errors;
-  }, [required, invalidEmail]);
+    return createContactFieldErrors(values, {
+      required,
+      invalidEmail,
+      tooLong: (_field, limit) => t('validationTooLong', { max: limit }),
+    }, ['name', 'email', 'message']);
+  }, [required, invalidEmail, t]);
 
   const buildPayload = useCallback((values: WidgetForm) => ({
     ...values,
@@ -116,58 +121,46 @@ export default function FloatingContact({ contactEmail }: Props) {
             </div>
 
             <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
-              <div className="space-y-1">
-                <label htmlFor="name" className="text-sm font-display text-charcoal flex items-center gap-1.5">
-                  <Icon icon="ph:user" className="w-3.5 h-3.5 text-bronze-500" aria-hidden />
-                  {t('name')} *
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  value={form.name}
-                  onChange={handleChange}
-                  className={`w-full rounded-md border-2 px-3 py-2 text-sm transition focus:outline-none focus:border-bronze-600 ${
-                    errors.name ? 'border-red-500' : 'border-bronze-200'
-                  }`}
-                />
-                {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
-              </div>
+              <TextField
+                id="floating-name"
+                name="name"
+                label={t('name')}
+                icon="ph:user"
+                required
+                fieldSize="compact"
+                value={form.name}
+                onChange={handleChange}
+                error={errors.name}
+                maxLength={CONTACT_FIELD_LIMITS.name}
+              />
 
-              <div className="space-y-1">
-                <label htmlFor="email" className="text-sm font-display text-charcoal flex items-center gap-1.5">
-                  <Icon icon="ph:envelope" className="w-3.5 h-3.5 text-bronze-500" aria-hidden />
-                  {t('email')} *
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  className={`w-full rounded-md border-2 px-3 py-2 text-sm transition focus:outline-none focus:border-bronze-600 ${
-                    errors.email ? 'border-red-500' : 'border-bronze-200'
-                  }`}
-                />
-                {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
-              </div>
+              <TextField
+                id="floating-email"
+                name="email"
+                type="email"
+                label={t('email')}
+                icon="ph:envelope"
+                required
+                fieldSize="compact"
+                value={form.email}
+                onChange={handleChange}
+                error={errors.email}
+                maxLength={CONTACT_FIELD_LIMITS.email}
+              />
 
-              <div className="space-y-1">
-                <label htmlFor="message" className="text-sm font-display text-charcoal flex items-center gap-1.5">
-                  <Icon icon="ph:note-pencil" className="w-3.5 h-3.5 text-bronze-500" aria-hidden />
-                  {tFloat('messageLabel')} *
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={4}
-                  value={form.message}
-                  onChange={handleChange}
-                  className={`w-full rounded-md border-2 px-3 py-2 text-sm transition focus:outline-none focus:border-bronze-600 resize-none ${
-                    errors.message ? 'border-red-500' : 'border-bronze-200'
-                  }`}
-                />
-                {errors.message && <p className="text-xs text-red-500">{errors.message}</p>}
-              </div>
+              <TextareaField
+                id="floating-message"
+                name="message"
+                rows={4}
+                label={tFloat('messageLabel')}
+                icon="ph:note-pencil"
+                required
+                fieldSize="compact"
+                value={form.message}
+                onChange={handleChange}
+                error={errors.message}
+                maxLength={CONTACT_FIELD_LIMITS.message}
+              />
 
               <div className="flex items-center justify-between text-xs text-charcoal/70">
                 <span>{tFloat('preferEmail')}</span>
@@ -197,26 +190,14 @@ export default function FloatingContact({ contactEmail }: Props) {
 
               <AnimatePresence>
                 {status === 'success' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    className="rounded-md border border-green-300 bg-green-50 px-3 py-2 text-green-800 text-sm flex items-center gap-2"
-                  >
-                    <Icon icon="ph:check-circle" className="w-4 h-4 shrink-0" aria-hidden />
+                  <FormAlert tone="success" compact>
                     {t('success')}
-                  </motion.div>
+                  </FormAlert>
                 )}
                 {status === 'error' && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -6 }}
-                    className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-red-700 text-sm flex items-center gap-2"
-                  >
-                    <Icon icon="ph:warning-circle" className="w-4 h-4 shrink-0" aria-hidden />
+                  <FormAlert tone="error" compact>
                     {t('error')}
-                  </motion.div>
+                  </FormAlert>
                 )}
               </AnimatePresence>
             </form>

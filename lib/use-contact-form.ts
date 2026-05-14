@@ -2,25 +2,11 @@
 
 import { useCallback, useState } from 'react';
 
-export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export type ContactStatus = 'idle' | 'success' | 'error';
 
 type Values = Record<string, string | undefined>;
 type FormErrors<T> = Partial<Record<keyof T, string>>;
 type SubmitContactPayload = (payload: Record<string, unknown>) => Promise<void>;
-
-export async function submitSiteContact(payload: Record<string, unknown>) {
-  const response = await fetch('/api/contact', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  const data = (await response.json()) as { success?: boolean; error?: string };
-  if (!response.ok || !data.success) {
-    throw new Error(data.error || 'Send failed');
-  }
-}
 
 export function useContactForm<T extends Values>({
   initialValues,

@@ -8,6 +8,7 @@ import { Icon } from '@iconify/react';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import type { Category } from '@/types';
+import { cn } from '@/lib/classnames';
 
 interface Props {
   categories: Category[];
@@ -17,6 +18,27 @@ export default function HeaderClient({ categories }: Props) {
   const t = useTranslations('common');
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navTextClass = cn(
+    'transition-colors font-display text-lg flex items-center gap-1.5',
+    isScrolled ? 'text-charcoal hover:text-bronze-600' : 'text-white hover:text-bronze-300',
+  );
+  const dropdownButtonClass = cn(
+    'transition-colors font-display text-lg flex items-center gap-2',
+    isScrolled ? 'text-charcoal hover:text-bronze-600' : 'text-white hover:text-bronze-300',
+  );
+  const contactCtaClass = cn(
+    'px-6 py-2 transition-all font-display flex items-center gap-2',
+    isScrolled
+      ? 'bg-bronze-600 text-white hover:bg-bronze-700'
+      : 'bg-white/10 backdrop-blur-sm text-white border-2 border-white hover:bg-white hover:text-charcoal',
+  );
+  const mobileMenuButtonClass = cn(
+    'lg:hidden p-2 transition-colors',
+    isScrolled ? 'text-charcoal' : 'text-white',
+  );
+  const logoFilter = isScrolled
+    ? 'drop-shadow(0 2px 6px rgba(0,0,0,0.18)) drop-shadow(0 1px 3px rgba(0,0,0,0.12))'
+    : 'brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,0.35)) drop-shadow(0 1px 4px rgba(0,0,0,0.25))';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,18 +69,7 @@ export default function HeaderClient({ categories }: Props) {
                   alt="ArteStudio"
                   fill
                   className="object-contain transition-all duration-300 group-hover:scale-105"
-                  style={{
-                    filter: isScrolled
-                      ? `
-                        drop-shadow(0 2px 6px rgba(0,0,0,0.18))
-                        drop-shadow(0 1px 3px rgba(0,0,0,0.12))
-                      `
-                      : `
-                        brightness(0) invert(1)
-                        drop-shadow(0 2px 8px rgba(0,0,0,0.35))
-                        drop-shadow(0 1px 4px rgba(0,0,0,0.25))
-                      `,
-                  }}
+                  style={{ filter: logoFilter }}
                   priority
                 />
               </div>
@@ -68,11 +79,7 @@ export default function HeaderClient({ categories }: Props) {
           <div className="hidden lg:flex items-center space-x-8">
             <Link
               href="/"
-              className={`transition-colors font-display text-lg flex items-center gap-1.5 ${
-                isScrolled
-                  ? 'text-charcoal hover:text-bronze-600'
-                  :               'text-white hover:text-bronze-300'
-              }`}
+              className={navTextClass}
             >
               <Icon icon="ph:house" className="w-4 h-4" aria-hidden />
               {t('home')}
@@ -82,11 +89,7 @@ export default function HeaderClient({ categories }: Props) {
               <button
                 type="button"
                 aria-haspopup="menu"
-                className={`transition-colors font-display text-lg flex items-center gap-2 ${
-                  isScrolled
-                    ? 'text-charcoal hover:text-bronze-600'
-                    : 'text-white hover:text-bronze-300'
-                }`}
+                className={dropdownButtonClass}
               >
                 <Icon icon="ph:squares-four" className="w-4 h-4" aria-hidden />
                 {t('projects')}
@@ -117,11 +120,7 @@ export default function HeaderClient({ categories }: Props) {
 
             <Link
               href="/contact"
-              className={`px-6 py-2 transition-all font-display flex items-center gap-2 ${
-                isScrolled
-                  ? 'bg-bronze-600 text-white hover:bg-bronze-700'
-                  : 'bg-white/10 backdrop-blur-sm text-white border-2 border-white hover:bg-white hover:text-charcoal'
-              }`}
+              className={contactCtaClass}
             >
               <Icon icon="ph:chat-dots" className="w-4 h-4" aria-hidden />
               {t('contact')}
@@ -131,9 +130,7 @@ export default function HeaderClient({ categories }: Props) {
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`lg:hidden p-2 transition-colors ${
-              isScrolled ? 'text-charcoal' : 'text-white'
-            }`}
+            className={mobileMenuButtonClass}
             aria-label={t('toggleMenu')}
           >
             {mobileMenuOpen

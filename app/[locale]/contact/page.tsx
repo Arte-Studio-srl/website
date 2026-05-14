@@ -1,11 +1,14 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ContactForm from '@/components/ContactForm';
+import PageHero from '@/components/PageHero';
 import { Icon } from '@iconify/react';
 import { getCurrentData } from '@/lib/data-utils';
 import { readSiteConfig } from '@/lib/site-config-storage';
 import { formatPhoneDisplay, formatTelHref, getGoogleMapsEmbedUrl, resolveDayKey } from '@/lib/site-config';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
+import { isLocale, type Locale } from '@/i18n/routing';
+import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-static';
 
@@ -14,7 +17,9 @@ type Props = {
 };
 
 export default async function ContactPage({ params }: Props) {
-  const { locale } = await params;
+  const { locale: localeParam } = await params;
+  if (!isLocale(localeParam)) notFound();
+  const locale: Locale = localeParam;
   setRequestLocale(locale);
 
   const [t, site, { categories }] = await Promise.all([
@@ -26,16 +31,7 @@ export default async function ContactPage({ params }: Props) {
   return (
     <main className="min-h-screen">
       <Header categories={categories} />
-      <section className="relative pt-32 pb-20 bg-charcoal text-cream">
-        <div className="absolute inset-0 blueprint-grid opacity-10" />
-        <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <div className="max-w-4xl">
-            <div className="h-1 w-20 bg-bronze-500 mb-6" />
-            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl mb-6">{t('title')}</h1>
-            <p className="text-xl md:text-2xl text-cream/80 leading-relaxed">{t('subtitle')}</p>
-          </div>
-        </div>
-      </section>
+      <PageHero title={t('title')} subtitle={t('subtitle')} />
 
       <section className="py-20 bg-cream">
         <div className="container mx-auto px-4 lg:px-8">

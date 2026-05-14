@@ -8,7 +8,7 @@ import { buildProjectMetadata } from '@/lib/seo';
 import { ProjectJsonLd, BreadcrumbListJsonLd, ProjectImagesJsonLd } from '@/components/JsonLd';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { routing } from '@/i18n/routing';
+import { isLocale, routing, type Locale } from '@/i18n/routing';
 
 export const dynamicParams = false;
 export const dynamic = 'force-static';
@@ -18,7 +18,8 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props) {
-  const { locale, id } = await params;
+  const { locale: localeParam, id } = await params;
+  const locale = isLocale(localeParam) ? localeParam : routing.defaultLocale;
   const project = await getProjectById(id, locale);
   if (!project) return {};
   const site = await readSiteConfig(locale);
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export async function generateStaticParams() {
-  const params: { locale: string; id: string }[] = [];
+  const params: { locale: Locale; id: string }[] = [];
   for (const locale of routing.locales) {
     try {
       const { projects } = await getCurrentData(locale);
@@ -47,7 +48,9 @@ export async function generateStaticParams() {
 }
 
 export default async function ProjectDetailPage({ params }: Props) {
-  const { locale, id } = await params;
+  const { locale: localeParam, id } = await params;
+  if (!isLocale(localeParam)) notFound();
+  const locale: Locale = localeParam;
   setRequestLocale(locale);
 
   const [{ projects, categories }, site, t] = await Promise.all([

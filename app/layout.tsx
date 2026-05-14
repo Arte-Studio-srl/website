@@ -4,7 +4,7 @@ import "./globals.css";
 import { readSiteConfig } from "@/lib/site-config-storage";
 import { buildBaseMetadata } from "@/lib/seo";
 import { getLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
+import { isLocale, routing, type Locale } from "@/i18n/routing";
 
 const cormorant = Cormorant_Garamond({
   weight: ['300', '400', '500', '600', '700'],
@@ -20,9 +20,10 @@ const inter = Inter({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  let locale: string = routing.defaultLocale;
+  let locale: Locale = routing.defaultLocale;
   try {
-    locale = await getLocale();
+    const detectedLocale = await getLocale();
+    if (isLocale(detectedLocale)) locale = detectedLocale;
   } catch {}
   const site = await readSiteConfig(locale);
   const base = buildBaseMetadata(site);
@@ -41,9 +42,10 @@ export default async function RootLayout({
 }>) {
   // /studio and other non-localized routes don't go through the next-intl
   // middleware, so getLocale() throws there — fall back to the default locale.
-  let htmlLang: string = routing.defaultLocale;
+  let htmlLang: Locale = routing.defaultLocale;
   try {
-    htmlLang = await getLocale();
+    const detectedLocale = await getLocale();
+    if (isLocale(detectedLocale)) htmlLang = detectedLocale;
   } catch {}
 
   return (
@@ -52,4 +54,3 @@ export default async function RootLayout({
     </html>
   );
 }
-

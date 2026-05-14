@@ -6,6 +6,8 @@
     "contactDescription": "Contatta ArteStudio per progetti di architettura, scenografia e design degli spazi. Richiedi un preventivo o una consulenza.",
     "allProjectsTitle": "Tutti i Progetti",
     "allProjectsDescription": "Esplora il portfolio completo di ArteStudio: architettura, scenografia e design degli spazi. Progetti di spazi espositivi, scenografie ed eventi.",
+    "faqTitle": "Domande frequenti",
+    "faqDescription": "Risposte alle domande più comuni sul processo, le tempistiche e le collaborazioni di ArteStudio per progetti di architettura e scenografia.",
     "categoryDescriptionFallback": "Esplora i progetti di {name} nel portfolio di ArteStudio.",
     "projectDescriptionFallback": "{title} — un progetto firmato ArteStudio."
   },
@@ -13,6 +15,7 @@
     "home": "Home",
     "projects": "Progetti",
     "contact": "Contatti",
+    "faq": "FAQ",
     "viewProjects": "Vedi Progetti",
     "contactUs": "Contattaci",
     "allProjects": "Tutti i Progetti",
@@ -74,6 +77,7 @@
     "validationSubject": "L'oggetto è obbligatorio",
     "validationMessage": "Il messaggio è obbligatorio",
     "validationRequired": "Obbligatorio",
+    "validationTooLong": "Massimo {max} caratteri",
     "mapTitle": "ArteStudio su Google Maps",
     "infoHeading": "Informazioni di Contatto",
     "address": "Indirizzo",
@@ -121,7 +125,8 @@
     "nextImage": "Immagine successiva",
     "openStage": "Apri fase {title}",
     "viewImage": "Vedi immagine {n}",
-    "noStageImages": "Nessuna immagine disponibile per questa fase."
+    "noStageImages": "Nessuna immagine disponibile per questa fase.",
+    "noProjectStages": "Nessuna galleria disponibile per questo progetto."
   },
   "notFound": {
     "title": "Pagina non trovata",
@@ -135,5 +140,17 @@
     "allSubtitle": "Esplora il portfolio completo di strutture per eventi e scenografia",
     "projectsFound": "{count, plural, one {# progetto trovato} other {# progetti trovati}}",
     "viewProject": "Vedi Progetto"
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "homeTitle": "Le risposte che cerchi",
+    "homeSubtitle": "Le domande che ci vengono fatte più spesso prima di iniziare a lavorare insieme.",
+    "viewAll": "Vedi tutte le domande",
+    "pageTitle": "Domande frequenti",
+    "pageSubtitle": "Tutto quello che è utile sapere prima di affidarci un progetto — processo, tempi e modalità di collaborazione.",
+    "stillCurious": "Hai un'altra domanda?",
+    "stillCuriousBody": "Raccontaci il tuo progetto: ti risponderemo entro un giorno lavorativo.",
+    "contactCta": "Contattaci",
+    "empty": "Stiamo preparando le domande più frequenti. Nel frattempo, scrivici pure direttamente."
   }
 }

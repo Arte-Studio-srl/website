@@ -1,5 +1,10 @@
 /// <reference types="@cloudflare/workers-types" />
 
+import {
+  validateContactPayload,
+  type ContactPayload,
+} from '../../lib/contact-validation';
+
 interface Env {
   RATE_LIMITER: { limit: (input: { key: string }) => Promise<{ success: boolean }> };
   RESEND_API_KEY: string;
@@ -7,7 +12,7 @@ interface Env {
   CONTACT_TO: string;
 }
 
-interface ContactPayload {
+interface ContactRequestPayload extends ContactPayload {
   name: string;
   email: string;
   phone?: string;
@@ -16,16 +21,6 @@ interface ContactPayload {
   source?: string;
 }
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const LIMITS = {
-  name: 200,
-  email: 320,
-  phone: 40,
-  subject: 200,
-  message: 5000,
-  source: 60,
-} as const;
-
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -33,29 +28,12 @@ function json(body: unknown, status = 200): Response {
   });
 }
 
-function validatePayload(body: Partial<ContactPayload>): string[] {
-  const errors: string[] = [];
-  if (!body.name?.trim()) errors.push('Name is required');
-  if (!body.email?.trim()) errors.push('Email is required');
-  else if (!EMAIL_REGEX.test(body.email.trim())) errors.push('Invalid email');
-  if (!body.subject?.trim()) errors.push('Subject is required');
-  if (!body.message?.trim()) errors.push('Message is required');
-
-  for (const [field, max] of Object.entries(LIMITS) as [keyof typeof LIMITS, number][]) {
-    const value = body[field];
-    if (typeof value === 'string' && value.length > max) {
-      errors.push(`${field} exceeds ${max} characters`);
-    }
-  }
-  return errors;
-}
-
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   if (!request.headers.get('content-type')?.includes('application/json')) {
     return json({ success: false, error: 'Content-Type must be application/json' }, 415);
   }
 
-  const payload = (await request.json().catch(() => null)) as Partial<ContactPayload> | null;
+  const payload = (await request.json().catch(() => null)) as Partial<ContactRequestPayload> | null;
   if (!payload) {
     return json({ success: false, error: 'Invalid JSON' }, 400);
   }
@@ -66,7 +44,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     return json({ success: false, error: 'Too many requests. Please try again in a minute.' }, 429);
   }
 
-  const validationErrors = validatePayload(payload);
+  const validationErrors = validateContactPayload(payload);
   if (validationErrors.length > 0) {
     return json({ success: false, error: validationErrors.join(', ') }, 400);
   }

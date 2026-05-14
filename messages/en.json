@@ -6,6 +6,8 @@
     "contactDescription": "Contact ArteStudio for architecture, scenography and spatial design projects. Request a quote or consultation.",
     "allProjectsTitle": "All Projects",
     "allProjectsDescription": "Explore ArteStudio's complete portfolio: architecture, scenography and spatial design. Exhibition spaces, scenography and events.",
+    "faqTitle": "Frequently Asked Questions",
+    "faqDescription": "Answers to common questions about ArteStudio's process, timelines and collaborations on architecture and scenography projects.",
     "categoryDescriptionFallback": "Explore {name} projects in the ArteStudio portfolio.",
     "projectDescriptionFallback": "{title} — a project by ArteStudio."
   },
@@ -13,6 +15,7 @@
     "home": "Home",
     "projects": "Projects",
     "contact": "Contact",
+    "faq": "FAQ",
     "viewProjects": "View Projects",
     "contactUs": "Contact Us",
     "allProjects": "All Projects",
@@ -74,6 +77,7 @@
     "validationSubject": "Subject is required",
     "validationMessage": "Message is required",
     "validationRequired": "Required",
+    "validationTooLong": "Must be {max} characters or fewer",
     "mapTitle": "ArteStudio on Google Maps",
     "infoHeading": "Contact Information",
     "address": "Address",
@@ -121,7 +125,8 @@
     "nextImage": "Next image",
     "openStage": "Open stage {title}",
     "viewImage": "View image {n}",
-    "noStageImages": "No images available for this stage."
+    "noStageImages": "No images available for this stage.",
+    "noProjectStages": "No project gallery available yet."
   },
   "notFound": {
     "title": "Page Not Found",
@@ -135,5 +140,17 @@
     "allSubtitle": "Explore our complete portfolio of event structures and scenography",
     "projectsFound": "{count, plural, one {# project found} other {# projects found}}",
     "viewProject": "View Project"
+  },
+  "faq": {
+    "eyebrow": "FAQ",
+    "homeTitle": "Questions, Answered",
+    "homeSubtitle": "A few things clients ask before we start working together.",
+    "viewAll": "See all questions",
+    "pageTitle": "Frequently Asked Questions",
+    "pageSubtitle": "Everything you might want to know before commissioning a project — process, timelines, and how we work together.",
+    "stillCurious": "Still have a question?",
+    "stillCuriousBody": "Tell us about your project and we will get back to you within one business day.",
+    "contactCta": "Contact us",
+    "empty": "We are preparing the most common questions. In the meantime, get in touch directly."
   }
 }

@@ -1,9 +1,12 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AllProjectsFilter from '@/components/AllProjectsFilter';
+import PageHero from '@/components/PageHero';
 import { getCurrentData } from '@/lib/data-utils';
 import { readSiteConfig } from '@/lib/site-config-storage';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
+import { isLocale, type Locale } from '@/i18n/routing';
+import { notFound } from 'next/navigation';
 
 export const dynamic = 'force-static';
 
@@ -12,7 +15,9 @@ type Props = {
 };
 
 export default async function AllProjectsPage({ params }: Props) {
-  const { locale } = await params;
+  const { locale: localeParam } = await params;
+  if (!isLocale(localeParam)) notFound();
+  const locale: Locale = localeParam;
   setRequestLocale(locale);
 
   const [{ projects, categories }, site, t] = await Promise.all([
@@ -24,16 +29,7 @@ export default async function AllProjectsPage({ params }: Props) {
   return (
     <main className="min-h-screen">
       <Header categories={categories} />
-      <section className="relative pt-32 pb-20 bg-charcoal text-cream">
-        <div className="absolute inset-0 blueprint-grid opacity-10" />
-        <div className="container mx-auto px-4 lg:px-8 relative z-10">
-          <div className="max-w-4xl">
-            <div className="h-1 w-20 bg-bronze-500 mb-6" />
-            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl mb-6">{t('allTitle')}</h1>
-            <p className="text-xl md:text-2xl text-cream/80 leading-relaxed">{t('allSubtitle')}</p>
-          </div>
-        </div>
-      </section>
+      <PageHero title={t('allTitle')} subtitle={t('allSubtitle')} />
       <AllProjectsFilter projects={projects} categories={categories} />
       <Footer locale={locale} site={site} categories={categories} />
     </main>

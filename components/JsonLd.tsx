@@ -1,5 +1,6 @@
 import { resolveDayKey, type DayKey } from '@/lib/site-config';
 import type { OpeningHour, SiteConfig } from '@/types';
+import type { Locale } from '@/i18n/routing';
 
 /**
  * Renders JSON-LD structured data for SEO.
@@ -92,7 +93,7 @@ export function OrganizationJsonLd({
 }: {
   site: SiteConfig;
   siteUrl: string;
-  locale?: string;
+  locale?: Locale;
 }) {
   const sameAs = [site.social?.facebook, site.social?.instagram, site.social?.linkedin].filter(Boolean) as string[];
   const inLanguage = locale === 'en' ? 'en-US' : 'it-IT';

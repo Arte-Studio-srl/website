@@ -18,26 +18,11 @@
 }
 
 @layer components {
-  .blueprint-line {
-    position: relative;
-  }
-
-  .blueprint-line::before {
-    content: "";
-    position: absolute;
-    background: currentColor;
-    opacity: 0.2;
-  }
-
   .blueprint-grid {
     background-image:
       linear-gradient(rgba(166, 120, 86, 0.05) 1px, transparent 1px),
       linear-gradient(90deg, rgba(166, 120, 86, 0.05) 1px, transparent 1px);
     background-size: 40px 40px;
-  }
-
-  .text-shadow-bronze {
-    text-shadow: 2px 2px 4px rgba(166, 120, 86, 0.2);
   }
 
   .hover-lift {

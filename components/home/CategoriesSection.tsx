@@ -1,11 +1,13 @@
 import { Link } from '@/i18n/navigation';
 import { Icon } from '@iconify/react';
 import { getTranslations } from 'next-intl/server';
+import SectionHeading from '@/components/SectionHeading';
 import type { Category } from '@/types';
+import type { Locale } from '@/i18n/routing';
 
 interface Props {
   categories: Category[];
-  locale: string;
+  locale: Locale;
 }
 
 export default async function CategoriesSection({ categories, locale }: Props) {
@@ -14,15 +16,7 @@ export default async function CategoriesSection({ categories, locale }: Props) {
   return (
     <section id="expertise" className="py-24 bg-cream">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="font-display text-4xl md:text-5xl text-charcoal mb-4">
-            {t('ourExpertise')}
-          </h2>
-          <div className="w-24 h-1 bg-bronze-600 mx-auto mb-6" />
-          <p className="text-lg text-charcoal/70 max-w-2xl mx-auto">
-            {t('expertiseSubtitle')}
-          </p>
-        </div>
+        <SectionHeading title={t('ourExpertise')} subtitle={t('expertiseSubtitle')} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {categories.map((category) => (
