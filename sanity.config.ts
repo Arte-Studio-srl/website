@@ -4,19 +4,12 @@ import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
 import { schemaTypes } from './sanity/schemaTypes';
 
-const projectId =
-  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ||
-  process.env.SANITY_STUDIO_PROJECT_ID;
-const dataset =
-  process.env.NEXT_PUBLIC_SANITY_DATASET ||
-  process.env.SANITY_STUDIO_DATASET ||
-  'production';
-
-if (!projectId) {
-  throw new Error(
-    'Sanity Studio: NEXT_PUBLIC_SANITY_PROJECT_ID (or SANITY_STUDIO_PROJECT_ID) is required'
-  );
-}
+// Hardcoded so the deployed Studio bundle at artestudio.sanity.studio resolves
+// in the browser — the Sanity CLI bundler doesn't inline NEXT_PUBLIC_* vars
+// (that prefix is a Next.js convention), so env-based lookups crash on load.
+// The projectId is public.
+const projectId = 'l9howtog';
+const dataset = 'production';
 
 export default defineConfig({
   name: 'default',

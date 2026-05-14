@@ -1,21 +1,11 @@
 import { defineCliConfig } from 'sanity/cli';
 
-const projectId =
-  process.env.NEXT_PUBLIC_SANITY_PROJECT_ID ||
-  process.env.SANITY_STUDIO_PROJECT_ID;
-const dataset =
-  process.env.NEXT_PUBLIC_SANITY_DATASET ||
-  process.env.SANITY_STUDIO_DATASET ||
-  'production';
-
-if (!projectId) {
-  throw new Error(
-    'Sanity CLI: NEXT_PUBLIC_SANITY_PROJECT_ID (or SANITY_STUDIO_PROJECT_ID) is required'
-  );
-}
-
+// Kept in sync with sanity.config.ts — same browser-bundle constraint applies.
 export default defineCliConfig({
-  api: { projectId, dataset },
+  api: {
+    projectId: 'l9howtog',
+    dataset: 'production',
+  },
   deployment: {
     appId: 'ugw1fkmq0dp9yjl355amg4c8',
   },
