@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import AllProjectsFilter from '@/components/AllProjectsFilter';
 import { getCurrentData } from '@/lib/data-utils';
+import { readSiteConfig } from '@/lib/site-config-storage';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 
 export const dynamic = 'force-static';
@@ -14,12 +15,15 @@ export default async function AllProjectsPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const { projects, categories } = await getCurrentData(locale);
-  const t = await getTranslations({ locale, namespace: 'projects' });
+  const [{ projects, categories }, site, t] = await Promise.all([
+    getCurrentData(locale),
+    readSiteConfig(locale),
+    getTranslations({ locale, namespace: 'projects' }),
+  ]);
 
   return (
     <main className="min-h-screen">
-      <Header locale={locale} />
+      <Header categories={categories} />
       <section className="relative pt-32 pb-20 bg-charcoal text-cream">
         <div className="absolute inset-0 blueprint-grid opacity-10" />
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
@@ -31,7 +35,7 @@ export default async function AllProjectsPage({ params }: Props) {
         </div>
       </section>
       <AllProjectsFilter projects={projects} categories={categories} />
-      <Footer locale={locale} />
+      <Footer locale={locale} site={site} categories={categories} />
     </main>
   );
 }

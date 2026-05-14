@@ -1,9 +1,11 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProjectCard from '@/components/ProjectCard';
+import { Link } from '@/i18n/navigation';
 import { getCurrentData, getProjectsByCategory } from '@/lib/data-utils';
 import { readSiteConfig } from '@/lib/site-config-storage';
-import { buildCategoryMetadata } from '@/lib/seo';
+import { buildAbsoluteUrl, buildCategoryMetadata } from '@/lib/seo';
+import { BreadcrumbListJsonLd } from '@/components/JsonLd';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
@@ -21,8 +23,10 @@ export async function generateMetadata({ params }: Props) {
   const categoryData = categories.find((c) => c.id === categoryId);
   if (!categoryData) return {};
   const projects = await getProjectsByCategory(categoryId, locale);
-  const site = await readSiteConfig();
-  return buildCategoryMetadata(categoryData, projects.length, site, locale);
+  const site = await readSiteConfig(locale);
+  const t = await getTranslations({ locale, namespace: 'metadata' });
+  const descriptionFallback = t('categoryDescriptionFallback', { name: categoryData.name });
+  return buildCategoryMetadata(categoryData, projects.length, site, locale, descriptionFallback);
 }
 
 export async function generateStaticParams() {
@@ -48,19 +52,37 @@ export default async function CategoryPage({ params }: Props) {
   const { locale, category } = await params;
   setRequestLocale(locale);
 
-  const { categories } = await getCurrentData(locale);
+  const { projects: allProjects, categories } = await getCurrentData(locale);
   const categoryData = categories.find((c) => c.id === category);
   if (!categoryData) notFound();
 
-  const projects = await getProjectsByCategory(category, locale);
-  const t = await getTranslations({ locale, namespace: 'projects' });
+  const projects = allProjects.filter((project) => project.category === category);
+  const [t, tCommon, site] = await Promise.all([
+    getTranslations({ locale, namespace: 'projects' }),
+    getTranslations({ locale, namespace: 'common' }),
+    readSiteConfig(locale),
+  ]);
+  const homeUrl = buildAbsoluteUrl(`/${locale}/`, site.seo?.siteUrl);
+
+  const breadcrumbs = [
+    { name: tCommon('home'), url: homeUrl },
+    { name: categoryData.name },
+  ];
 
   return (
     <main className="min-h-screen">
-      <Header locale={locale} />
+      <BreadcrumbListJsonLd items={breadcrumbs} />
+      <Header categories={categories} />
       <section className="relative pt-32 pb-20 bg-charcoal text-cream">
         <div className="absolute inset-0 blueprint-grid opacity-10" />
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
+          <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-sm text-cream/60">
+            <Link href="/" className="hover:text-bronze-300 transition-colors">
+              {tCommon('home')}
+            </Link>
+            <span aria-hidden>/</span>
+            <span className="text-cream capitalize">{categoryData.name}</span>
+          </nav>
           <div className="max-w-4xl">
             <div className="h-1 w-20 bg-bronze-500 mb-6" />
             <h1 className="font-display text-5xl md:text-6xl lg:text-7xl mb-6">
@@ -102,7 +124,7 @@ export default async function CategoryPage({ params }: Props) {
           )}
         </div>
       </section>
-      <Footer locale={locale} />
+      <Footer locale={locale} site={site} categories={categories} />
     </main>
   );
 }

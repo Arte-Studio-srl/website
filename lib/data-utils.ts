@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { sanityFetch, isSanityConfigured } from './sanity';
-import type { Category, Project, ProjectStage, StageIcon } from '@/types';
+import type { Category, Project, ProjectImage, ProjectStage, StageIcon } from '@/types';
 
 const stageIcons: StageIcon[] = ['compass', 'blueprint', 'layers', 'camera', 'sparkles', 'flag'];
 
@@ -11,24 +11,32 @@ function normalizeLocale(input?: string | null): Locale {
   return input === 'en' ? 'en' : 'it';
 }
 
+type SanityImage = {
+  url?: string;
+  alt?: string;
+};
+
 type SanityStage = {
   id?: string;
   title?: string;
   description?: string;
   icon?: StageIcon;
   type?: string;
-  images?: string[];
+  images?: SanityImage[];
 };
 
 type SanityProject = {
   id?: string;
   title?: string;
   category?: unknown;
+  categoryName?: string;
   year?: number;
   client?: string;
   description?: string;
   thumbnail?: unknown;
+  thumbnailAlt?: string;
   stages?: SanityStage[];
+  updatedAt?: string;
 };
 
 type SanityCategory = {
@@ -36,6 +44,7 @@ type SanityCategory = {
   name?: string;
   description?: string;
   icon?: string;
+  updatedAt?: string;
 };
 
 function buildProjectsQuery(locale: Locale): string {
@@ -43,17 +52,27 @@ function buildProjectsQuery(locale: Locale): string {
   "id": coalesce(slug.current, projectId, _id),
   "title": coalesce(title_${locale}, title_en, title_it, title, ""),
   "category": coalesce(category->slug.current, categorySlug, category, ""),
+  "categoryName": coalesce(category->name_${locale}, category->name_en, category->name_it, ""),
   year,
   client,
   "description": coalesce(description_${locale}, description_en, description_it, description, ""),
   "thumbnail": coalesce(thumbnail.asset->url, thumbnailUrl, ""),
+  "thumbnailAlt": coalesce(thumbnail.alt_${locale}, thumbnail.alt_en, thumbnail.alt_it, ""),
+  "updatedAt": _updatedAt,
   "stages": coalesce(stages[]{
     "id": coalesce(_key, id),
-    title,
-    description,
+    "title": coalesce(title_${locale}, title_en, title_it, title, ""),
+    "description": coalesce(description_${locale}, description_en, description_it, description, ""),
     icon,
     type,
-    "images": coalesce(images[].asset->url, imageUrls, [])
+    "images": coalesce(
+      images[]{
+        "url": asset->url,
+        "alt": coalesce(alt_${locale}, alt_en, alt_it, "")
+      },
+      imageUrls[]{ "url": @, "alt": "" },
+      []
+    )
   }, [])
 }`;
 }
@@ -63,14 +82,28 @@ function buildCategoriesQuery(locale: Locale): string {
   "id": coalesce(slug.current, categoryId, _id),
   "name": coalesce(name_${locale}, name_en, name_it, name, ""),
   "description": coalesce(description_${locale}, description_en, description_it, description, ""),
-  icon
+  icon,
+  "updatedAt": _updatedAt
 }`;
 }
 
-function normalizeStage(stage: SanityStage, index: number): ProjectStage {
+function normalizeImage(raw: SanityImage | string | null | undefined): ProjectImage | null {
+  if (!raw) return null;
+  if (typeof raw === 'string') return { url: raw, alt: '' };
+  if (!raw.url) return null;
+  return { url: raw.url, alt: raw.alt || '' };
+}
+
+function normalizeStage(stage: SanityStage, index: number): ProjectStage | null {
   const icon = stage.icon && stageIcons.includes(stage.icon)
     ? stage.icon
     : stageIcons[index % stageIcons.length];
+
+  const images = Array.isArray(stage.images)
+    ? stage.images.map(normalizeImage).filter((img): img is ProjectImage => Boolean(img))
+    : [];
+
+  if (images.length === 0) return null;
 
   return {
     id: stage.id || `stage-${index + 1}`,
@@ -78,26 +111,35 @@ function normalizeStage(stage: SanityStage, index: number): ProjectStage {
     description: stage.description || '',
     icon,
     type: stage.type,
-    images: Array.isArray(stage.images) ? stage.images.filter(Boolean) : [],
+    images,
   };
 }
 
 function normalizeProject(project: SanityProject): Project | null {
   if (!project.id || !project.title) return null;
 
+  const categorySlug = typeof project.category === 'string' ? project.category : '';
+
   return {
     id: project.id,
     title: project.title,
-    category: typeof project.category === 'string' ? project.category : '',
+    category: categorySlug,
+    categoryName: project.categoryName || categorySlug.replace(/-/g, ' '),
     year: Number(project.year) || new Date().getFullYear(),
     client: project.client || '',
     description: project.description || '',
     thumbnail: typeof project.thumbnail === 'string' && project.thumbnail
       ? project.thumbnail
       : '/logo.png',
+    thumbnailAlt: project.thumbnailAlt || '',
     stages: Array.isArray(project.stages)
-      ? project.stages.map(normalizeStage)
+      ? project.stages.reduce<ProjectStage[]>((acc, stage) => {
+          const normalized = normalizeStage(stage, acc.length);
+          if (normalized) acc.push(normalized);
+          return acc;
+        }, [])
       : [],
+    updatedAt: project.updatedAt,
   };
 }
 
@@ -108,6 +150,7 @@ function normalizeCategory(category: SanityCategory): Category | null {
     name: category.name,
     description: category.description || '',
     icon: category.icon,
+    updatedAt: category.updatedAt,
   };
 }
 

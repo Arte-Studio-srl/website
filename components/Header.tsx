@@ -1,7 +1,6 @@
-import { getCurrentData } from '@/lib/data-utils';
 import HeaderClient from './HeaderClient';
+import type { Category } from '@/types';
 
-export default async function Header({ locale }: { locale: string }) {
-  const { categories } = await getCurrentData(locale);
+export default function Header({ categories }: { categories: Category[] }) {
   return <HeaderClient categories={categories} />;
 }

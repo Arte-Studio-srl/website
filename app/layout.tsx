@@ -20,7 +20,11 @@ const inter = Inter({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const site = await readSiteConfig();
+  let locale: string = routing.defaultLocale;
+  try {
+    locale = await getLocale();
+  } catch {}
+  const site = await readSiteConfig(locale);
   const base = buildBaseMetadata(site);
   return {
     ...base,

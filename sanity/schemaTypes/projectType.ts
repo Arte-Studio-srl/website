@@ -68,6 +68,20 @@ export const projectType = defineType({
       title: 'Thumbnail',
       type: 'image',
       options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt_it',
+          title: 'Alt text (IT)',
+          description: 'Descrizione dell\'immagine per SEO e accessibilità. Es: "Allestimento vetrina Vodafone Stoccolma".',
+          type: 'string',
+        }),
+        defineField({
+          name: 'alt_en',
+          title: 'Alt text (EN)',
+          description: 'Image description for SEO and accessibility. E.g.: "Vodafone Stockholm window installation".',
+          type: 'string',
+        }),
+      ],
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -81,14 +95,25 @@ export const projectType = defineType({
           type: 'object',
           fields: [
             defineField({
-              name: 'title',
-              title: 'Title',
+              name: 'title_it',
+              title: 'Title (IT)',
               type: 'string',
               validation: (rule) => rule.required(),
             }),
             defineField({
-              name: 'description',
-              title: 'Description',
+              name: 'title_en',
+              title: 'Title (EN)',
+              type: 'string',
+            }),
+            defineField({
+              name: 'description_it',
+              title: 'Description (IT)',
+              type: 'text',
+              rows: 3,
+            }),
+            defineField({
+              name: 'description_en',
+              title: 'Description (EN)',
               type: 'text',
               rows: 3,
             }),
@@ -110,6 +135,18 @@ export const projectType = defineType({
                 defineArrayMember({
                   type: 'image',
                   options: { hotspot: true },
+                  fields: [
+                    defineField({
+                      name: 'alt_it',
+                      title: 'Alt text (IT)',
+                      type: 'string',
+                    }),
+                    defineField({
+                      name: 'alt_en',
+                      title: 'Alt text (EN)',
+                      type: 'string',
+                    }),
+                  ],
                 }),
               ],
               validation: (rule) => rule.min(1),
@@ -117,7 +154,7 @@ export const projectType = defineType({
           ],
           preview: {
             select: {
-              title: 'title',
+              title: 'title_it',
               media: 'images.0',
             },
           },

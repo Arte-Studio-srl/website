@@ -2,8 +2,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ContactForm from '@/components/ContactForm';
 import { Icon } from '@iconify/react';
+import { getCurrentData } from '@/lib/data-utils';
 import { readSiteConfig } from '@/lib/site-config-storage';
-import { formatPhoneDisplay, formatTelHref, getGoogleMapsEmbedUrl } from '@/lib/site-config';
+import { formatPhoneDisplay, formatTelHref, getGoogleMapsEmbedUrl, resolveDayKey } from '@/lib/site-config';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 
 export const dynamic = 'force-static';
@@ -16,12 +17,15 @@ export default async function ContactPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const t = await getTranslations({ locale, namespace: 'contact' });
-  const site = await readSiteConfig();
+  const [t, site, { categories }] = await Promise.all([
+    getTranslations({ locale, namespace: 'contact' }),
+    readSiteConfig(locale),
+    getCurrentData(locale),
+  ]);
 
   return (
     <main className="min-h-screen">
-      <Header locale={locale} />
+      <Header categories={categories} />
       <section className="relative pt-32 pb-20 bg-charcoal text-cream">
         <div className="absolute inset-0 blueprint-grid opacity-10" />
         <div className="container mx-auto px-4 lg:px-8 relative z-10">
@@ -102,11 +106,15 @@ export default async function ContactPage({ params }: Props) {
                     {t('workingHours')}
                   </p>
                   <div className="space-y-2 text-charcoal/70">
-                    {site.openingHours.map((entry) => (
-                      <p key={entry.day}>
-                        {entry.day}: {entry.closed ? t('closed') : entry.note || `${entry.open} - ${entry.close}`}
-                      </p>
-                    ))}
+                    {site.openingHours.map((entry) => {
+                      const dayKey = resolveDayKey(entry.day);
+                      const dayLabel = dayKey ? t(`days.${dayKey}`) : entry.day;
+                      return (
+                        <p key={entry.day}>
+                          {dayLabel}: {entry.closed ? t('closed') : entry.note || `${entry.open} - ${entry.close}`}
+                        </p>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
@@ -153,7 +161,7 @@ export default async function ContactPage({ params }: Props) {
           </div>
         </div>
       </section>
-      <Footer locale={locale} />
+      <Footer locale={locale} site={site} categories={categories} />
     </main>
   );
 }

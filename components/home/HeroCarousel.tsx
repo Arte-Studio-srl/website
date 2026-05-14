@@ -40,7 +40,7 @@ export default function HeroCarousel({ slides, tagline }: Props) {
         >
           <Image
             src={slide.image}
-            alt={slide.title}
+            alt={slide.imageAlt || slide.title}
             fill
             priority={currentSlide === 0}
             className="object-cover"

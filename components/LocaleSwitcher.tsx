@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter } from '@/i18n/navigation';
 
 type Props = {
@@ -12,6 +12,7 @@ export default function LocaleSwitcher({ variant = 'dark' }: Props) {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const t = useTranslations('common');
 
   const switchLocale = (newLocale: string) => {
     router.replace(pathname, { locale: newLocale });
@@ -21,7 +22,7 @@ export default function LocaleSwitcher({ variant = 'dark' }: Props) {
   const inactiveClass = variant === 'light' ? 'text-white/70 hover:text-bronze-300' : 'text-charcoal/70 hover:text-bronze-600';
 
   return (
-    <div className="flex items-center gap-1" role="group" aria-label="Language">
+    <div className="flex items-center gap-1" role="group" aria-label={t('language')}>
       <button
         onClick={() => switchLocale('it')}
         className={`px-2 py-1 text-sm font-display transition-colors ${

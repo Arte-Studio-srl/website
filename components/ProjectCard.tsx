@@ -24,24 +24,20 @@ export default function ProjectCard({ project, viewProjectText }: ProjectCardPro
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 to-transparent z-10" />
           <Image
             src={project.thumbnail}
-            alt={project.title}
+            alt={project.thumbnailAlt || project.title}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-110"
           />
           <div className="absolute top-4 right-4 z-20 px-4 py-1 bg-bronze-600 text-white text-xs uppercase tracking-wider font-display">
-            {project.category.replace(/-/g, ' ')}
+            {project.categoryName || project.category.replace(/-/g, ' ')}
           </div>
         </div>
 
         <div className="p-6 border-t-2 border-bronze-500">
-          <div className="flex items-start justify-between mb-3">
-            <h3 className="font-display text-xl text-charcoal group-hover:text-bronze-600 transition-colors flex-1">
+          <div className="mb-3">
+            <h3 className="font-display text-xl text-charcoal group-hover:text-bronze-600 transition-colors">
               {project.title}
             </h3>
-            <span className="flex items-center gap-1 text-bronze-600 text-sm ml-4">
-              <Icon icon="ph:calendar-blank" className="w-3.5 h-3.5" aria-hidden />
-              {project.year}
-            </span>
           </div>
 
           {project.client && (

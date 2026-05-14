@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { useTranslations } from 'next-intl';
-import { EMAIL_REGEX, useContactForm } from '@/lib/use-contact-form';
+import { EMAIL_REGEX, submitSiteContact, useContactForm } from '@/lib/use-contact-form';
 
 interface WidgetForm extends Record<string, string | undefined> {
   name: string;
@@ -51,7 +51,12 @@ export default function FloatingContact({ contactEmail }: Props) {
     handleChange,
     handleSubmit,
     resetStatus,
-  } = useContactForm<WidgetForm>({ initialValues: INITIAL, validate, buildPayload });
+  } = useContactForm<WidgetForm>({
+    initialValues: INITIAL,
+    validate,
+    buildPayload,
+    submit: submitSiteContact,
+  });
 
   useEffect(() => {
     if (!open) return;

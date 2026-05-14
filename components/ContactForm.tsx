@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Icon } from '@iconify/react';
 import { useTranslations } from 'next-intl';
-import { EMAIL_REGEX, useContactForm } from '@/lib/use-contact-form';
+import { EMAIL_REGEX, submitSiteContact, useContactForm } from '@/lib/use-contact-form';
 
 interface ContactFormShape extends Record<string, string | undefined> {
   name: string;
@@ -45,6 +45,7 @@ export default function ContactForm() {
     initialValues: INITIAL,
     validate,
     buildPayload,
+    submit: submitSiteContact,
     successResetMs: 5000,
   });
 

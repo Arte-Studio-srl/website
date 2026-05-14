@@ -5,7 +5,9 @@
     "contactTitle": "Contatti",
     "contactDescription": "Contatta ArteStudio per progetti di architettura, scenografia e design degli spazi. Richiedi un preventivo o una consulenza.",
     "allProjectsTitle": "Tutti i Progetti",
-    "allProjectsDescription": "Esplora il portfolio completo di ArteStudio: architettura, scenografia e design degli spazi. Progetti di spazi espositivi, scenografie ed eventi."
+    "allProjectsDescription": "Esplora il portfolio completo di ArteStudio: architettura, scenografia e design degli spazi. Progetti di spazi espositivi, scenografie ed eventi.",
+    "categoryDescriptionFallback": "Esplora i progetti di {name} nel portfolio di ArteStudio.",
+    "projectDescriptionFallback": "{title} — un progetto firmato ArteStudio."
   },
   "common": {
     "home": "Home",
@@ -13,7 +15,9 @@
     "contact": "Contatti",
     "viewProjects": "Vedi Progetti",
     "contactUs": "Contattaci",
-    "allProjects": "Tutti i Progetti"
+    "allProjects": "Tutti i Progetti",
+    "toggleMenu": "Apri/chiudi menu",
+    "language": "Lingua"
   },
   "home": {
     "viewProjects": "Vedi Progetti",
@@ -27,7 +31,26 @@
     "viewAllProjects": "Vedi Tutti i Progetti",
     "quote": "La nostra arte è spazio: vuoto o pieno, chiuso o aperto, reale o illusorio, buio, illuminato, razionale, folle. È lo spazio dell'apparizione.",
     "quoteAuthor": "— Filosofia ArteStudio",
-    "goToSlide": "Vai alla slide {n}"
+    "goToSlide": "Vai alla slide {n}",
+    "processTitle": "Dall'Idea al Palco",
+    "processSubtitle": "Tre fasi, un unico flusso continuo — ogni progetto passa dal tavolo da disegno all'esperienza dal vivo.",
+    "processSteps": {
+      "project": {
+        "label": "Fase 01",
+        "title": "Progetto",
+        "description": "Ascoltiamo, schizziamo e trasformiamo il brief in disegni tecnici, planimetrie e studi 3D — il blueprint che guida ogni scelta successiva."
+      },
+      "build": {
+        "label": "Fase 02",
+        "title": "Realizzazione",
+        "description": "Nei nostri laboratori prendono forma elementi scenici, strutture su misura e finiture — pensati per essere trasportati, assemblati e illuminati."
+      },
+      "display": {
+        "label": "Fase 03",
+        "title": "Allestimento",
+        "description": "In loco installiamo, illuminiamo e vestiamo lo spazio: l'esperienza si apre al pubblico esattamente come progettata."
+      }
+    }
   },
   "footer": {
     "ourWork": "I Nostri Lavori",
@@ -62,7 +85,16 @@
     "closed": "Chiuso",
     "findUs": "Dove Siamo",
     "formHeading": "Inviaci un Messaggio",
-    "formSubtitle": "Rispondiamo entro un giorno lavorativo."
+    "formSubtitle": "Rispondiamo entro un giorno lavorativo.",
+    "days": {
+      "monday": "Lunedì",
+      "tuesday": "Martedì",
+      "wednesday": "Mercoledì",
+      "thursday": "Giovedì",
+      "friday": "Venerdì",
+      "saturday": "Sabato",
+      "sunday": "Domenica"
+    }
   },
   "floating": {
     "title": "Parliamone",
@@ -88,7 +120,8 @@
     "previousImage": "Immagine precedente",
     "nextImage": "Immagine successiva",
     "openStage": "Apri fase {title}",
-    "viewImage": "Vedi immagine {n}"
+    "viewImage": "Vedi immagine {n}",
+    "noStageImages": "Nessuna immagine disponibile per questa fase."
   },
   "notFound": {
     "title": "Pagina non trovata",

@@ -5,7 +5,9 @@
     "contactTitle": "Contact",
     "contactDescription": "Contact ArteStudio for architecture, scenography and spatial design projects. Request a quote or consultation.",
     "allProjectsTitle": "All Projects",
-    "allProjectsDescription": "Explore ArteStudio's complete portfolio: architecture, scenography and spatial design. Exhibition spaces, scenography and events."
+    "allProjectsDescription": "Explore ArteStudio's complete portfolio: architecture, scenography and spatial design. Exhibition spaces, scenography and events.",
+    "categoryDescriptionFallback": "Explore {name} projects in the ArteStudio portfolio.",
+    "projectDescriptionFallback": "{title} — a project by ArteStudio."
   },
   "common": {
     "home": "Home",
@@ -13,7 +15,9 @@
     "contact": "Contact",
     "viewProjects": "View Projects",
     "contactUs": "Contact Us",
-    "allProjects": "All Projects"
+    "allProjects": "All Projects",
+    "toggleMenu": "Toggle menu",
+    "language": "Language"
   },
   "home": {
     "viewProjects": "View Projects",
@@ -27,7 +31,26 @@
     "viewAllProjects": "View All Projects",
     "quote": "Our art is space: empty or full, closed or open, real or illusory, dark, illuminated, rational, mad. It is the space of appearance.",
     "quoteAuthor": "— ArteStudio Philosophy",
-    "goToSlide": "Go to slide {n}"
+    "goToSlide": "Go to slide {n}",
+    "processTitle": "From Idea to Stage",
+    "processSubtitle": "Three phases, one continuous flow — every project moves from drawing board to live experience.",
+    "processSteps": {
+      "project": {
+        "label": "Phase 01",
+        "title": "Project",
+        "description": "We listen, sketch, and shape the brief into precise drawings, technical layouts and 3D studies — the blueprint that anchors every decision."
+      },
+      "build": {
+        "label": "Phase 02",
+        "title": "Build",
+        "description": "In our workshop, scenic elements, custom structures and finishes take physical form — engineered to be transported, assembled and lit."
+      },
+      "display": {
+        "label": "Phase 03",
+        "title": "Display",
+        "description": "On site, we install, light and dress the space so the experience opens to its audience exactly as designed."
+      }
+    }
   },
   "footer": {
     "ourWork": "Our Work",
@@ -62,7 +85,16 @@
     "closed": "Closed",
     "findUs": "Find Us",
     "formHeading": "Send us a Message",
-    "formSubtitle": "We usually respond within one business day."
+    "formSubtitle": "We usually respond within one business day.",
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    }
   },
   "floating": {
     "title": "Let's talk",
@@ -88,7 +120,8 @@
     "previousImage": "Previous image",
     "nextImage": "Next image",
     "openStage": "Open stage {title}",
-    "viewImage": "View image {n}"
+    "viewImage": "View image {n}",
+    "noStageImages": "No images available for this stage."
   },
   "notFound": {
     "title": "Page Not Found",

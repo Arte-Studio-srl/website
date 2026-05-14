@@ -59,7 +59,7 @@ export function buildBaseMetadata(site: SiteConfig): Metadata {
     ? toAbsoluteImageUrl(site.seo.ogImage, siteUrl)
     : site.heroCarousel?.[0]?.image
       ? toAbsoluteImageUrl(site.heroCarousel[0].image, siteUrl)
-      : toAbsoluteImageUrl("/og-default.png", siteUrl);
+      : toAbsoluteImageUrl("/logo.png", siteUrl);
 
   const locale = site.seo?.locale || "it";
   const metadataBase = new URL(siteUrl);
@@ -110,14 +110,17 @@ export function buildBaseMetadata(site: SiteConfig): Metadata {
 export function buildProjectMetadata(
   project: Project,
   site: SiteConfig,
-  locale?: string
+  locale?: string,
+  descriptionFallback?: string
 ): Metadata {
   const siteUrl = site.seo?.siteUrl || DEFAULT_SITE_URL;
   const path = locale ? `/${locale}/project/${project.id}/` : `/project/${project.id}/`;
   const url = buildAbsoluteUrl(path, siteUrl);
   const title = project.title;
   const description = truncateDescription(
-    project.description || `${project.title} - ${project.client || "Progetto"} ${project.year}`
+    project.description ||
+      descriptionFallback ||
+      `${project.title}${project.client ? ` — ${project.client}` : ""}${project.year ? ` (${project.year})` : ""}`
   );
   const image = toAbsoluteImageUrl(project.thumbnail, siteUrl);
 
@@ -166,14 +169,15 @@ export function buildCategoryMetadata(
   category: Category,
   projectCount: number,
   site: SiteConfig,
-  locale?: string
+  locale?: string,
+  descriptionFallback?: string
 ): Metadata {
   const siteUrl = site.seo?.siteUrl || DEFAULT_SITE_URL;
   const path = locale ? `/${locale}/projects/${category.id}/` : `/projects/${category.id}/`;
   const url = buildAbsoluteUrl(path, siteUrl);
   const title = category.name;
   const description = truncateDescription(
-    category.description || `Esplora i progetti di ${category.name}. ${projectCount} progetti nel portfolio.`
+    category.description || descriptionFallback || `${category.name} — ${site.siteName}`
   );
 
   const alternates: Metadata["alternates"] = { canonical: url };

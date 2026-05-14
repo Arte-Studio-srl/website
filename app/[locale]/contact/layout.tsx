@@ -16,7 +16,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
-  const site = await readSiteConfig();
+  const site = await readSiteConfig(locale);
   return buildPageMetadata(
     {
       title: t("contactTitle"),

@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import HeroCarousel from "@/components/home/HeroCarousel";
 import ImageShowcase from "@/components/home/ImageShowcase";
 import CategoriesSection from "@/components/home/CategoriesSection";
+import ProcessSection from "@/components/home/ProcessSection";
 import FeaturedProjects from "@/components/home/FeaturedProjects";
 import Quote from "@/components/home/Quote";
 import { readSiteConfig } from "@/lib/site-config-storage";
@@ -31,7 +32,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
-  const site = await readSiteConfig();
+  const site = await readSiteConfig(locale);
   return buildPageMetadata(
     {
       title: t("homeTitle"),
@@ -49,30 +50,33 @@ export default async function HomePage({ params }: Props) {
   setRequestLocale(locale);
 
   const [siteConfig, { projects, categories }] = await Promise.all([
-    readSiteConfig(),
+    readSiteConfig(locale),
     getCurrentData(locale),
   ]);
 
-  const slides: HeroSlide[] = siteConfig.heroCarousel.length > 0
-    ? siteConfig.heroCarousel
+  const configuredSlides = siteConfig.heroCarousel.filter((slide) => slide.image);
+  const slides: HeroSlide[] = configuredSlides.length > 0
+    ? configuredSlides
     : projects.length > 0
       ? projects.slice(0, 5).map((p) => ({
           projectId: p.id,
           image: p.thumbnail,
+          imageAlt: p.thumbnailAlt || p.title,
           title: p.title,
-          category: p.category,
+          category: p.categoryName || p.category,
         }))
       : [PLACEHOLDER_SLIDE];
 
   return (
     <main className="min-h-screen">
-      <Header locale={locale} />
+      <Header categories={categories} />
       <HeroCarousel slides={slides} tagline={siteConfig.tagline} />
       <ImageShowcase projects={projects} />
       <CategoriesSection categories={categories} locale={locale} />
+      <ProcessSection locale={locale} />
       <FeaturedProjects projects={projects} locale={locale} />
       <Quote locale={locale} />
-      <Footer locale={locale} />
+      <Footer locale={locale} site={siteConfig} categories={categories} />
     </main>
   );
 }

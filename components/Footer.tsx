@@ -2,8 +2,7 @@ import { Link } from '@/i18n/navigation';
 import { Icon } from '@iconify/react';
 import { getTranslations } from 'next-intl/server';
 import { formatPhoneDisplay, formatTelHref } from '@/lib/site-config';
-import { readSiteConfig } from '@/lib/site-config-storage';
-import { getCurrentData } from '@/lib/data-utils';
+import type { Category, SiteConfig } from '@/types';
 
 type SocialKey = 'facebook' | 'instagram' | 'linkedin';
 
@@ -28,13 +27,17 @@ function SocialIcon({ href, label, type }: { href: string; label: string; type: 
   );
 }
 
-export default async function Footer({ locale }: { locale: string }) {
+export default async function Footer({
+  locale,
+  site,
+  categories,
+}: {
+  locale: string;
+  site: SiteConfig;
+  categories: Category[];
+}) {
   const t = await getTranslations({ locale, namespace: 'common' });
   const tFooter = await getTranslations({ locale, namespace: 'footer' });
-  const [site, { categories }] = await Promise.all([
-    readSiteConfig(),
-    getCurrentData(locale),
-  ]);
   const currentYear = new Date().getFullYear();
 
   return (

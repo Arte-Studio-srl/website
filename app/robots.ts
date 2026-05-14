@@ -10,13 +10,7 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
   const baseUrl = site.seo?.siteUrl || DEFAULT_SITE_URL;
 
   return {
-    rules: [
-      {
-        userAgent: "*",
-        allow: "/",
-        disallow: ["/api/", "/studio/"],
-      },
-    ],
+    rules: [{ userAgent: "*", allow: "/" }],
     sitemap: `${baseUrl.replace(/\/$/, "")}/sitemap.xml`,
   };
 }

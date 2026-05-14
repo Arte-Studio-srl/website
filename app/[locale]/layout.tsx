@@ -26,7 +26,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   const [messages, siteConfig] = await Promise.all([
     import(`@/messages/${locale}.json`).then((m) => m.default),
-    readSiteConfig(),
+    readSiteConfig(locale),
   ]);
 
   const siteUrl =
@@ -36,15 +36,7 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <OrganizationJsonLd
-        siteName={siteConfig.siteName}
-        tagline={siteConfig.tagline}
-        siteUrl={siteUrl}
-        contactEmail={siteConfig.contactEmail}
-        address={siteConfig.address}
-        social={siteConfig.social}
-        locale={locale}
-      />
+      <OrganizationJsonLd site={siteConfig} siteUrl={siteUrl} locale={locale} />
       {children}
       <FloatingContact contactEmail={siteConfig.contactEmail} />
     </NextIntlClientProvider>

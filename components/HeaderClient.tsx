@@ -134,7 +134,7 @@ export default function HeaderClient({ categories }: Props) {
             className={`lg:hidden p-2 transition-colors ${
               isScrolled ? 'text-charcoal' : 'text-white'
             }`}
-            aria-label="Toggle menu"
+            aria-label={t('toggleMenu')}
           >
             {mobileMenuOpen
               ? <Icon icon="ph:x" className="w-6 h-6" aria-hidden />

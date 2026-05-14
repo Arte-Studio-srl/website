@@ -2,34 +2,46 @@
 
 ## Current Shape
 
-This is a simplified public Next.js site:
+A static-export Next.js public site with one Cloudflare Pages Function:
 
 - `app/[locale]`: localized public pages.
-- `app/api/contact`: lightweight SMTP contact route.
-- `app/studio`: embedded Sanity Studio.
-- `components`: public UI.
-- `lib/sanity.ts`: Sanity client setup.
+- `app/layout.tsx`, `app/error.tsx`, `app/not-found.tsx`, `app/sitemap.ts`, `app/robots.ts`: app-level routes and metadata.
+- `functions/api/contact.ts`: Cloudflare Pages Function handling `POST /api/contact` via Resend.
+- `components/`: public UI (header, footer, project card, hero carousel, lightbox, etc.).
+- `lib/sanity.ts`: Sanity client setup (reads `NEXT_PUBLIC_SANITY_*` env vars).
 - `lib/data-utils.ts`: Sanity project/category reads.
-- `lib/site-config-storage.ts`: Sanity site config read with local fallback.
-- `lib/email.ts`: SMTP transport helper.
+- `lib/site-config-storage.ts`: Sanity `siteConfig` read with a hardcoded fallback.
+- `lib/site-config.ts`: pure helpers for opening hours, phone formatting, maps embed.
+- `lib/seo.ts`: shared metadata helpers.
+- `sanity.config.ts`, `sanity.cli.ts`: standalone Sanity Studio configuration (run separately, not mounted in Next).
+- `sanity/schemaTypes/`: `categoryType`, `projectType`, `siteConfigType`.
 - `types/index.ts`: shared content and site config types.
 
-There is no custom CMS, auth system, database, or object-storage upload layer. The only editing UI is Sanity Studio, authenticated by Sanity.
+There is no custom CMS, auth system, database, server-render path, or upload layer. The only editing UI is the Sanity Studio, authenticated by Sanity.
+
+## Build & Runtime
+
+- `next.config.ts` sets `output: "export"`, so `npm run build` produces a fully static `out/` directory.
+- Cloudflare Pages serves `out/` and executes anything under `functions/` as Pages Functions.
+- `public/_headers` carries security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`).
+- `public/_redirects` carries the root → `/it/` redirect.
 
 ## Data Flow
 
-1. Server components call `readSiteConfig()` and `getCurrentData()`.
-2. Those functions read published Sanity content through GROQ.
-3. `app/layout.tsx` injects site data into `SiteDataProvider`.
-4. Client components render from that provider.
-5. Images are normal Sanity asset CDN URLs.
+1. Server components in `app/[locale]/**` call `readSiteConfig()` and `getCurrentData()` at build time.
+2. Those helpers issue GROQ queries against Sanity via `sanityFetch()`.
+3. Layouts pass the resolved site config and content into client components as props.
+4. Images are plain Sanity Asset CDN URLs (`next/image` is `unoptimized`).
 
 ## Contact Flow
 
-1. Contact forms call `POST /api/contact`.
-2. The route validates the payload and checks a small in-memory rate limit bucket.
-3. `lib/email.ts` creates an SMTP transport.
-4. The email is sent to `CONTACT_TO`.
+1. The contact form `POST`s JSON to `/api/contact`.
+2. Cloudflare Pages routes the request to `functions/api/contact.ts`.
+3. The function checks content type, parses JSON, and consults the `RATE_LIMITER` binding keyed by sender email.
+4. It validates required fields and per-field length limits.
+5. It posts to `https://api.resend.com/emails` with `RESEND_API_KEY`, `CONTACT_FROM`, `CONTACT_TO`, and `reply_to` set to the sender.
+
+There is no SMTP transport, nodemailer, or in-memory queue.
 
 ## Sanity Content Contract
 
@@ -39,25 +51,12 @@ The frontend expects:
 - `project` documents with slug/title/category/year/client/description/thumbnail/stages.
 - A singleton `siteConfig` document for company info, SEO defaults, contact details, legal info, opening hours, socials, and hero carousel.
 
-The GROQ projections accept a few alternate field names, such as `projectId`, `categoryId`, `categorySlug`, `thumbnailUrl`, and `imageUrls`, to keep the first Sanity migration flexible.
+The GROQ projections accept alternate field names (`projectId`, `categoryId`, `categorySlug`, `thumbnailUrl`, `imageUrls`) so the original migration can evolve without a frontend rewrite.
 
 ## Studio
 
-The Studio is mounted at `/studio` through `next-sanity/studio` and configured in `sanity.config.ts`.
+The Studio is a standalone Sanity Studio configured in `sanity.config.ts`. It is run with `npm run sanity:dev` and deployed with `npm run sanity:deploy`. It is **not** mounted inside the Next.js app and there is no `/studio` route in the deployed site.
 
-Schemas live in `sanity/schemaTypes`:
+## Internationalization
 
-- `categoryType.ts`
-- `projectType.ts`
-- `siteConfigType.ts`
-
-## Complexity Removed
-
-- PostgreSQL connection pool and table migrations.
-- Admin pages and admin API routes.
-- Email-code auth, JWT cookies, and verification-code storage.
-- S3 presigned uploads and S3 deletion.
-- DB-backed rate limits.
-- Docker Compose Postgres service.
-
-The remaining complexity is mostly presentation and content modeling, which is the right place for this project at this stage.
+`next-intl` powers localized routes under `app/[locale]`. Strings live in `messages/{en,it}.json` and the request configuration lives in `i18n/`.

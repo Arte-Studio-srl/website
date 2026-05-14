@@ -8,16 +8,31 @@ export type ContactStatus = 'idle' | 'success' | 'error';
 
 type Values = Record<string, string | undefined>;
 type FormErrors<T> = Partial<Record<keyof T, string>>;
+type SubmitContactPayload = (payload: Record<string, unknown>) => Promise<void>;
+
+export async function submitSiteContact(payload: Record<string, unknown>) {
+  const response = await fetch('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const data = (await response.json()) as { success?: boolean; error?: string };
+  if (!response.ok || !data.success) {
+    throw new Error(data.error || 'Send failed');
+  }
+}
 
 export function useContactForm<T extends Values>({
   initialValues,
   validate,
   buildPayload,
+  submit,
   successResetMs = 3500,
 }: {
   initialValues: T;
   validate: (values: T) => FormErrors<T>;
   buildPayload: (values: T) => Record<string, unknown>;
+  submit: SubmitContactPayload;
   successResetMs?: number;
 }) {
   const [values, setValues] = useState<T>(initialValues);
@@ -42,15 +57,7 @@ export function useContactForm<T extends Values>({
     setIsSubmitting(true);
     setStatus('idle');
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(buildPayload(values)),
-      });
-      const data = (await response.json()) as { success?: boolean; error?: string };
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Send failed');
-      }
+      await submit(buildPayload(values));
       setStatus('success');
       setValues(initialValues);
       if (successResetMs) setTimeout(() => setStatus('idle'), successResetMs);
@@ -60,7 +67,7 @@ export function useContactForm<T extends Values>({
     } finally {
       setIsSubmitting(false);
     }
-  }, [values, validate, buildPayload, initialValues, successResetMs]);
+  }, [values, validate, buildPayload, submit, initialValues, successResetMs]);
 
   const resetStatus = useCallback(() => setStatus('idle'), []);
 

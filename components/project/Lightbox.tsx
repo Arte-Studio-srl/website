@@ -5,10 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { Icon } from '@iconify/react';
 import { useTranslations } from 'next-intl';
+import type { ProjectImage } from '@/types';
 
 interface LightboxProps {
   open: boolean;
-  images: string[];
+  images: ProjectImage[];
   index: number;
   altPrefix: string;
   onClose: () => void;
@@ -76,7 +77,12 @@ export default function Lightbox({ open, images, index, altPrefix, onClose, onIn
             className="relative w-full h-full max-w-7xl max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
-            <Image src={images[index]} alt={altPrefix} fill className="object-contain" />
+            <Image
+              src={images[index]?.url || ''}
+              alt={images[index]?.alt || altPrefix}
+              fill
+              className="object-contain"
+            />
           </motion.div>
 
           {images.length > 1 && (
