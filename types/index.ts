@@ -35,7 +35,6 @@ export interface Category {
   id: string;
   name: string;
   description: string;
-  icon?: string;
   /** ISO timestamp from Sanity `_updatedAt`, used for sitemap lastmod */
   updatedAt?: string;
 }

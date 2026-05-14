@@ -17,7 +17,7 @@ type SanitySiteConfig = Partial<SiteConfig> & {
 function buildSiteConfigQuery(locale: Locale): string {
   return `*[_type == "siteConfig"][0] {
   siteName,
-  "tagline": coalesce(tagline_${locale}, tagline_en, tagline_it, tagline, ""),
+  "tagline": coalesce(tagline_${locale}, tagline_en, tagline_it, ""),
   faviconUrl,
   contactEmail,
   phone,
@@ -32,8 +32,8 @@ function buildSiteConfigQuery(locale: Locale): string {
   openingHours,
   social,
   "seo": {
-    "defaultMetaTitle": coalesce(seo.defaultMetaTitle_${locale}, seo.defaultMetaTitle_en, seo.defaultMetaTitle_it, seo.defaultMetaTitle),
-    "defaultMetaDescription": coalesce(seo.defaultMetaDescription_${locale}, seo.defaultMetaDescription_en, seo.defaultMetaDescription_it, seo.defaultMetaDescription),
+    "defaultMetaTitle": coalesce(seo.defaultMetaTitle_${locale}, seo.defaultMetaTitle_en, seo.defaultMetaTitle_it),
+    "defaultMetaDescription": coalesce(seo.defaultMetaDescription_${locale}, seo.defaultMetaDescription_en, seo.defaultMetaDescription_it),
     "siteUrl": seo.siteUrl,
     "ogImage": seo.ogImage.asset->url,
     "locale": seo.locale,

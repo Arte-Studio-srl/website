@@ -80,8 +80,8 @@ export default async function HomePage({ params }: Props) {
       <CategoriesSection categories={categories} locale={locale} />
       <ProcessSection locale={locale} />
       <FeaturedProjects projects={projects} locale={locale} />
-      <Quote locale={locale} />
       <FaqSection locale={locale} />
+      <Quote locale={locale} />
       <Footer locale={locale} site={siteConfig} categories={categories} />
     </main>
   );

@@ -43,7 +43,6 @@ type SanityCategory = {
   id?: string;
   name?: string;
   description?: string;
-  icon?: string;
   updatedAt?: string;
 };
 
@@ -91,7 +90,6 @@ function buildCategoriesQuery(locale: Locale): string {
   "id": coalesce(slug.current, categoryId, _id),
   "name": coalesce(name_${locale}, name_en, name_it, name, ""),
   "description": coalesce(description_${locale}, description_en, description_it, description, ""),
-  icon,
   "updatedAt": _updatedAt
 }`;
 }
@@ -166,7 +164,6 @@ function normalizeCategory(category: SanityCategory): Category | null {
     id: category.id,
     name: category.name,
     description: category.description || '',
-    icon: category.icon,
     updatedAt: category.updatedAt,
   };
 }

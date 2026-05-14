@@ -2,6 +2,7 @@
 
 import { defineConfig } from 'sanity';
 import { structureTool } from 'sanity/structure';
+import { itITLocale } from '@sanity/locale-it-it';
 import { schemaTypes } from './sanity/schemaTypes';
 
 // Hardcoded so the deployed Studio bundle at artestudio.sanity.studio resolves
@@ -13,28 +14,31 @@ const dataset = 'production';
 
 export default defineConfig({
   name: 'default',
-  title: 'ArteStudio',
+  title: 'ArteStudio CMS',
   projectId,
   dataset,
   plugins: [
+    itITLocale(),
     structureTool({
+      name: 'content',
+      title: 'Contenuti',
       structure: (S) =>
         S.list()
-          .title('Content')
+          .title('Contenuti')
           .items([
             S.listItem()
-              .title('Site config')
+              .title('Configurazione del sito')
               .id('siteConfig')
               .child(
                 S.document()
                   .schemaType('siteConfig')
                   .documentId('siteConfig')
-                  .title('Site config')
+                  .title('Configurazione del sito')
               ),
             S.divider(),
-            ...S.documentTypeListItems().filter(
-              (item) => item.getId() !== 'siteConfig'
-            ),
+            S.documentTypeListItem('project').title('Progetti'),
+            S.documentTypeListItem('category').title('Categorie'),
+            S.documentTypeListItem('faq').title('Domande frequenti (FAQ)'),
           ]),
     }),
   ],
