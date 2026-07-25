@@ -2,11 +2,11 @@
 
 ## Current Shape
 
-A static-export Next.js public site with one Cloudflare Pages Function:
+A static-export Next.js public site with one narrowly routed Cloudflare Worker:
 
 - `app/[locale]`: localized public pages.
 - `app/layout.tsx`, `app/error.tsx`, `app/not-found.tsx`, `app/sitemap.ts`, `app/robots.ts`: app-level routes and metadata.
-- `functions/api/contact.ts`: Cloudflare Pages Function handling `POST /api/contact` via Resend.
+- `workers/contact/index.mjs`: Cloudflare Worker handling `POST /api/contact` through a restricted email binding.
 - `components/`: public UI (header, footer, project card, hero carousel, lightbox, etc.).
 - `lib/sanity.ts`: Sanity client setup (reads `NEXT_PUBLIC_SANITY_*` env vars).
 - `lib/data-utils.ts`: Sanity project/category reads.
@@ -22,7 +22,7 @@ There is no custom CMS, auth system, database, server-render path, or upload lay
 ## Build & Runtime
 
 - `next.config.ts` sets `output: "export"`, so `npm run build` produces a fully static `out/` directory.
-- Cloudflare Pages serves `out/` and executes anything under `functions/` as Pages Functions.
+- Cloudflare Pages serves `out/`; an exact Worker route intercepts `/api/contact` on the apex hostname. The `www` frontend submits to that canonical endpoint.
 - `public/_headers` carries security headers (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`).
 - `public/_redirects` carries the root → `/it/` redirect.
 
@@ -35,13 +35,13 @@ There is no custom CMS, auth system, database, server-render path, or upload lay
 
 ## Contact Flow
 
-1. The contact form `POST`s JSON to `/api/contact`.
-2. Cloudflare Pages routes the request to `functions/api/contact.ts`.
-3. The function checks content type, parses JSON, and consults the `RATE_LIMITER` binding keyed by sender email.
+1. The contact form `POST`s JSON to `/api/contact`; on `www`, the client uses the canonical apex endpoint with a CORS-safelisted content type.
+2. A narrowly scoped Worker route sends the request to `workers/contact/index.mjs`.
+3. The Worker checks origin, content type, request size, JSON shape, and the `RATE_LIMITER` binding.
 4. It validates required fields and per-field length limits.
-5. It posts to `https://api.resend.com/emails` with `RESEND_API_KEY`, `CONTACT_FROM`, `CONTACT_TO`, and `reply_to` set to the sender.
+5. Its restricted `EMAIL` binding sends from `website@forms.artestudiosrl.it` only to the verified project mailbox, with `replyTo` set to the visitor.
 
-There is no SMTP transport, nodemailer, or in-memory queue.
+There is no SMTP password, third-party mail API token, nodemailer dependency, or in-memory queue.
 
 ## Sanity Content Contract
 

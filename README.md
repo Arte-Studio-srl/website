@@ -1,6 +1,6 @@
 # ArteStudio Website
 
-Public portfolio website for an events and scenography studio. The app is intentionally small: Next.js renders a fully static export of the public site, Sanity owns content and media, and a single Cloudflare Pages Function handles the contact form via Resend.
+Public portfolio website for an events and scenography studio. The app is intentionally small: Next.js renders a fully static export of the public site, Sanity owns content and media, and a dedicated Cloudflare Worker handles the contact form through Cloudflare Email Routing.
 
 ## Architecture
 
@@ -8,16 +8,16 @@ Public portfolio website for an events and scenography studio. The app is intent
 - **CMS**: Sanity for projects, categories, site config, and images.
 - **Studio**: standalone Sanity Studio (`npm run sanity:dev` / `npm run sanity:deploy`). It is **not** mounted inside this Next.js app.
 - **Images**: Sanity Asset CDN (`cdn.sanity.io`) served as plain URLs (`next/image` is unoptimized — see `next.config.ts`).
-- **Contact form**: `POST /api/contact` is implemented as a Cloudflare Pages Function in `functions/api/contact.ts` and sends mail via the Resend HTTP API.
-- **Rate limiting**: Cloudflare Rate Limiting binding (`RATE_LIMITER`) keyed by sender email.
+- **Contact form**: `POST /api/contact` is implemented by `workers/contact/index.mjs` and sends only to the verified project mailbox through a restricted Cloudflare email binding.
+- **Rate limiting**: Cloudflare Workers Rate Limiting binding (`RATE_LIMITER`) keyed by the connecting client.
 - **No custom admin/backend**: there is no local admin panel, auth system, database, or upload pipeline.
 
 ## Requirements
 
 - Node.js 20.9 or newer
 - A Sanity project and dataset
-- A Resend API key for the contact form (production only)
-- Cloudflare Pages for deployment (or any static host, plus an external function host for the contact route)
+- Cloudflare Pages for the static site
+- Cloudflare Email Routing on `forms.artestudiosrl.it`, a verified destination address, and Workers bindings for the contact route
 
 ## Quick Start
 
@@ -29,7 +29,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-`npm run dev` runs the Next.js public site only. The contact Pages Function does not run under `next dev`; to test the contact flow end-to-end, run a Cloudflare-compatible local server (for example `npx wrangler pages dev out` after `npm run build`).
+`npm run dev` runs the Next.js public site only. Run the contact Worker separately with Wrangler when testing its request handling locally.
 
 ## Environment
 
@@ -38,15 +38,10 @@ NEXT_PUBLIC_SANITY_PROJECT_ID=your-project-id
 NEXT_PUBLIC_SANITY_DATASET=production
 SANITY_API_VERSION=2025-02-25
 
-# Cloudflare Pages Function — set these in the Cloudflare dashboard, not here.
-RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxx
-CONTACT_FROM=Website <no-reply@yourdomain.com>
-CONTACT_TO=owner@yourdomain.com
-
 NEXT_PUBLIC_SITE_URL=https://yourdomain.com
 ```
 
-The `RATE_LIMITER` binding is configured in the Cloudflare Pages dashboard (Settings → Functions → Bindings → Rate limiting), not via env vars.
+The contact Worker's restricted `EMAIL` and `RATE_LIMITER` bindings are declared in `workers/contact/wrangler.jsonc`. No mail API token is stored in the repository or exposed to the browser.
 
 If Sanity variables are missing, the app still builds with fallback site config and empty project/category lists.
 
@@ -98,8 +93,8 @@ npm run generate:favicon # Regenerate favicon asset
 The site is built as a fully static export and deployed to Cloudflare Pages.
 
 1. `npm run build` produces `out/`.
-2. Cloudflare Pages serves `out/` and runs `functions/` as Pages Functions.
+2. Cloudflare Pages serves `out/`.
 3. `public/_headers` and `public/_redirects` carry security headers and routing.
-4. Set `RESEND_API_KEY`, `CONTACT_FROM`, `CONTACT_TO`, and the `RATE_LIMITER` binding in the Cloudflare dashboard.
+4. Deploy `workers/contact` and route the exact `/api/contact` path on the apex hostname to it. The `www` frontend submits to that canonical endpoint.
 
 The Studio is deployed separately with `npm run sanity:deploy`.

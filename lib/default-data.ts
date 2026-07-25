@@ -4,7 +4,7 @@ export const fallbackSiteConfig: SiteConfig = {
   siteName: "ArteStudio",
   tagline: "Architettura, Scenografia e Design degli spazi",
   faviconUrl: "/favicon.ico",
-  contactEmail: "info@progettoartestudio.it",
+  contactEmail: "progetto@progettoartestudio.it",
   phone: "+39 02 1234567",
   address: "Via Example, 1\n20100 Milano (MI)",
   googleMapsUrl: "https://maps.google.com",

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "artestudio-contact",
+  "main": "index.mjs",
+  "compatibility_date": "2026-07-25",
+  "workers_dev": false,
+  "routes": [
+    {
+      "pattern": "artestudiosrl.it/api/contact*",
+      "zone_name": "artestudiosrl.it"
+    }
+  ],
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "destination_address": "progetto@progettoartestudio.it",
+      "allowed_sender_addresses": [
+        "website@forms.artestudiosrl.it"
+      ]
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "RATE_LIMITER",
+      "namespace_id": "25072501",
+      "simple": {
+        "limit": 5,
+        "period": 60
+      }
+    }
+  ]
+}
